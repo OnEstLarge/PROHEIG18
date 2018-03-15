@@ -13,30 +13,30 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="PeerInformations.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="PeerInformations.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/PeerInformations.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="10" column="0" lean-forward="true" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+            <state relative-caret-position="-2244">
+              <caret line="15" column="0" lean-forward="true" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
               <folding>
-                <element signature="e#0#3881#0" expanded="true" />
-                <element signature="e#1331#1332#0" expanded="true" />
-                <element signature="e#1356#1357#0" expanded="true" />
-                <element signature="e#1480#1481#0" expanded="true" />
-                <element signature="e#1510#1511#0" expanded="true" />
-                <element signature="e#2999#3000#0" expanded="true" />
-                <element signature="e#3026#3027#0" expanded="true" />
-                <element signature="e#3634#3635#0" expanded="true" />
-                <element signature="e#3697#3698#0" expanded="true" />
+                <element signature="e#0#3995#0" expanded="true" />
+                <element signature="e#1425#1426#0" expanded="true" />
+                <element signature="e#1450#1451#0" expanded="true" />
+                <element signature="e#1574#1575#0" expanded="true" />
+                <element signature="e#1604#1605#0" expanded="true" />
+                <element signature="e#3113#3114#0" expanded="true" />
+                <element signature="e#3140#3141#0" expanded="true" />
+                <element signature="e#3748#3749#0" expanded="true" />
+                <element signature="e#3811#3812#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="PeerInformationsTest.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="PeerInformationsTest.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/test/java/PeerInformationsTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="574">
+            <state relative-caret-position="1892">
               <caret line="120" column="29" lean-forward="false" selection-start-line="120" selection-start-column="29" selection-end-line="120" selection-end-column="29" />
               <folding>
                 <element signature="e#0#3939#0" expanded="true" />
@@ -317,12 +317,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="PeerInformationsTest - 2018.03.15 at 17h 08m 02s.xml">
-      <configuration name="PeerInformationsTest" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="PeerInformationsTest - 2018.03.15 at 17h 12m 44s.xml">
-      <configuration name="PeerInformationsTest" configurationId="JUnit" />
-    </history-entry>
     <history-entry file="PeerInformationsTest - 2018.03.15 at 17h 13m 36s.xml">
       <configuration name="PeerInformationsTest" configurationId="JUnit" />
     </history-entry>
@@ -345,6 +339,12 @@
       <configuration name="PeerInformationsTest" configurationId="JUnit" />
     </history-entry>
     <history-entry file="PeerInformationsTest - 2018.03.15 at 17h 44m 20s.xml">
+      <configuration name="PeerInformationsTest" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="PeerInformationsTest - 2018.03.15 at 17h 49m 01s.xml">
+      <configuration name="PeerInformationsTest" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="PeerInformationsTest - 2018.03.15 at 17h 49m 24s.xml">
       <configuration name="PeerInformationsTest" configurationId="JUnit" />
     </history-entry>
   </component>
@@ -396,33 +396,33 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/PeerInformations.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2244">
+          <caret line="15" column="0" lean-forward="true" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#3995#0" expanded="true" />
+            <element signature="e#1425#1426#0" expanded="true" />
+            <element signature="e#1450#1451#0" expanded="true" />
+            <element signature="e#1574#1575#0" expanded="true" />
+            <element signature="e#1604#1605#0" expanded="true" />
+            <element signature="e#3113#3114#0" expanded="true" />
+            <element signature="e#3140#3141#0" expanded="true" />
+            <element signature="e#3748#3749#0" expanded="true" />
+            <element signature="e#3811#3812#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/PeerInformationsTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="574">
+        <state relative-caret-position="1892">
           <caret line="120" column="29" lean-forward="false" selection-start-line="120" selection-start-column="29" selection-end-line="120" selection-end-column="29" />
           <folding>
             <element signature="e#0#3939#0" expanded="true" />
             <element signature="imports" expanded="true" />
             <element signature="e#824#825#0" expanded="true" />
             <element signature="e#910#911#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/PeerInformations.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="10" column="0" lean-forward="true" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#3881#0" expanded="true" />
-            <element signature="e#1331#1332#0" expanded="true" />
-            <element signature="e#1356#1357#0" expanded="true" />
-            <element signature="e#1480#1481#0" expanded="true" />
-            <element signature="e#1510#1511#0" expanded="true" />
-            <element signature="e#2999#3000#0" expanded="true" />
-            <element signature="e#3026#3027#0" expanded="true" />
-            <element signature="e#3634#3635#0" expanded="true" />
-            <element signature="e#3697#3698#0" expanded="true" />
           </folding>
         </state>
       </provider>

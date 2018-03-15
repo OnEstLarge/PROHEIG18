@@ -17,6 +17,8 @@ public class PeerInformations {
     //Constantes pour l'intervalle de ports
     public static final int PORT_RANGE_MIN = 0;
     public static final int PORT_RANGE_MAX = 65535;
+    public static final int IP_RANGE_MIN = 0;
+    public static final int IP_RANGE_MAX = 255;
 
     /**
      * Constructeur pour les informations d'un pair
@@ -89,7 +91,7 @@ public class PeerInformations {
             }
             for(String part: parts) {
                 int i = Integer.parseInt(part);
-                if( i < 0 || i > 255) {
+                if( i < IP_RANGE_MIN || i > IP_RANGE_MAX) {
                     return false;
                 }
             }
