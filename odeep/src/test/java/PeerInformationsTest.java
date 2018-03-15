@@ -100,9 +100,29 @@ class PeerInformationsTest {
     }
 
     @Test
-    void setPort() {
+    void setValidPortShouldWork() {
         testName="setPort()";
         peerInfo.setPort(81);
         assertEquals(81, peerInfo.getPort());
+    }
+
+    @Test
+    void setNegativePortNumberShouldNotWork() {
+        testName = "setNegativePortNumberShouldNotWork()";
+        try{
+            peerInfo.setPort(PeerInformations.PORT_RANGE_MIN -1);
+        } catch(IllegalArgumentException e) {
+            assertEquals("Bad port", e.getMessage());
+        }
+    }
+
+    @Test
+    void setTooBigPortNumberShouldNotWork() {
+        testName = "setTooBigPortNumberShouldNotWork()";
+        try{
+            peerInfo.setPort(PeerInformations.PORT_RANGE_MAX + 1);
+        } catch(IllegalArgumentException e) {
+            assertEquals("Bad port", e.getMessage());
+        }
     }
 }

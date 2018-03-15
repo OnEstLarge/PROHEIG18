@@ -14,9 +14,16 @@
  */
 public class PeerInformations {
 
-    private static final int PORT_RANGE_MIN = 0;
-    private static final int PORT_RANGE_MAX = 65535;
+    //Constantes pour l'intervalle de ports
+    public static final int PORT_RANGE_MIN = 0;
+    public static final int PORT_RANGE_MAX = 65535;
 
+    /**
+     * Constructeur pour les informations d'un pair
+     * @param ID      l'identifiant du pair
+     * @param address l'adresse IP du pair
+     * @param port    le port utilisé par le pair
+     */
     public PeerInformations(String ID, String address, int port) {
 
         this.ID = ID;
@@ -34,15 +41,29 @@ public class PeerInformations {
         }
     }
 
+    /**
+     * Getter de l'identifiant du pair
+     * @return l'identifiant du pair
+     */
     public String getID(){
         return ID;
     }
 
+    /**
+     * Getter de l'adresse IP du pair
+     * @return l'adresse IP du pair
+     */
     public String getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
+    /**
+     * Setter de l'adresse IP du pair
+     * @param address la nouvelle adresse IP du pair
+     * @throws IllegalArgumentException si l'adresse IP ne correspond pas au format X.X.X.X
+     *                                  où X est un nombre entre 0 et 255.
+     */
+    public void setAddress(String address) throws IllegalArgumentException{
         if(isValidIP(address)) {
             this.address = address;
         } else {
@@ -50,6 +71,12 @@ public class PeerInformations {
         }
     }
 
+    /**
+     * Vérifie si l'adresse IP correspond au format X.X.X.X où X est un nombre entre 0 et 255.
+     * @param ip l'adresse IP à vérifier.
+     * @return   true si l'adresse IP correspond au format,
+     *           false sinon.
+     */
     public static boolean isValidIP(String ip) {
         try {
             if(ip == null || ip.equals("")) {
@@ -66,20 +93,26 @@ public class PeerInformations {
                     return false;
                 }
             }
-            if(ip.endsWith(".")) {
-                return false;
-            }
+            return !ip.endsWith(".");
 
-            return true;
         } catch (NumberFormatException e) {
             return false;
         }
     }
 
+    /**
+     * Getter du numéro de port utilisé par le pair
+     * @return le numéro de port utilisé
+     */
     public int getPort() {
         return port;
     }
 
+    /**
+     * Setter du numéro de port utilisé par le pair
+     * @param port Le nouveau port à utiliser
+     * @throws IllegalArgumentException Si le port ne se situe pas entre PORT_RANGE_MIN et PORT_RANGE_MAX.
+     */
     public void setPort(int port) throws IllegalArgumentException{
         if(PORT_RANGE_MIN <= port && port <= PORT_RANGE_MAX) {
             this.port = port;
@@ -88,6 +121,10 @@ public class PeerInformations {
         }
     }
 
+    /**
+     * Redéfinition de la méthode toString
+     * @return Les informations d'un pair
+     */
     public String toString() {
         return ID + " - " + address + ":" + port + "\n";
     }
@@ -98,6 +135,6 @@ public class PeerInformations {
     //l'adresse IP du pair
     private String address;
 
-    //port TCP dédié à l'application
+    //numéro de port TCP utilisé à l'application
     private int port;
 }
