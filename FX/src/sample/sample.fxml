@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+  <children>
+    <HBox prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <children>
+        <Accordion>
+          <expandedPane>
+            <TitledPane fx:id="x1" animated="false" text="Groupe 2">
+              <content>
+                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </TitledPane>
+          </expandedPane>
+          <panes>
+            <TitledPane animated="false" text="Groupe 1">
+              <content>
+                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </TitledPane>
+            <fx:reference source="x1" />
+          </panes>
+        </Accordion>
+        <Pane prefHeight="200.0" prefWidth="200.0" />
+        <AnchorPane prefHeight="200.0" prefWidth="200.0">
+          <children>
+            <Button layoutX="58.0" layoutY="46.0" mnemonicParsing="false" text="Télécharger" />
+            <Button layoutX="71.0" layoutY="132.0" mnemonicParsing="false" text="Inviter" />
+            <Button layoutX="74.0" layoutY="227.0" mnemonicParsing="false" text="Créer" />
+            <Button layoutX="74.0" layoutY="316.0" mnemonicParsing="false" text="Quitter" />
+          </children>
+        </AnchorPane>
+      </children>
+    </HBox>
+  </children>
+</AnchorPane>
