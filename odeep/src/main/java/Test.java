@@ -13,8 +13,13 @@ public class Test {
         String message2 = "HOHOHOHOHO";
         PeerMessage peerMessage2 = new PeerMessage("TEST", message2);
 
-        n2.sendToPeer(peerMessage1, p1);
-        n2.sendToPeer(peerMessage2, p1);
+        // Client sends messages
+        //n2.sendToPeer(peerMessage1, p1);
+        //n2.sendToPeer(peerMessage2, p1);
+
+        // Server listens
+        n1.AcceptingConnections();
+
     }
 
 }
