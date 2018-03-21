@@ -31,7 +31,7 @@ public class Node {
      */
     public void addPeer(PeerInformations... peers) {
         for(PeerInformations peer : peers) {
-            if(!knownPeers.contains(peer)) {
+            if (!knownPeers.contains(peer)) {
                 knownPeers.add(peer);
             }
         }
