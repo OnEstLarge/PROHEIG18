@@ -24,6 +24,18 @@ public class Node {
         mapMessage = new HashMap<String, MessageHandler>();
     }
 
+    public void addPeer(PeerInformations peer) {
+
+    }
+
+    public void addMessageHandler(String typeMessage, MessageHandler handler) {
+
+    }
+
+    public void shutdown() {
+        nodeIsRunning = false;
+    }
+
     public void AcceptingConnections() {
 
         while(nodeIsRunning) {
@@ -43,5 +55,5 @@ public class Node {
     private HashMap<String, MessageHandler> mapMessage;
 
     //Permet de déterminer sur le noeud est actif
-    private boolean nodeIsRunning = false;
+    private boolean nodeIsRunning = true;
 }

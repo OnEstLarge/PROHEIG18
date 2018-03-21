@@ -10,5 +10,6 @@
 
 
 public interface MessageHandler {
+
     public abstract void handleMessage(String message);
 }
