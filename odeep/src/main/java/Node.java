@@ -27,11 +27,13 @@ public class Node {
     /**
      * Ajoute un ou plusieurs pairs à la liste de pairs connus.
      *
-     * @param peers
+     * @param peers nouveau(x) peer(s) à ajouter
      */
     public void addPeer(PeerInformations... peers) {
         for(PeerInformations peer : peers) {
-            knownPeers.add(peer);
+            if(!knownPeers.contains(peer)) {
+                knownPeers.add(peer);
+            }
         }
     }
 
