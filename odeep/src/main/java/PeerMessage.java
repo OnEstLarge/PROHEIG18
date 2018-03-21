@@ -17,7 +17,7 @@ public class PeerMessage {
     /**
      * Vérifie que le format du type de message passé en argument est correct.
      * @param type
-     * @return
+     * @return true si le format du type de message passé en argument est correct
      */
     public static boolean isValidTypeFormat(String type) {
         return type != null && type.length() == TYPE_LENGTH && isUpperCase(type);
@@ -26,7 +26,7 @@ public class PeerMessage {
     /**
      * Vérifie si la string passée en argument est composée uniquement de majuscule.
      * @param s
-     * @return
+     * @return true si la string passée en argument est composée uniquement de majuscule
      */
     private static boolean isUpperCase(String s) {
         for(int i = 0; i < s.length(); ++i) {
