@@ -46,7 +46,7 @@ public class Node {
     }
 
     /**
-     *
+     * Ferme la connexion entrante du Noeud
      */
     public void shutdown() {
         nodeIsRunning = false;
