@@ -22,76 +22,66 @@ public class PeerInformations {
 
     /**
      * Constructeur pour les informations d'un pair
+     *
      * @param ID      l'identifiant du pair
      * @param address l'adresse IP du pair
      * @param port    le port utilisé par le pair
      */
     public PeerInformations(String ID, String address, int port) {
-
         this.ID = ID;
 
-        if(isValidIP(address)) {
-            this.address = address;
-        } else {
+        if (!isValidIP(address)) {
             throw new IllegalArgumentException("Bad IP");
         }
+        this.address = address;
 
-        if(PORT_RANGE_MIN <= port && port <= PORT_RANGE_MAX) {
-            this.port = port;
-        } else {
+        if (PORT_RANGE_MIN > port && port > PORT_RANGE_MAX) {
             throw new IllegalArgumentException("Bad port");
         }
+        this.port = port;
     }
 
-    /**
-     * Getter de l'identifiant du pair
-     * @return l'identifiant du pair
-     */
-    public String getID(){
+    public String getID() {
         return ID;
     }
 
-    /**
-     * Getter de l'adresse IP du pair
-     * @return l'adresse IP du pair
-     */
     public String getAddress() {
         return address;
     }
 
     /**
-     * Setter de l'adresse IP du pair
+     *
      * @param address la nouvelle adresse IP du pair
      * @throws IllegalArgumentException si l'adresse IP ne correspond pas au format X.X.X.X
      *                                  où X est un nombre entre 0 et 255.
      */
-    public void setAddress(String address) throws IllegalArgumentException{
-        if(isValidIP(address)) {
-            this.address = address;
-        } else {
+    public void setAddress(String address) throws IllegalArgumentException {
+        if (!isValidIP(address)) {
             throw new IllegalArgumentException("Bad IP");
         }
+        this.address = address;
     }
 
     /**
      * Vérifie si l'adresse IP correspond au format X.X.X.X où X est un nombre entre 0 et 255.
+     *
      * @param ip l'adresse IP à vérifier.
-     * @return   true si l'adresse IP correspond au format,
-     *           false sinon.
+     * @return true si l'adresse IP correspond au format,
+     * false sinon.
      */
     public static boolean isValidIP(String ip) {
         try {
-            if(ip == null || ip.equals("")) {
+            if (ip == null || ip.equals("")) {
                 return false;
             }
 
             String[] parts = ip.split("\\.");
-            if(parts.length != 4) {
+            if (parts.length != 4) {
                 return false;
             }
-            for(String part: parts) {
+            for (String part : parts) {
                 int i = Integer.parseInt(part);
-                if( i < IP_RANGE_MIN || i > IP_RANGE_MAX) {
+                if (i < IP_RANGE_MIN || i > IP_RANGE_MAX) {
                     return false;
                 }
             }
@@ -102,29 +92,26 @@ public class PeerInformations {
         }
     }
 
-    /**
-     * Getter du numéro de port utilisé par le pair
-     * @return le numéro de port utilisé
-     */
     public int getPort() {
         return port;
     }
 
     /**
-     * Setter du numéro de port utilisé par le pair
+     *
      * @param port Le nouveau port à utiliser
      * @throws IllegalArgumentException Si le port ne se situe pas entre PORT_RANGE_MIN et PORT_RANGE_MAX.
+     *
      */
-    public void setPort(int port) throws IllegalArgumentException{
-        if(PORT_RANGE_MIN <= port && port <= PORT_RANGE_MAX) {
-            this.port = port;
-        } else {
+    public void setPort(int port) throws IllegalArgumentException {
+        if (PORT_RANGE_MIN > port && port > PORT_RANGE_MAX) {
             throw new IllegalArgumentException("Bad port");
         }
+        this.port = port;
     }
 
     /**
      * Redéfinition de la méthode toString
+     *
      * @return Les informations d'un pair
      */
     public String toString() {
