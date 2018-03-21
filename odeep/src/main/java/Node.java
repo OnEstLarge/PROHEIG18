@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------------
  Odeep
  Fichier     : Node.java
- Auteur(s)   : Schürch Loïc
+ Auteur(s)   : Burgbacher Lionel, Jee Mathieu, Schürch Loïc
  Date        : 15.03.2018
  Compilateur : jdk 1.8.0_144
  -----------------------------------------------------------------------------------
@@ -30,7 +30,7 @@ public class Node {
     /**
      * Ajoute un ou plusieurs pairs à la liste de pairs connus.
      *
-     * @param peers
+     * @param peers nouveau(x) pair(s) à ajouter
      */
     public void addPeer(PeerInformations... peers) {
         for(PeerInformations peer : peers) {
@@ -47,16 +47,20 @@ public class Node {
      * @param handler     handler correspondant au type de message
      */
     public void addMessageHandler(String typeMessage, MessageHandler handler) {
-
+        // TODO: check typeMessage format
+        mapMessage.put(typeMessage, handler);
     }
 
     /**
-     * Ferme la connexion entrante du Noeud
+     * Ferme la connexion entrante du Noeud (Node).
      */
     public void shutdown() {
         nodeIsRunning = false;
     }
 
+    /**
+     * Ouvre la connexion entrante du Noeud (Node).
+     */
     public void turnOn() {
         nodeIsRunning = true;
     }
@@ -65,6 +69,11 @@ public class Node {
         return knownPeers;
     }
 
+    /**
+     * Retire un pair de la map 'mapMessage'.
+     *
+     * @param peers pair(s) à retirer
+     */
     public void removeKnownPeers(PeerInformations... peers) {
         for(PeerInformations peer : peers) {
             if (knownPeers.contains(peer)) {
@@ -77,8 +86,13 @@ public class Node {
         return myInfos;
     }
 
+    /**
+     *
+     * @param message
+     * @param peer
+     */
     public void sendToPeer(PeerMessage message, PeerInformations peer) {
-
+    
     }
 
     public HashMap<String, MessageHandler> getMapMessage() {
@@ -109,15 +123,15 @@ public class Node {
         }
     }
 
-    //Informations sur le pair de ce noeud
+    // Informations sur le pair de ce noeud
     private PeerInformations myInfos;
 
-    //Les informations sur les pairs que ce noeud connait
+    // Les informations sur les pairs que ce noeud connait
     private ArrayList<PeerInformations> knownPeers;
 
-    //Association entre les types de message et leur handlers
+    // Association entre les types de message et leur handlers
     private HashMap<String, MessageHandler> mapMessage;
 
-    //Permet de déterminer sur le noeud est actif
+    // Permet de déterminer sur le noeud est actif
     private boolean nodeIsRunning = true;
 }
