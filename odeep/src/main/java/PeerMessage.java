@@ -5,7 +5,7 @@ public class PeerMessage {
     private String type;
     private String message;
 
-    public PeerMessage(String type, String message) {
+    public PeerMessage(String type, String message) throws IllegalArgumentException{
         //exception si pas bon format de type
         if(!isValidTypeFormat(type)) {
             throw new IllegalArgumentException("Bad type format");

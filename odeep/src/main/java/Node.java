@@ -49,8 +49,10 @@ public class Node {
      * @param typeMessage type de message reçu/envoyé (format: 4 lettres majuscules, ex: XXXX)
      * @param handler     handler correspondant au type de message
      */
-    public void addMessageHandler(String typeMessage, MessageHandler handler) {
-        // TODO: check typeMessage format
+    public void addMessageHandler(String typeMessage, MessageHandler handler) throws IllegalArgumentException{
+        if(!PeerMessage.isValidTypeFormat(typeMessage)) {
+            throw new IllegalArgumentException("Bad type format");
+        }
         mapMessage.put(typeMessage, handler);
     }
 
