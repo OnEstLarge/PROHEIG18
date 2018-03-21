@@ -71,7 +71,7 @@ public class Node {
     }
 
     public ArrayList<PeerInformations> getKnownPeers() {
-        return knownPeers;
+        return new ArrayList<PeerInformations>(knownPeers);
     }
 
     /**
@@ -172,7 +172,7 @@ public class Node {
         }
 
         try {
-            if(clientSocket != null) {
+            if (clientSocket != null) {
                 clientSocket.close();
             }
         } catch (IOException e) {
@@ -180,7 +180,7 @@ public class Node {
         }
 
         try {
-            if(serverSocket != null) {
+            if (serverSocket != null) {
                 serverSocket.close();
             }
         } catch (IOException e) {
