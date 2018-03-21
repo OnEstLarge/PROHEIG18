@@ -36,9 +36,10 @@ public class Node {
     }
 
     /**
+     * Ajoute un nouveau type de message accompagné de son handler dans la map 'mapMessage'.
      *
-     * @param typeMessage
-     * @param handler
+     * @param typeMessage type de message reçu/envoyé (format: 4 lettres majuscules, ex: XXXX)
+     * @param handler     handler correspondant au type de message
      */
     public void addMessageHandler(String typeMessage, MessageHandler handler) {
 
