@@ -51,6 +51,26 @@ public class Node {
         nodeIsRunning = false;
     }
 
+    public void turnOn() {
+        nodeIsRunning = true;
+    }
+
+    public ArrayList<PeerInformations> getKnownPeers() {
+        return knownPeers;
+    }
+
+    public void removeKnownPeers(PeerInformations... peers) {
+
+    }
+
+    public PeerInformations getNodePeer() {
+        return myInfos;
+    }
+
+    public void sendToPeer(PeerMessage message, PeerInformations peer) {
+
+    }
+
     /**
      *
      */
