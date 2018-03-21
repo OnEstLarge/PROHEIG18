@@ -96,7 +96,7 @@ public class Node {
     }
 
     public HashMap<String, MessageHandler> getMapMessage() {
-        return mapMessage;
+        return new HashMap<String, MessageHandler>(mapMessage);
     }
 
     /**
