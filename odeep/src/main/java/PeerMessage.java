@@ -28,7 +28,10 @@ public class PeerMessage {
      * @param s
      * @return true si la string passée en argument est composée uniquement de majuscule
      */
-    private static boolean isUpperCase(String s) {
+    public static boolean isUpperCase(String s) {
+        if(s == null | s == "") {
+            return false;
+        }
         for(int i = 0; i < s.length(); ++i) {
             if(!Character.isUpperCase(s.charAt(i))) {
                 return false;
