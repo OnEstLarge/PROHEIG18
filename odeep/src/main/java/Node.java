@@ -126,28 +126,28 @@ public class Node {
     public void AcceptingConnections() {
 
         ServerSocket serverSocket = null;
+        Socket clientSocket = null;
 
         try {
+
             serverSocket = new ServerSocket(myInfos.getPort());
-        } catch (IOException ex) {
-            return; //A gerer
-        } finally {
-            // close serverSocket
-            cleanup(null, null, null, serverSocket);
-        }
 
-        while (nodeIsRunning) {
-            //socket wait for connection
-            Socket clientSocket = null;
-            try {
-                clientSocket = serverSocket.accept();
-                PeerHandler peerHandler = new PeerHandler(this, clientSocket);
-            } catch (IOException ex) {
-
-            } finally {
-                // close clientSocket
-                cleanup(null, null, clientSocket, null);
+            while (nodeIsRunning) {
+                //socket wait for connection
+                try {
+                    clientSocket = serverSocket.accept();
+                    PeerHandler peerHandler = new PeerHandler(this, clientSocket);
+                } catch (IOException ex) {
+                    //TODO
+                }
             }
+            
+        } catch (IOException ex) {
+                return; //A gerer
+            }
+            finally {
+            // close clientSocket
+            cleanup(null, null, clientSocket, serverSocket);
         }
     }
 
