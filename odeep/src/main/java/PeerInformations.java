@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------------
  Odeep
  Fichier     : PeerInformations.java
- Auteur(s)   : Schürch Loïc
+ Auteur(s)   : Burgbacher Lionel, Jee Mathieu, Schürch Loïc
  Date        : 15.03.2018
  Compilateur : jdk 1.8.0_144
  -----------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ public class PeerInformations {
 
     /**
      *
-     * @param address la nouvelle adresse IP du pair
+     * @param  address la nouvelle adresse IP du pair
      * @throws IllegalArgumentException si l'adresse IP ne correspond pas au format X.X.X.X
      *                                  où X est un nombre entre 0 et 255
      */
@@ -63,9 +63,9 @@ public class PeerInformations {
     }
 
     /**
-     * Vérifie si l'adresse IP correspond au format X.X.X.X où X est un nombre entre 0 et 255.
+     * Vérifie si l'adresse IP correspond au format X.X.X.X, où X est un nombre entre 0 et 255.
      *
-     * @param ip l'adresse IP à vérifier
+     * @param  ip l'adresse IP à vérifier
      * @return true  si l'adresse IP correspond au format,
      *         false sinon
      */
@@ -98,7 +98,7 @@ public class PeerInformations {
 
     /**
      *
-     * @param port Le nouveau port à utiliser
+     * @param  port Le nouveau port à utiliser
      * @throws IllegalArgumentException Si le port ne se situe pas entre PORT_RANGE_MIN et PORT_RANGE_MAX
      *
      */
