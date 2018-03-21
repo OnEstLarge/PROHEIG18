@@ -34,7 +34,9 @@ public class Node {
      */
     public void addPeer(PeerInformations... peers) {
         for(PeerInformations peer : peers) {
-            knownPeers.add(peer);
+            if(!knownPeers.contains(peer)) {
+                knownPeers.add(peer);
+            }
         }
     }
 
@@ -64,7 +66,11 @@ public class Node {
     }
 
     public void removeKnownPeers(PeerInformations... peers) {
-
+        for(PeerInformations peer : peers) {
+            if (knownPeers.contains(peer)) {
+                knownPeers.remove(peer);
+            }
+        }
     }
 
     public PeerInformations getNodePeer() {
