@@ -56,11 +56,10 @@ public class PeerInformations {
      *                                  où X est un nombre entre 0 et 255.
      */
     public void setAddress(String address) throws IllegalArgumentException {
-        if (isValidIP(address)) {
-            this.address = address;
-        } else {
+        if (!isValidIP(address)) {
             throw new IllegalArgumentException("Bad IP");
         }
+        this.address = address;
     }
 
     /**
@@ -104,11 +103,10 @@ public class PeerInformations {
      *
      */
     public void setPort(int port) throws IllegalArgumentException {
-        if (PORT_RANGE_MIN <= port && port <= PORT_RANGE_MAX) {
-            this.port = port;
-        } else {
+        if (PORT_RANGE_MIN > port && port > PORT_RANGE_MAX) {
             throw new IllegalArgumentException("Bad port");
         }
+        this.port = port;
     }
 
     /**
