@@ -9,6 +9,9 @@
 */
 
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -78,15 +81,31 @@ public class Node {
 
     }
 
+    public HashMap<String, MessageHandler> getMapMessage() {
+        return mapMessage;
+    }
+
     /**
      *
      */
     public void AcceptingConnections() {
 
+        ServerSocket serverSocket;
+
+        try {
+            serverSocket = new ServerSocket(myInfos.getPort());
+        } catch (IOException ex) {
+            return; //A gerer
+        }
+
         while(nodeIsRunning) {
             //socket wait for connection
+            try {
+                Socket clientSocket = serverSocket.accept();
+                PeerHandler peerHandler = new PeerHandler(this, clientSocket);
+            } catch (IOException ex) {
 
-            //start a new PeerHandler
+            }
         }
     }
 
