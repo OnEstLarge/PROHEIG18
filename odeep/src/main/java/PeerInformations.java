@@ -21,7 +21,7 @@ public class PeerInformations {
     public static final int IP_RANGE_MAX = 255;
 
     /**
-     * Constructeur pour les informations d'un pair
+     * Constructeur pour les informations d'un pair.
      *
      * @param ID      l'identifiant du pair
      * @param address l'adresse IP du pair
@@ -53,7 +53,7 @@ public class PeerInformations {
      *
      * @param address la nouvelle adresse IP du pair
      * @throws IllegalArgumentException si l'adresse IP ne correspond pas au format X.X.X.X
-     *                                  où X est un nombre entre 0 et 255.
+     *                                  où X est un nombre entre 0 et 255
      */
     public void setAddress(String address) throws IllegalArgumentException {
         if (!isValidIP(address)) {
@@ -65,9 +65,9 @@ public class PeerInformations {
     /**
      * Vérifie si l'adresse IP correspond au format X.X.X.X où X est un nombre entre 0 et 255.
      *
-     * @param ip l'adresse IP à vérifier.
-     * @return true si l'adresse IP correspond au format,
-     * false sinon.
+     * @param ip l'adresse IP à vérifier
+     * @return true  si l'adresse IP correspond au format,
+     *         false sinon
      */
     public static boolean isValidIP(String ip) {
         try {
@@ -99,7 +99,7 @@ public class PeerInformations {
     /**
      *
      * @param port Le nouveau port à utiliser
-     * @throws IllegalArgumentException Si le port ne se situe pas entre PORT_RANGE_MIN et PORT_RANGE_MAX.
+     * @throws IllegalArgumentException Si le port ne se situe pas entre PORT_RANGE_MIN et PORT_RANGE_MAX
      *
      */
     public void setPort(int port) throws IllegalArgumentException {
@@ -110,7 +110,7 @@ public class PeerInformations {
     }
 
     /**
-     * Redéfinition de la méthode toString
+     * Redéfinition de la méthode toString.
      *
      * @return Les informations d'un pair
      */

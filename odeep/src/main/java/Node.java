@@ -18,24 +18,42 @@ import java.util.HashMap;
 public class Node {
 
     public Node(PeerInformations myInfos) {
-        this.myInfos = myInfos; //copie profonde?
+        this.myInfos = myInfos;
 
-        peersInfos = new ArrayList<PeerInformations>();
+        knownPeers = new ArrayList<PeerInformations>();
         mapMessage = new HashMap<String, MessageHandler>();
     }
 
-    public void addPeer(PeerInformations peer) {
-
+    /**
+     * Ajoute un ou plusieurs pairs à la liste de pairs connus.
+     *
+     * @param peers
+     */
+    public void addPeer(PeerInformations... peers) {
+        for(PeerInformations peer : peers) {
+            knownPeers.add(peer);
+        }
     }
 
+    /**
+     *
+     * @param typeMessage
+     * @param handler
+     */
     public void addMessageHandler(String typeMessage, MessageHandler handler) {
 
     }
 
+    /**
+     *
+     */
     public void shutdown() {
         nodeIsRunning = false;
     }
 
+    /**
+     *
+     */
     public void AcceptingConnections() {
 
         while(nodeIsRunning) {
@@ -49,7 +67,7 @@ public class Node {
     private PeerInformations myInfos;
 
     //Les informations sur les pairs que ce noeud connait
-    private ArrayList<PeerInformations> peersInfos;
+    private ArrayList<PeerInformations> knownPeers;
 
     //Association entre les types de message et leur handlers
     private HashMap<String, MessageHandler> mapMessage;
