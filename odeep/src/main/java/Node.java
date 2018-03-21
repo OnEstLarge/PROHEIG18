@@ -10,8 +10,11 @@
 
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -33,7 +36,7 @@ public class Node {
      * @param peers nouveau(x) pair(s) à ajouter
      */
     public void addPeer(PeerInformations... peers) {
-        for(PeerInformations peer : peers) {
+        for (PeerInformations peer : peers) {
             if (!knownPeers.contains(peer)) {
                 knownPeers.add(peer);
             }
@@ -75,10 +78,8 @@ public class Node {
      * @param peers pair(s) à retirer
      */
     public void removeKnownPeers(PeerInformations... peers) {
-        for(PeerInformations peer : peers) {
-            if (knownPeers.contains(peer)) {
-                knownPeers.remove(peer);
-            }
+        for (PeerInformations peer : peers) {
+            knownPeers.remove(peer);
         }
     }
 
@@ -87,12 +88,30 @@ public class Node {
     }
 
     /**
-     *
      * @param message
      * @param peer
      */
     public void sendToPeer(PeerMessage message, PeerInformations peer) {
-    
+        Socket clientSocket = null;
+        OutputStream outputStream = null;
+
+        try {
+            clientSocket = new Socket(peer.getAddress(), peer.getPort());
+            outputStream = clientSocket.getOutputStream();
+
+            outputStream.write(message.getMessage().getBytes());
+            System.out.println("Message sent from: " + myInfos.getID() + ", to: " + peer.getID());
+
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        } finally {
+            // close outputStream and clientSocket
+            cleanup(outputStream, null, clientSocket, null);
+        }
     }
 
     public HashMap<String, MessageHandler> getMapMessage() {
@@ -104,22 +123,66 @@ public class Node {
      */
     public void AcceptingConnections() {
 
-        ServerSocket serverSocket;
+        ServerSocket serverSocket = null;
 
         try {
             serverSocket = new ServerSocket(myInfos.getPort());
         } catch (IOException ex) {
             return; //A gerer
+        } finally {
+            // close serverSocket
+            cleanup(null, null, null, serverSocket);
         }
 
-        while(nodeIsRunning) {
+        while (nodeIsRunning) {
             //socket wait for connection
+            Socket clientSocket = null;
             try {
-                Socket clientSocket = serverSocket.accept();
+                clientSocket = serverSocket.accept();
                 PeerHandler peerHandler = new PeerHandler(this, clientSocket);
             } catch (IOException ex) {
 
+            } finally {
+                // close clientSocket
+                cleanup(null, null, clientSocket, null);
             }
+        }
+    }
+
+    /**
+     *
+     */
+    private void cleanup(OutputStream out, InputStream in, Socket clientSocket, ServerSocket serverSocket) {
+        try {
+            if (out != null) {
+                out.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            if (in != null) {
+                in.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            if(clientSocket != null) {
+                clientSocket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            if(serverSocket != null) {
+                serverSocket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
