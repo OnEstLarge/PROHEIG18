@@ -14,12 +14,13 @@ public class FileSharingNode extends Node {
     }
 
     public void sendFileToPeer(File file, PeerInformations destination) throws IOException {
-        byte buffer[] = new byte[4096];
+        byte buffer[] = new byte[4048];
         FileInputStream in = new FileInputStream(file);
-        BufferedOutputStream out = new BufferedOutputStream(/*destination.getSocket()*/ new Socket("127.0.0.1", 80).getOutputStream());
+        BufferedOutputStream out = new BufferedOutputStream(new Socket(destination.getAddress(), destination.getPort()).getOutputStream());
             int j;
             int i = 0;
             while ((j = in.read(buffer)) != -1){
+                sendToPeer(new PeerMessage (MessageType.SFIL.toString(), this.getNodePeer().getID(), destination.getID(), buffer), destination);
                 out.write(buffer, 0, j);
                 i++;
                 System.out.println(((i+1)*buffer.length)/(double)file.length()*100 % 1 + "%");
