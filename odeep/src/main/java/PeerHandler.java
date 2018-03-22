@@ -10,7 +10,7 @@
 
 import java.net.Socket;
 
-public class PeerHandler implements Runnable{
+public class PeerHandler implements Runnable {
 
     private Thread activity;
     Socket clientSocket;
