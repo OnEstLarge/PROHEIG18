@@ -4,43 +4,44 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PeerMessageTest {
+public class PeerMessageTest {
 
-    private PeerMessage message = new PeerMessage("ABCD", "This is a message");
+    private static final int BLOCK_SIZE = 4096;
+    private static final int HEADER_SIZE = 48;
+    private static final int MESSAGE_CONTENT_SIZE = BLOCK_SIZE - HEADER_SIZE;
 
-    private static int numero = 0;
+    private byte[] goodMessageContent = new byte[MESSAGE_CONTENT_SIZE];
+    private byte[] wrongMessageContent = new byte[1];
 
+    private PeerMessage goodPeerMessage   = new PeerMessage("XXXX", "idFrom", "idTo==", 1, goodMessageContent);
+
+    private static int testNumber = 0;
     private static String testName;
 
     @BeforeEach
-    void setUp() {
-        numero++;
-        System.out.println("Test " + numero + " started");
+    public void setUp() {
+        testNumber++;
+        System.out.println("Test " + testNumber + " started");
     }
 
     @AfterEach
-    void tearDown() {
-        System.out.println("Test " + numero + " : " + testName + " completed");
+    public void tearDown() {
+        System.out.println("Test " + testNumber + " : " + testName + " completed");
     }
 
     @Test
-    void getType() {
-        assertEquals("ABCD", message.getType());
+    public void getPeerMessageType() {
+        assertEquals("XXXX", goodPeerMessage.getType());
     }
 
     @Test
-    void getMessage() {
-        assertEquals("This is a message", message.getMessage());
-    }
-
-    @Test
-    void isUpperCaseShouldWorkOnCorrectFormattedType() {
+    public void isUpperCaseShouldWorkOnCorrectFormattedType() {
         testName = "isUpperCaseShouldWorkOnCorrectFormattedType";
-        assertTrue(PeerMessage.isUpperCase(message.getType()));
+        assertTrue(PeerMessage.isUpperCase(goodPeerMessage.getType()));
     }
 
     @Test
-    void isUpperCaseShouldNotWorkOnBadFormattedString() {
+    public void isUpperCaseShouldNotWorkOnBadFormattedString() {
         testName = "isUpperCaseShouldNotWorkOnBadFormattedString";
         assertFalse(PeerMessage.isUpperCase(""));
         assertFalse(PeerMessage.isUpperCase("a"));
@@ -55,13 +56,13 @@ class PeerMessageTest {
     }
 
     @Test
-    void isValidTypeFormatShouldWorkOnCorrectFormattedType() {
+    public void isValidTypeFormatShouldWorkOnCorrectFormattedType() {
         testName = "isValidTypeFormatShouldWorkOnCorrectFormattedType";
-        assertTrue(PeerMessage.isValidTypeFormat(message.getType()));
+        assertTrue(PeerMessage.isValidTypeFormat(goodPeerMessage.getType()));
     }
 
     @Test
-    void isValidTypeFormatShouldNotWorkOnIncorrectFormattedType() {
+    public void isValidTypeFormatShouldNotWorkOnIncorrectFormattedType() {
         testName = "isValidTypeFormatShouldWorkOnCorrectFormattedType";
         assertFalse(PeerMessage.isValidTypeFormat(""));
         assertFalse(PeerMessage.isValidTypeFormat("-"));
@@ -71,5 +72,48 @@ class PeerMessageTest {
         assertFalse(PeerMessage.isValidTypeFormat("AAaA"));
         assertFalse(PeerMessage.isValidTypeFormat("AAAAA"));
         assertFalse(PeerMessage.isValidTypeFormat("AAA1"));
+    }
+
+    @Test
+    public void isValidIdFormatShouldWorkOnCorrectId() {
+        testName = "isValidIdFormatShouldWorkOnCorrectId";
+        assertTrue(PeerMessage.isValidIdFormat(goodPeerMessage.getIdFrom()));
+        assertTrue(PeerMessage.isValidIdFormat(goodPeerMessage.getIdTo()));
+    }
+
+    @Test
+    public void isValidIdFormatShouldNotWorkOnIncorrectId() {
+        testName = "isValidIdFormatShouldNotWorkOnIncorrectId";
+        assertFalse(PeerMessage.isValidIdFormat("ThisIsAWrongIfFormatBecauseItIsTooLong"));
+        assertFalse(PeerMessage.isValidIdFormat("id"));
+        //assertFalse(PeerMessage.isValidIdFormat("InvalidId€"));
+        //assertFalse(PeerMessage.isValidIdFormat("[InvalidId]"));
+    }
+
+    @Test
+    public void isValidMessageContentFormatShouldWorkOnCorrectMessageContent() {
+        testName = "isValidMessageContentFormatShouldWorkOnCorrectMessageContent";
+        assertTrue(PeerMessage.isValidMessageContentFormat(goodPeerMessage.getMessageContent()));
+    }
+
+    @Test
+    public void isValidMessageContentFormatShouldNotWorkOnIncorrectMessageContent() {
+        testName = "isValidMessageContentFormatShouldNotWorkOnIncorrectMessageContent";
+        assertFalse(PeerMessage.isValidMessageContentFormat(wrongMessageContent));
+    }
+
+    /*
+    @Test(expected = IllegalArgumentException.class)
+    public void peerMessageConstructorShouldThrowExceptionOnIncorrectFormat() {
+        new PeerMessage("XXXXX", "idFrom", "idTo", goodMessageContent);
+    }
+    */
+
+    @Test
+    public void getFormattedMessageTest() {
+        testName = "getFormattedMessageTest";
+        String goodMessage = "XXXX,idFrom,idTo==,00000001,";
+        goodMessage += new String(goodMessageContent);
+        assertEquals(goodMessage, new String(goodPeerMessage.getFormattedMessage()));
     }
 }
