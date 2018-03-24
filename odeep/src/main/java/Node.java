@@ -99,7 +99,7 @@ public class Node {
             clientSocket = new Socket(peer.getAddress(), peer.getPort());
             outputStream = clientSocket.getOutputStream();
 
-            outputStream.write(message.getMessage().getBytes());
+            outputStream.write(message.getFormattedMessage());
             System.out.println("Message sent from: " + myInfos.getID() + ", to: " + peer.getID());
 
         } catch (UnknownHostException e) {
