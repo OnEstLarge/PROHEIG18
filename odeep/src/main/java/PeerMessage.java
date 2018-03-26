@@ -11,30 +11,36 @@
 /**
  * Header Format:
  *
- * TYPE,idFROM==========,idTo============,noPaquet,MessageContentOn4048bytes
+ * TYPE,idGROUP=========,idFROM==========,idTO============,noPaquet,MessageContentOn4032bytes
  * TYPE         4 lettres maj
+ * idGROUP      Nom du groupe, 16 chars max
  * idFROM       Source, 16 chars max
  * idTO         Dest,   16 chars max
  * noPaquet     numéro du paquet, int 8 digits (max 400Go)
  *
- * bytes total header  = 4+1+16+1+16+1+8+1 = 48 bytes
- * bytes total message = 4096 - 48 = 4048 bytes
+ * bytes total header  = 4+1+16+1+16+1+8+1 = 64 bytes
+ * bytes total message = 4096 - 64 = 4032 bytes
  *
  */
 public class PeerMessage {
 
-    private static final int TYPE_LENGTH          =      4;
-    private static final int ID_MAX_LENGTH        =     16;
-    private static final int ID_MIN_LENGTH        =      6;
-    private static final int NO_PACKET_DIGITS     =      8;
-    private static final int BLOCK_SIZE           =   4096;
-    private static final int HEADER_SIZE          = TYPE_LENGTH + 2 * ID_MAX_LENGTH + NO_PACKET_DIGITS + 4;
-    private static final int MESSAGE_CONTENT_SIZE = BLOCK_SIZE - HEADER_SIZE;
+    private static final int  TYPE_LENGTH          =      4;
+    private static final int  ID_GROUP_MIN_LENGTH  =      6;
+    private static final int  ID_GROUP_MAX_LENGTH  =     16;
+    private static final int  ID_MIN_LENGTH        =      6;
+    private static final int  ID_MAX_LENGTH        =     16;
+    private static final int  NO_PACKET_DIGITS     =      8;
+    private static final int  BLOCK_SIZE           =   4096;
+    private static final int  HEADER_SIZE          = TYPE_LENGTH + ID_GROUP_MAX_LENGTH + 2 * ID_MAX_LENGTH + NO_PACKET_DIGITS + 4;
+    private static final int  MESSAGE_CONTENT_SIZE = BLOCK_SIZE - HEADER_SIZE;
 
+    private static final char PADDING_SYMBOL       = '=';
+    
     /**
      * EN-TÊTE DU MESSAGE
      */
     private String type;            // type du message
+    private String idGroup;         // nom du groupe
     private String idFrom;          // pseudo source
     private String idTo;            // pseudo destinataire
     private int    noPacket;        // numéro du paquet
@@ -45,17 +51,21 @@ public class PeerMessage {
     private byte[] messageContent;
 
 
-    public PeerMessage(String type, String idFrom, String idTo, int noPacket, byte[] messageContent) throws IllegalArgumentException{
+    public PeerMessage(String type, String idGroup, String idFrom, String idTo, int noPacket, byte[] messageContent) throws IllegalArgumentException{
 
         if(!isValidTypeFormat(type)) {
             throw new IllegalArgumentException("Bad 'type' format");
         }
 
-        if(!isValidIdFormat(idFrom)) {
+        if(!isValidIdFormat(idGroup, ID_GROUP_MIN_LENGTH, ID_GROUP_MAX_LENGTH)) {
+            throw new IllegalArgumentException("Bad 'idGroup' format");
+        }
+
+        if(!isValidIdFormat(idFrom, ID_MIN_LENGTH, ID_MAX_LENGTH)) {
             throw new IllegalArgumentException("Bad 'idFrom' format");
         }
 
-        if(!isValidIdFormat(idTo)) {
+        if(!isValidIdFormat(idTo, ID_MIN_LENGTH, ID_MAX_LENGTH)) {
             throw new IllegalArgumentException("Bad 'idTo' format");
         }
 
@@ -67,15 +77,16 @@ public class PeerMessage {
             throw new IllegalArgumentException("Invalid message content (size must match block size (" + MESSAGE_CONTENT_SIZE + " bytes))");
         }
 
-        this.type = type;
-        this.idFrom = idFrom;
-        this.idTo = idTo;
-        this.noPacket = noPacket;
+        this.type           = type;
+        this.idGroup        = idGroup;
+        this.idFrom         = idFrom;
+        this.idTo           = idTo;
+        this.noPacket       = noPacket;
         this.messageContent = messageContent;
     }
 
-    public PeerMessage(String type, String idFrom, String idTo, byte[] message) {
-        this(type, idFrom, idTo, 0, message);
+    public PeerMessage(String type, String idGroup, String idFrom, String idTo, byte[] message) {
+        this(type, idGroup, idFrom, idTo, 0, message);
     }
 
     /**
@@ -94,9 +105,10 @@ public class PeerMessage {
      * @param id    pseudo
      * @return      true si le format du pseudo passé en argument est correct
      */
-    public static boolean isValidIdFormat(String id) {
+    public static boolean isValidIdFormat(String id, int minLength, int maxLength) {
         // TODO: gérer les caractères interdits pour un pseudo (ex: $![)*# ...)
-        return id != null && id.length()>= ID_MIN_LENGTH && id.length() <= ID_MAX_LENGTH;
+        // => isAlphaNum()
+        return id != null && id.length()>= minLength && id.length() <= maxLength;
     }
 
     /**
@@ -143,6 +155,24 @@ public class PeerMessage {
         return String.format(paddingRule.toString(), number);
     }
 
+    /**
+     * Ajoute du padding (si nécessaire) au texte.
+     *
+     * @param text          texte à "padder"
+     * @param sizeWithPad   taille totale du texte après ajout du padding
+     * @param padSymbol     Symbole ajouté lors du padding
+     * @return              texte paddé
+     */
+    public static String addPadding(String text, int sizeWithPad, char padSymbol) {
+        StringBuilder result = new StringBuilder(text);
+
+        while(result.length() < sizeWithPad) {
+            result.append(padSymbol);
+        }
+
+        return result.toString();
+    }
+
     public String getType() {
         return type;
     }
@@ -153,6 +183,10 @@ public class PeerMessage {
 
     public String getIdTo() {
         return idTo;
+    }
+
+    public String getIdGroup() {
+        return idGroup;
     }
 
     public byte[] getMessageContent() {
@@ -167,7 +201,12 @@ public class PeerMessage {
     public byte[] getFormattedMessage() {
         StringBuilder message = new StringBuilder();
 
-        message.append(type).append(",").append(idFrom).append(",").append(idTo).append(",").append(formatInt(noPacket, NO_PACKET_DIGITS)).append(",").append(new String(messageContent));
+        message.append(type).append(",");
+        message.append(addPadding(idGroup, ID_GROUP_MAX_LENGTH, PADDING_SYMBOL)).append(",");
+        message.append(addPadding(idFrom, ID_MAX_LENGTH, PADDING_SYMBOL)).append(",");
+        message.append(addPadding(idTo, ID_MAX_LENGTH, PADDING_SYMBOL)).append(",");
+        message.append(formatInt(noPacket, NO_PACKET_DIGITS)).append(",");
+        message.append(new String(messageContent));
 
         return message.toString().getBytes();
     }

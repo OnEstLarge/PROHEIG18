@@ -6,14 +6,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class PeerMessageTest {
 
-    private static final int BLOCK_SIZE = 4096;
-    private static final int HEADER_SIZE = 48;
+    private static final int BLOCK_SIZE           = 4096;
+    private static final int HEADER_SIZE          =   64;
     private static final int MESSAGE_CONTENT_SIZE = BLOCK_SIZE - HEADER_SIZE;
+    private static final int ID_MIN_LENGTH        =    6;
+    private static final int ID_MAX_LENGTH        =   16;
 
     private byte[] goodMessageContent = new byte[MESSAGE_CONTENT_SIZE];
     private byte[] wrongMessageContent = new byte[1];
 
-    private PeerMessage goodPeerMessage   = new PeerMessage("XXXX", "idFrom", "idTo==", 1, goodMessageContent);
+    private PeerMessage goodPeerMessage   = new PeerMessage("XXXX", "idGroup", "idFrom", "idTo==", 1, goodMessageContent);
 
     private static int testNumber = 0;
     private static String testName;
@@ -77,15 +79,15 @@ public class PeerMessageTest {
     @Test
     public void isValidIdFormatShouldWorkOnCorrectId() {
         testName = "isValidIdFormatShouldWorkOnCorrectId";
-        assertTrue(PeerMessage.isValidIdFormat(goodPeerMessage.getIdFrom()));
-        assertTrue(PeerMessage.isValidIdFormat(goodPeerMessage.getIdTo()));
+        assertTrue(PeerMessage.isValidIdFormat(goodPeerMessage.getIdFrom(), ID_MIN_LENGTH, ID_MAX_LENGTH));
+        assertTrue(PeerMessage.isValidIdFormat(goodPeerMessage.getIdTo(), ID_MIN_LENGTH, ID_MAX_LENGTH));
     }
 
     @Test
     public void isValidIdFormatShouldNotWorkOnIncorrectId() {
         testName = "isValidIdFormatShouldNotWorkOnIncorrectId";
-        assertFalse(PeerMessage.isValidIdFormat("ThisIsAWrongIfFormatBecauseItIsTooLong"));
-        assertFalse(PeerMessage.isValidIdFormat("id"));
+        assertFalse(PeerMessage.isValidIdFormat("ThisIsAWrongIdFormatBecauseItIsTooLong", ID_MIN_LENGTH, ID_MAX_LENGTH));
+        assertFalse(PeerMessage.isValidIdFormat("id", ID_MIN_LENGTH, ID_MAX_LENGTH));
         //assertFalse(PeerMessage.isValidIdFormat("InvalidId€"));
         //assertFalse(PeerMessage.isValidIdFormat("[InvalidId]"));
     }
@@ -110,9 +112,18 @@ public class PeerMessageTest {
     */
 
     @Test
+    public void addPaddingTest() {
+        testName = "addPaddingTest";
+        char padSymbol   = '=';
+        int  sizeWithPad =  16;
+        assertEquals("idFrom==========", PeerMessage.addPadding("idFrom", sizeWithPad, padSymbol));
+        assertEquals("ThisIsACorrectId", PeerMessage.addPadding("ThisIsACorrectId", sizeWithPad, padSymbol));
+    }
+
+    @Test
     public void getFormattedMessageTest() {
         testName = "getFormattedMessageTest";
-        String goodMessage = "XXXX,idFrom,idTo==,00000001,";
+        String goodMessage = "XXXX,idGroup=========,idFrom==========,idTo============,00000001,";
         goodMessage += new String(goodMessageContent);
         assertEquals(goodMessage, new String(goodPeerMessage.getFormattedMessage()));
     }
