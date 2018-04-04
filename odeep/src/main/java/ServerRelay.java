@@ -194,7 +194,7 @@ public class ServerRelay {
         BufferedInputStream in = null;
         BufferedOutputStream out = null;
 
-        public writeToServer(Socket clientToWrite,byte[] buff){
+        public writeToClient(Socket clientToWrite,byte[] buff){
             try {
                 toClient = clientToWrite;
                 in = new BufferedInputStream(clientToWrite.getInputStream());
