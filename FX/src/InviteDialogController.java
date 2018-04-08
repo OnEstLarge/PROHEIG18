@@ -1,6 +1,5 @@
-package views;
-
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 import javafx.scene.control.TextField;
@@ -34,7 +33,9 @@ public class InviteDialogController {
      *
      * @return
      */
-    public boolean isOkClicked() { return okClicked; }
+    public boolean isOkClicked() {
+        return okClicked;
+    }
 
     /**
      * Called when the user clicks cancel.
@@ -49,8 +50,14 @@ public class InviteDialogController {
      */
     @FXML
     private void handleOk() {
+        Label newIp = new Label();
+        newIp.setText(newUserIPField.getText());
         System.out.println(groupeIDField.getText());
-        System.out.println(newUserIPField.getText());
+        int group = Integer.parseInt(groupeIDField.getText())-1;
+        if(group > RootLayoutController.listView.size()){
+            return; // TODO: afficher une fenetre d'erreur
+        }
+        RootLayoutController.listView.get(group).getItems().add(newIp);
         okClicked = true;
         dialogStage.close();
     }

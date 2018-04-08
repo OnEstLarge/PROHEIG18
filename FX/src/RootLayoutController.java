@@ -1,5 +1,3 @@
-package views;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +12,12 @@ import javafx.scene.control.TitledPane;
 
 public class RootLayoutController implements Initializable {
 
-    private views.Main mainApp;
+    private Main mainApp;
     static int groupeID = 1;
-    static List<TitledPane> listPanes = new ArrayList<>();
+    //public static List<TitledPane> listPanes = new ArrayList<>();
+    public static List<ListView> listView = new ArrayList<>();
 
-    public void setMainApp(views.Main mainApp) {
+    public void setMainApp(Main mainApp) {
         this.mainApp = mainApp;
     }
 
@@ -29,16 +28,17 @@ public class RootLayoutController implements Initializable {
     @FXML
     private void handleCreateButtonAction() {
         TitledPane pane = new TitledPane();
-        listPanes.add(pane);
+        //listPanes.add(pane);
         ListView view = new ListView();
+        listView.add(view);
         Label label = new Label();
         label.setText("Test ip");
-        view.setId("groupe" + groupeID);
-        view.getItems().add(label);
-        listPanes.get(groupeID - 1).setText("Groupe " + groupeID);
-        listPanes.get(groupeID - 1).setContent(view);
-        listPanes.get(groupeID - 1).setCollapsible(true);
-        accordion.getPanes().add(listPanes.get(groupeID - 1));
+        listView.get(groupeID-1).setId("groupe" + groupeID);
+        listView.get(groupeID-1).getItems().add(label);
+        pane.setText("Groupe " + groupeID);
+        pane.setContent(view);
+        pane.setCollapsible(true);
+        accordion.getPanes().add(pane);
         ++groupeID;
     }
 
