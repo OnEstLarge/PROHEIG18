@@ -2,7 +2,6 @@ import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.junit.jupiter.api.Test;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,7 +14,7 @@ class CipherUtilTest {
         byte[] plain = s.getBytes();
         String key = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
         byte[] keyByte = key.getBytes();
-        assertEquals(keyByte.length, 32);
+        assertEquals(32, keyByte.length);
         byte[] cipher = CipherUtil.AESEncrypt(plain, keyByte);
         assertFalse(cipher.equals(plain));
         for(int i = 0; i < cipher.length; i++){
@@ -24,10 +23,22 @@ class CipherUtilTest {
         System.out.println(" ");
         System.out.println("plain : " + new String(plain,"UTF-8"));
         System.out.println("cipher : " + new String(cipher,"UTF-8"));
+
+        byte[] plain2 = CipherUtil.AESDEcrypt(cipher, keyByte);
+        System.out.println("cipher : " + new String(cipher,"UTF-8"));
+        System.out.println("plain : " + new String(plain2,"UTF-8"));
     }
 
     @Test
-    void AESDEcrypt() {
+    void AESDEcrypt() throws InvalidCipherTextException {
+        String text = "hello world";
+        byte[] plainText = text.getBytes();
+        String key = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+        byte[] keyByte = key.getBytes();
+        assertEquals(32, keyByte.length);
+        byte[] cipherText = CipherUtil.AESEncrypt(plainText, keyByte);
+        byte[] decipherText = CipherUtil.AESDEcrypt(cipherText, keyByte);
+        assertTrue(Arrays.equals(plainText, decipherText));
     }
 
     @Test

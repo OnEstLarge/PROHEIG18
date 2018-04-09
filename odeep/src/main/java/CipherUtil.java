@@ -1,6 +1,5 @@
 import org.bouncycastle.crypto.BlockCipher;
 import org.bouncycastle.crypto.InvalidCipherTextException;
-import org.bouncycastle.crypto.digests.SHA384Digest;
 import org.bouncycastle.crypto.engines.AESEngine;
 import org.bouncycastle.crypto.modes.CBCBlockCipher;
 import org.bouncycastle.crypto.paddings.PKCS7Padding;
@@ -11,15 +10,13 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import com.google.common.primitives.Bytes;
 
-import javax.crypto.*;
-import javax.crypto.spec.SecretKeySpec;
-import java.io.ByteArrayOutputStream;
 import java.security.*;
+import java.util.Arrays;
 
-import static javafx.scene.input.KeyCode.K;
 
 public class CipherUtil {
 
+    private final static int HMACSize = 32;
     /**
      * retourne la concatenation des data chiffrée et du HMAC
      * @param data
@@ -51,7 +48,16 @@ public class CipherUtil {
     }
 
     public static byte[] AESDEcrypt(byte[] data, byte[] key) throws InvalidCipherTextException {
-        return AESProcessing(data, key, false);
+        byte[][] keys = splitKey(key);
+        if(!checkHMAC(data, keys[1])){
+            throw new InvalidCipherTextException("HMAC failure");
+        }
+        byte[] rawData = new byte[data.length - HMACSize];
+        for(int i = 0; i < rawData.length; i++){
+            rawData[i] = data[i];
+        }
+        byte[] decipherData = AESProcessing(rawData, keys[0], false);
+        return erasePadding(decipherData, 0);
     }
 
     public static byte[] generateKey(){
@@ -100,5 +106,40 @@ public class CipherUtil {
         }
         return keys;
     }
+
+    public static boolean checkHMAC(byte[] data, byte[] key){
+        int dataLength = data.length;
+        byte[] HMAC = new byte[HMACSize];
+        byte[] rawData = new byte[data.length - HMACSize];
+        for(int i = 0; i < dataLength - HMACSize; i++){
+            rawData[i] = data[i];
+        }
+        int index = 0;
+        for(int i = dataLength - HMACSize; i < dataLength; i++){
+            HMAC[index] = data[i];
+            index++;
+        }
+        byte[] expectedHMAC = generateHMAC(rawData, key);
+        return Arrays.equals(expectedHMAC, HMAC);
+    }
+
+    public static byte[] erasePadding(byte[] data, int pad){
+        int paddingSize = 0;
+        for(int i = data.length-1; i >= 0; i--){
+            if(data[i] == pad){
+                paddingSize++;
+            }
+            else{
+                break;
+            }
+        }
+        byte[] dataWithoutPadding = new byte[data.length - paddingSize];
+        for(int i = 0; i < dataWithoutPadding.length; i++){
+            dataWithoutPadding[i] = data[i];
+        }
+        return dataWithoutPadding;
+    }
+
+
 
 }
