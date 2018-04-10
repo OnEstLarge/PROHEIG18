@@ -24,15 +24,15 @@
  */
 public class PeerMessage {
 
-    private static final int  TYPE_LENGTH          =      4;
-    private static final int  ID_GROUP_MIN_LENGTH  =      6;
-    private static final int  ID_GROUP_MAX_LENGTH  =     16;
-    private static final int  ID_MIN_LENGTH        =      6;
-    private static final int  ID_MAX_LENGTH        =     16;
-    private static final int  NO_PACKET_DIGITS     =      8;
-    private static final int  BLOCK_SIZE           =   4096;
-    private static final int  HEADER_SIZE          = TYPE_LENGTH + ID_GROUP_MAX_LENGTH + 2 * ID_MAX_LENGTH + NO_PACKET_DIGITS + 4;
-    private static final int  MESSAGE_CONTENT_SIZE = BLOCK_SIZE - HEADER_SIZE;
+    public static final int  TYPE_LENGTH          =      4;
+    public static final int  ID_GROUP_MIN_LENGTH  =      6;
+    public static final int  ID_GROUP_MAX_LENGTH  =     16;
+    public static final int  ID_MIN_LENGTH        =      6;
+    public static final int  ID_MAX_LENGTH        =     16;
+    public static final int  NO_PACKET_DIGITS     =      8;
+    public static final int  BLOCK_SIZE           =   4096;
+    public static final int  HEADER_SIZE          = TYPE_LENGTH + ID_GROUP_MAX_LENGTH + 2 * ID_MAX_LENGTH + NO_PACKET_DIGITS + 4;
+    public static final int  MESSAGE_CONTENT_SIZE = BLOCK_SIZE - HEADER_SIZE;
 
     private static final char PADDING_SYMBOL       = '=';
     
