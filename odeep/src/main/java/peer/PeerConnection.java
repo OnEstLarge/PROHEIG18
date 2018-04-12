@@ -31,7 +31,11 @@ public class PeerConnection {
     }
 
     public void sendMessage(PeerMessage message) {
-
+        try {
+            os.write(message.getFormattedMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void close() {
