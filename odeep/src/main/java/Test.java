@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;
 import Node.FileSharingNode;
+import handler.SFILHandler;
+import handler.SMESHandler;
 import message.MessageHandler;
 import message.MessageType;
 import peer.PeerInformations;
@@ -25,10 +27,12 @@ public class Test {
         users.put("florent", florent);
 
         final FileSharingNode n = new FileSharingNode(myInfo);
-        MessageHandler sendMessageHandler = new SendMessageHandler();
+        MessageHandler sendMessageHandler = new SMESHandler();
+        MessageHandler sendFileHandler = new SFILHandler();
 
         n.addPeer(jee, florent, olivier);
         n.addMessageHandler(MessageType.SMES, sendMessageHandler);
+        n.addMessageHandler(MessageType.SFIL, sendFileHandler);
 
 
         //lancer un client qui lit stdin, simule l'interface graphique
