@@ -11,7 +11,6 @@ import views.InviteDialogController;
 import views.RootLayoutController;
 
 import java.io.IOException;
-import java.net.URL;
 
 public class Main extends Application {
 
@@ -22,18 +21,14 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("ODEEP");
-        URL testUrl = Main.class.getResource("/");
-        URL testUrl2 = getClass().getResource("/");
-        System.out.println(testUrl);
-        System.out.println(testUrl2);
-        //initRootLayout();
+        initRootLayout();
     }
 
     public void initRootLayout(){
         try{
             // Load root layout from fxml file.
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(Main.class.getResource("/src/main/ressources/RootLayout.fxml"));
+            loader.setLocation(Main.class.getResource("/views/RootLayout.fxml"));
             rootLayout = loader.load();
 
             // Show the scene containing the root layout.
@@ -54,7 +49,7 @@ public class Main extends Application {
         try{
             // Load the FXML filer and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(Main.class.getResource("/src/main/ressources/InviteDialog.fxml"));
+            loader.setLocation(Main.class.getResource("/views/InviteDialog.fxml"));
             AnchorPane page = loader.load();
 
             // Create the dialog Stage.
