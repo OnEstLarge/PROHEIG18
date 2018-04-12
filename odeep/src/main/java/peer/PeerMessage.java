@@ -139,7 +139,7 @@ public class PeerMessage {
      * @return                  true si le format du contenu du message passé en argument est correct
      */
     public static boolean isValidMessageContentFormat(byte[] messageContent) {
-        return messageContent != null && messageContent.length == MESSAGE_CONTENT_SIZE;
+        return messageContent != null && messageContent.length <= MESSAGE_CONTENT_SIZE;
     }
 
     /**
@@ -227,7 +227,7 @@ public class PeerMessage {
         message.append(addPadding(idFrom, ID_MAX_LENGTH, PADDING_SYMBOL)).append(",");
         message.append(addPadding(idTo, ID_MAX_LENGTH, PADDING_SYMBOL)).append(",");
         message.append(formatInt(noPacket, NO_PACKET_DIGITS)).append(",");
-        message.append(new String(messageContent));
+        message.append(addPadding(new String(messageContent), MESSAGE_CONTENT_SIZE, PADDING_SYMBOL));
 
         return message.toString().getBytes();
     }
