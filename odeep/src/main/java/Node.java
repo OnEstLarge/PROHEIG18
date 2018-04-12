@@ -135,7 +135,7 @@ public class Node {
                 try {
                     clientSocket = serverSocket.accept();
                     PeerHandler peerHandler = new PeerHandler(this, clientSocket);
-                    
+
                 } catch (IOException ex) {
                     //TODO
                 }
