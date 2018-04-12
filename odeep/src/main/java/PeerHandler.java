@@ -32,7 +32,7 @@ public class PeerHandler implements Runnable {
         PeerMessage message = connection.receiveMessage();
 
         //handle message
-        node.getMapMessage().get(message.getType()).handleMessage(new String(message.getMessageContent()));
+        node.getMapMessage().get(message.getType()).handleMessage(connection, message);
 
         //close connection
         connection.close();
