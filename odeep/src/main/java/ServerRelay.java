@@ -1,110 +1,11 @@
-/*
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-
-
-public class ServerRelay {
-    boolean serverShutdownRequested = false;
-    ServerSocket receptionistSocket;
-    InputStream is = null;
-    OutputStream os = null;
-    Socket clientSocket = null; // blocking call
-
-
-    public ServerRelay(int port){
-        try {
-            receptionistSocket = new ServerSocket(80);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void main(String[] args) throws IOException {
-        try {
-            ServerRelay s = new ServerRelay(80);
-            s.listening();
-        }catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-
-    }
-    public void listening() throws IOException {
-        while (!serverShutdownRequested) {
-            try {
-                clientSocket = receptionistSocket.accept();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            initConnection();
-
-            //receive file
-            int i;
-            byte buffer[] = new byte[4096];
-            FileOutputStream out = new FileOutputStream("The.Walking.Dead.S08E12.HDTV.x264-SVA[ettv].mkv");
-            while ((i = is.read(buffer)) != -1 ){
-                out.write(buffer, 0, i);
-            }
-            out.close();
-
-
-            closeConnection();
-
-
-        }
-        try {
-            receptionistSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-
-
-    public void initConnection(){
-        try {
-            is = clientSocket.getInputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            os = clientSocket.getOutputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void closeConnection(){
-        try {
-            clientSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            is.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            os.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-}
-*/
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 
 public class ServerRelay {
+
+    protected HashMap<String,BufferedOutputStream > peapleInServ = new HashMap<String, BufferedOutputStream>();
 
     public static void main(String[] args) {
         ServerRelay m = new ServerRelay();
@@ -140,80 +41,94 @@ public class ServerRelay {
         }
     }
 
-    private class ServeurWorker implements Runnable{
-        HashMap<String,String > peapleInServ;
+    private class ServeurWorker implements Runnable {
+
         Socket clientToSever;
-        Socket servToClient;
         BufferedInputStream in = null;
         BufferedOutputStream out = null;
+        byte[] bufferIn = new byte[4096];
+        byte[] bufferOut = new byte[4096];
 
-        public ServeurWorker(Socket clientSocket){
+        public ServeurWorker(Socket clientSocket) {
             try {
                 this.clientToSever = clientSocket;
                 in = new BufferedInputStream(clientSocket.getInputStream());
                 out = new BufferedOutputStream(clientSocket.getOutputStream());
-
-            }catch(IOException e){
+                out.flush();
+            } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
 
         }
+
         @Override
         public void run() {
-            redirectMessage(in);
-
+            greetings();
+            do {
+                redirectMessage(in);
+            }while(true); // rajouter condition de fin avec les messages
         }
 
-        void redirectMessage(BufferedInputStream in){
-            byte[] cbuf = new byte[4096];
-
+        private void greetings() {
             try {
-                while(in.read(cbuf) == 4096) {
-                    String s = new String(cbuf);
-                    s = s.substring(40, 56);
-                    if (peapleInServ.containsKey(s)) {
-                        String ip = peapleInServ.get(s);
-                        try{
-                            servToClient = new Socket(ip,80);
-                        }catch (IOException e){
-                            System.out.println(e.getMessage());
-                        }
-                        new Thread(new writeToClient(servToClient,cbuf)).start();                    }
+                System.out.println("Appellte de greetings");
+                    in.read(bufferIn);
+                    String s = new String(bufferIn);
+                    s = s.substring(23, 39);
+                    peapleInServ.put(s, out);
+                    System.out.println(peapleInServ);
 
-                }
-            }catch (IOException e){
+            } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
         }
 
+        void redirectMessage(BufferedInputStream in) {
+            System.out.println("Appelle de redirect");
+            String sender  = "";
+            try {
+                do{
+                    while((in.read(bufferIn) != -1)){
+                        String s = new String(bufferIn);
+                        sender = s.substring(40, 56);
+                        System.out.println(sender);
+                        System.out.println(peapleInServ.containsKey(sender));
+                        System.out.println(bufferIn.toString());
+                        bufferOut = bufferIn.clone();
+                        if (peapleInServ.containsKey(sender)) {
+                            System.out.println("personne sur le serveur");
+                            new Thread(new writeToClient(peapleInServ.get(sender), bufferOut)).start();
+                        }
 
+                    }
+                }while(!sender.equals("0000000000000000"));
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+        }
     }
-    private class writeToClient implements Runnable{
+
+    private class writeToClient implements Runnable {
         byte[] buff;
-        Socket toClient = null;
-        BufferedInputStream in = null;
         BufferedOutputStream out = null;
 
-        public writeToClient(Socket clientToWrite,byte[] buff){
-            try {
-                toClient = clientToWrite;
-                in = new BufferedInputStream(clientToWrite.getInputStream());
-                out = new BufferedOutputStream(clientToWrite.getOutputStream());
-            }catch(IOException e){
-                System.out.println(e.getMessage());
-            }
-
+        public writeToClient(BufferedOutputStream out, byte[] buff) {
             this.buff = buff.clone();
-
+            this.out = out;
         }
 
         @Override
-        public void run(){
+        public void run() {
             try {
-                out.write(buff, 0, buff.length);
-            }catch(IOException e){
+                System.out.println(out);
+                System.out.println("Ecriture de" + buff.toString());
+                out.write(this.buff, 0, this.buff.length);
+                out.flush();
+            } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
         }
     }
+
+
 }
