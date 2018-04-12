@@ -1,4 +1,5 @@
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
@@ -50,16 +51,54 @@ public class InviteDialogController {
      */
     @FXML
     private void handleOk() {
-        Label newIp = new Label();
-        newIp.setText(newUserIPField.getText());
-        System.out.println(groupeIDField.getText());
-        int group = Integer.parseInt(groupeIDField.getText())-1;
-        if(group > RootLayoutController.listView.size()){
-            return; // TODO: afficher une fenetre d'erreur
+        //if(group < RootLayoutController.listView.size()){
+        if(isInputValid()){
+            Label newIp = new Label();
+            newIp.setText(newUserIPField.getText());
+            int group = Integer.parseInt(groupeIDField.getText())-1;
+            RootLayoutController.listView.get(group).getItems().add(newIp);
+
+            okClicked = true;
+            dialogStage.close();
         }
-        RootLayoutController.listView.get(group).getItems().add(newIp);
-        okClicked = true;
-        dialogStage.close();
+    }
+
+    private boolean isInputValid(){
+        String errorMessage="";
+        if(groupeIDField.getText() == null || groupeIDField.getText().length() == 0){
+            errorMessage += "Group ID false.\n";
+        }else{
+            try{
+                int id = Integer.parseInt(groupeIDField.getText());
+                if(id -1 > RootLayoutController.listView.size()){
+                    errorMessage += "Group ID invalid. No group with this id.\n";
+                }
+            }catch(NumberFormatException e){
+                errorMessage += "No valid format for groupe ID (must be an int)!\n";
+            }
+        }
+
+        if (newUserIPField.getText() == null || newUserIPField.getText().length() == 0) {
+            errorMessage += "IP false.\n";
+        }else{
+            String ip = newUserIPField.getText();
+            if(ip == "faux"){
+                errorMessage += "IP invalid format.\n";
+            }
+        }
+        if(errorMessage.length() == 0){
+                return true;
+        }else{
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.initOwner(dialogStage);
+            alert.setTitle("Invalid Fields");
+            alert.setHeaderText("Please correct invalid fields");
+            alert.setContentText(errorMessage);
+
+            alert.showAndWait();
+
+            return false;
+        }
     }
 }
 
