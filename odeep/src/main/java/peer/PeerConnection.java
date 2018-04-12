@@ -18,7 +18,12 @@ public class PeerConnection {
 
 
     public PeerConnection(Socket socket) {
+
         clientSocket = socket; //vérification sur socket?
+        try {
+            os = clientSocket.getOutputStream();
+            is = clientSocket.getInputStream();
+        }catch(IOException e) { System.out.println("problem peerconnection");}
     }
 
     public PeerConnection(PeerInformations peer) throws IOException{
@@ -26,18 +31,19 @@ public class PeerConnection {
 
         clientSocket = new Socket(peer.getAddress(), peer.getPort());
         os = clientSocket.getOutputStream();
-        is = new BufferedInputStream(clientSocket.getInputStream());
+        is = clientSocket.getInputStream();
     }
 
     public PeerMessage receiveMessage() throws InvalidFormatException{
-        byte[] b = new byte[4096];
+        byte[] b = new byte[4032];
         try{
-            while(is.read(b) != -1) {
+            System.out.println(is == null);
+            while(is.read(b) != -1);
 
-            }
         } catch(IOException e) {
 
         }
+        System.out.println(b.length);
         return new PeerMessage(b);
     }
 

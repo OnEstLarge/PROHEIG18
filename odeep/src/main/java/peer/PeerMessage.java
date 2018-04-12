@@ -105,7 +105,7 @@ public class PeerMessage {
         index += ID_MAX_LENGTH;
         this.idTo           = new String(Arrays.copyOfRange(rawData,index, index + ID_MAX_LENGTH));
         index += ID_MAX_LENGTH;
-        this.noPacket       = Integer.parseInt(new String(Arrays.copyOfRange(rawData,index, NO_PACKET_DIGITS)));
+        this.noPacket       = Integer.parseInt((new String(Arrays.copyOfRange(rawData,index, index +NO_PACKET_DIGITS))).replaceAll("=", "0"));
         index += NO_PACKET_DIGITS;
         this.messageContent = Arrays.copyOfRange(rawData,index, rawData.length);
     }

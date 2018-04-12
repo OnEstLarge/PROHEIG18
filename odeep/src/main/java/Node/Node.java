@@ -127,26 +127,29 @@ public class Node {
      *
      */
     public void AcceptingConnections() {
-
         ServerSocket serverSocket = null;
         Socket clientSocket = null;
 
         try {
-
-            serverSocket = new ServerSocket(myInfos.getPort());
-
+            System.out.println("lol");
+            serverSocket = new ServerSocket(4445);
+            System.out.println("lol2");
             while (nodeIsRunning) {
                 //socket wait for connection
                 try {
+                    System.out.println("lol3");
                     clientSocket = serverSocket.accept();
-                    PeerHandler peerHandler = new PeerHandler(this, clientSocket);
+                    System.out.println("lol4");
 
+                    PeerHandler peerHandler = new PeerHandler(this, clientSocket);
+                    System.out.println("lol5");
                 } catch (IOException ex) {
                     //TODO
                 }
             }
 
         } catch (IOException ex) {
+
                 return; //A gerer
             }
             finally {

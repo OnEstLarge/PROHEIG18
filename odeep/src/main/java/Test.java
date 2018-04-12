@@ -18,7 +18,7 @@ public class Test {
         final String idGroup = "group1";
 
         final PeerInformations myInfo = new PeerInformations("schurch", "10.192.95.152", 4444);
-        PeerInformations lionel = new PeerInformations("lionel", "", 4444);
+        PeerInformations lionel = new PeerInformations("lionel", "10.192.95.98", 4444);
         final HashMap<String, PeerInformations> users = new HashMap<String, PeerInformations>();
         users.put("lionel", lionel);
 
@@ -54,6 +54,7 @@ public class Test {
 
                     if(type.equals(MessageType.SMES)) {
                         PeerMessage m = new PeerMessage(type, idGroup, myInfo.getID(), pseudo, content.getBytes());
+                        System.out.println(m.getFormattedMessage());
                         n.sendToPeer(m, users.get(pseudo));
                     } else if(type.equals(MessageType.SFIL)) {
                         File file = new File(content);
