@@ -1,13 +1,18 @@
-/*
+package Node;/*
  -----------------------------------------------------------------------------------
  Odeep
- Fichier     : Node.java
+ Fichier     : Node.Node.java
  Auteur(s)   : Burgbacher Lionel, Jee Mathieu, Schürch Loïc
  Date        : 15.03.2018
  Compilateur : jdk 1.8.0_144
  -----------------------------------------------------------------------------------
 */
 
+
+import message.MessageHandler;
+import peer.PeerHandler;
+import peer.PeerInformations;
+import peer.PeerMessage;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -55,14 +60,14 @@ public class Node {
     }
 
     /**
-     * Ferme la connexion entrante du Noeud (Node).
+     * Ferme la connexion entrante du Noeud (Node.Node).
      */
     public void shutdown() {
         nodeIsRunning = false;
     }
 
     /**
-     * Ouvre la connexion entrante du Noeud (Node).
+     * Ouvre la connexion entrante du Noeud (Node.Node).
      */
     public void turnOn() {
         nodeIsRunning = true;

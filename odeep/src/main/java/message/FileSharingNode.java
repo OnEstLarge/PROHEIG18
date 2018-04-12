@@ -1,3 +1,9 @@
+package message;
+
+import message.MessageType;
+import peer.PeerInformations;
+import peer.PeerMessage;
+
 import java.io.*;
 import java.net.Socket;
 
@@ -29,7 +35,7 @@ public class FileSharingNode extends Node {
             int j;
             int i = 0;
             while ((j = in.read(buffer)) != -1){
-                sendToPeer(new PeerMessage (MessageType.SFIL.toString(), groupID, this.getNodePeer().getID(), destination.getID(), buffer), destination);
+                sendToPeer(new PeerMessage(MessageType.SFIL.toString(), groupID, this.getNodePeer().getID(), destination.getID(), buffer), destination);
                 out.write(buffer, 0, j);
                 i++;
                 System.out.println(((i+1)*buffer.length)/(double)file.length()*100 % 1 + "%");

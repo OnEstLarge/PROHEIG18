@@ -1,13 +1,13 @@
-/*
+package message;
+import peer.*;/*
  -----------------------------------------------------------------------------------
  Odeep
- Fichier     : MessageHandler.java
+ Fichier     : message.MessageHandler.java
  Auteur(s)   : Schürch Loïc
  Date        : 15.03.2018
  Compilateur : jdk 1.8.0_144
  -----------------------------------------------------------------------------------
 */
-
 
 public interface MessageHandler {
 

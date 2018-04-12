@@ -1,3 +1,7 @@
+import Node.Node;
+import peer.PeerInformations;
+import peer.PeerMessage;
+
 public class Test {
 
     public static void main(String[] args) {

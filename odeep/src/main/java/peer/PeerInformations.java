@@ -1,7 +1,7 @@
-/*
+package peer;/*
  -----------------------------------------------------------------------------------
  Odeep
- Fichier     : PeerInformations.java
+ Fichier     : peer.PeerInformations.java
  Auteur(s)   : Burgbacher Lionel, Jee Mathieu, Schürch Loïc
  Date        : 15.03.2018
  Compilateur : jdk 1.8.0_144

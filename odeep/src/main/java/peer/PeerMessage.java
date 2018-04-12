@@ -1,7 +1,7 @@
-/*
+package peer;/*
  -----------------------------------------------------------------------------------
  Odeep
- Fichier     : PeerHandler.java
+ Fichier     : peer.PeerHandler.java
  Auteur(s)   : Kopp Olivier, Jee Mathieu, Schürch Loïc
  Date        : 15.03.2018
  Compilateur : jdk 1.8.0_144
@@ -215,9 +215,9 @@ public class PeerMessage {
     }
 
     /**
-     * Retourne le message de format PeerMessage et prêt à l'envoi
+     * Retourne le message de format peer.PeerMessage et prêt à l'envoi
      *
-     * @return PeerMessage formatté
+     * @return peer.PeerMessage formatté
      */
     public byte[] getFormattedMessage() {
         StringBuilder message = new StringBuilder();

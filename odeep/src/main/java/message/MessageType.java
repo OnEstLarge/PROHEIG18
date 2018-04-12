@@ -1,3 +1,5 @@
+package message;
+
 public class MessageType {
     public final static String FGET = "FGET"; // demande d'envoie d'un fichier a un noeud
     public final static String PGET = "PGET"; // demande d'envoie d'un paquet a un noeud
@@ -8,4 +10,6 @@ public class MessageType {
     public final static String OK = "OK"; // réponse positive
     public final static String RKEY = "RKEY"; // demande de la clé public du destinataire pour le protocole ECDH
     public final static String ECDH = "ECDH"; // message de protocole ECDH
+    public final static String HELO = "HELO"; //initialisation de la connexion au serveur relai
+    public final static String BYE = "BYE"; // fin de connexion au serveur relai
 }

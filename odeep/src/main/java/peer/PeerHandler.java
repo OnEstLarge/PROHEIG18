@@ -1,7 +1,10 @@
-/*
+package peer;
+import Node.*;
+import peer.*;
+import message.*;/*
  -----------------------------------------------------------------------------------
  Odeep
- Fichier     : PeerHandler.java
+ Fichier     : peer.PeerHandler.java
  Auteur(s)   : Schürch Loïc
  Date        : 15.03.2018
  Compilateur : jdk 1.8.0_144
