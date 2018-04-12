@@ -5,7 +5,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="123.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="FX.InviteDialogController">
+<AnchorPane prefHeight="123.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="FX.views.InviteDialogController">
     <children>
         <Label layoutX="38.0" layoutY="45.0" text="User ip" AnchorPane.leftAnchor="38.0" AnchorPane.topAnchor="45.0" />
         <TextField fx:id="newUserIPField" layoutX="126.0" layoutY="41.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="41.0" />
