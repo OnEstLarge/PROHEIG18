@@ -23,8 +23,8 @@ public class CipherUtil {
         Security.addProvider(new BouncyCastleProvider());
     }
 
-    private final static int HMAC_SIZE = 32;
-    private final static int AES_KEY_SIZE = 16;
+    public final static int HMAC_SIZE = 32;
+    public final static int AES_KEY_SIZE = 16;
     /**
      * retourne la concatenation des data chiffrée et du HMAC
      * @param data données en claire
@@ -99,7 +99,7 @@ public class CipherUtil {
     }
 
     /**
-     *
+     * génére une clé de 256 bits
      * @return
      */
     public static byte[] generateKey(){
