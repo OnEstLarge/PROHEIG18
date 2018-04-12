@@ -1,4 +1,4 @@
-package message;
+package Node;
 
 import message.MessageType;
 import peer.PeerInformations;
