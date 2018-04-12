@@ -1,5 +1,7 @@
 
+import Node.FileSharingNode;
 import org.junit.jupiter.api.Test;
+import peer.PeerInformations;
 
 import static org.junit.jupiter.api.Assertions.*;
 
