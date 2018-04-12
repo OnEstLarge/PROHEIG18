@@ -1,5 +1,6 @@
 package peer;
 import Node.*;
+import com.sun.media.sound.InvalidFormatException;
 import peer.*;
 import message.*;/*
  -----------------------------------------------------------------------------------
@@ -32,8 +33,10 @@ public class PeerHandler implements Runnable {
         PeerConnection connection = new PeerConnection(clientSocket);
 
         //receive message from the connection
-        PeerMessage message = connection.receiveMessage();
-
+        PeerMessage message = null;
+        try {
+            message = connection.receiveMessage();
+        } catch(InvalidFormatException e) {}
         //handle message
         node.getMapMessage().get(message.getType()).handleMessage(connection, message); //gerer erreur possible
 

@@ -11,11 +11,11 @@ public class FileSharingNode extends Node {
 
     public FileSharingNode(PeerInformations myInfos) {
         super(myInfos);
-        try {
+        /*try {
             test();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     /**
