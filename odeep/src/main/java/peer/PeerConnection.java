@@ -1,5 +1,8 @@
 package peer;
 
+import com.sun.media.sound.InvalidFormatException;
+
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -22,13 +25,20 @@ public class PeerConnection {
         this.peer = peer;
 
         clientSocket = new Socket(peer.getAddress(), peer.getPort());
-        //os = clientSocket.getOutputStream();
-
+        os = clientSocket.getOutputStream();
+        is = new BufferedInputStream(clientSocket.getInputStream());
     }
 
-    public PeerMessage receiveMessage() {
+    public PeerMessage receiveMessage() throws InvalidFormatException{
+        byte[] b = new byte[4096];
+        try{
+            while(is.read(b) != -1) {
 
-        return null;
+            }
+        } catch(IOException e) {
+
+        }
+        return new PeerMessage(b);
     }
 
     public void sendMessage(PeerMessage message) {
@@ -40,6 +50,12 @@ public class PeerConnection {
     }
 
     public void close() {
+        try {
+            is.close();
+            os.close();
+            clientSocket.close();
+        } catch(IOException e){
 
+        }
     }
 }
