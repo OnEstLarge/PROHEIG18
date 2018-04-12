@@ -1,7 +1,12 @@
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;
+import message.FileSharingNode;
+import message.MessageHandler;
+import peer.PeerInformations;
+import peer.PeerMessage;
 
 public class Test {
 
