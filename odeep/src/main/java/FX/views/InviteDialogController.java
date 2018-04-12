@@ -1,3 +1,5 @@
+package FX.views;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -87,7 +89,7 @@ public class InviteDialogController {
             }
         }
         if(errorMessage.length() == 0){
-                return true;
+            return true;
         }else{
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.initOwner(dialogStage);

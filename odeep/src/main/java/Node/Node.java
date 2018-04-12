@@ -130,8 +130,6 @@ public class Node {
 
         ServerSocket serverSocket = null;
         Socket clientSocket = null;
-        BufferedReader in = null;
-        PrintWriter out = null;
 
         try {
 
@@ -142,13 +140,7 @@ public class Node {
                 try {
                     clientSocket = serverSocket.accept();
                     PeerHandler peerHandler = new PeerHandler(this, clientSocket);
-                    in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                    out = new PrintWriter(clientSocket.getOutputStream());
-                    String line;
-                    while((line = in.readLine()) != null)
-                    {
-                        System.out.println(line);
-                    }
+                    
                 } catch (IOException ex) {
                     //TODO
                 }

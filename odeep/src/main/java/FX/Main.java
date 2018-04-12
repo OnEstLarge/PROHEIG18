@@ -1,5 +1,7 @@
 package FX;
 
+import FX.views.InviteDialogController;
+import FX.views.RootLayoutController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -26,9 +28,8 @@ public class Main extends Application {
         try{
             // Load root layout from fxml file.
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(Main.class
-                    .getResource("FX/RootLayout.fxml"));
-            rootLayout = (BorderPane) loader.load();
+            loader.setLocation(Main.class.getResource("FX/views/RootLayout.fxml"));
+            rootLayout = loader.load();
 
             // Show the scene containing the root layout.
             Scene scene = new Scene(rootLayout);
@@ -48,8 +49,8 @@ public class Main extends Application {
         try{
             // Load the FXML filer and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(Main.class.getResource("FX/InviteDialog.fxml"));
-            AnchorPane page = (AnchorPane) loader.load();
+            loader.setLocation(Main.class.getResource("/FX/views/InviteDialog.fxml"));
+            AnchorPane page = loader.load();
 
             // Create the dialog Stage.
             Stage dialogStage = new Stage();

@@ -1,4 +1,3 @@
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -27,7 +26,7 @@ public class Main extends Application {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Main.class
                     .getResource("RootLayout.fxml"));
-            rootLayout = (BorderPane) loader.load();
+            rootLayout = loader.load();
 
             // Show the scene containing the root layout.
             Scene scene = new Scene(rootLayout);
