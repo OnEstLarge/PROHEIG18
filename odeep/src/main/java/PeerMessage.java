@@ -8,6 +8,9 @@
  -----------------------------------------------------------------------------------
 */
 
+import com.sun.media.sound.InvalidFormatException;
+import org.bouncycastle.util.Arrays;
+
 /**
  * Header Format:
  *
@@ -87,6 +90,24 @@ public class PeerMessage {
 
     public PeerMessage(String type, String idGroup, String idFrom, String idTo, byte[] message) {
         this(type, idGroup, idFrom, idTo, 0, message);
+    }
+
+    public PeerMessage(byte[] rawData) throws InvalidFormatException {
+        if(rawData.length < HEADER_SIZE + 1){
+            throw new InvalidFormatException("incorrect message");
+        }
+        int index = 0;
+        this.type           = new String(Arrays.copyOfRange(rawData,index, TYPE_LENGTH));
+        index += TYPE_LENGTH;
+        this.idGroup        = new String(Arrays.copyOfRange(rawData,index, index + ID_GROUP_MAX_LENGTH));
+        index += ID_GROUP_MAX_LENGTH;
+        this.idFrom         = new String(Arrays.copyOfRange(rawData,index , index + ID_MAX_LENGTH));
+        index += ID_MAX_LENGTH;
+        this.idTo           = new String(Arrays.copyOfRange(rawData,index, index + ID_MAX_LENGTH));
+        index += ID_MAX_LENGTH;
+        this.noPacket       = Integer.parseInt(new String(Arrays.copyOfRange(rawData,index, NO_PACKET_DIGITS)));
+        index += NO_PACKET_DIGITS;
+        this.messageContent = Arrays.copyOfRange(rawData,index, rawData.length);
     }
 
     /**
