@@ -7,6 +7,6 @@ import peer.PeerMessage;
 public class SMESHandler implements MessageHandler{
 
     public void handleMessage(PeerConnection c, PeerMessage m){
-        return;
+        System.out.println(m.getMessageContent().toString());
     }
 }
