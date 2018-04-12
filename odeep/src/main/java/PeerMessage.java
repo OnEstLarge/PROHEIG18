@@ -35,7 +35,7 @@ public class PeerMessage {
     private static final int  MESSAGE_CONTENT_SIZE = BLOCK_SIZE - HEADER_SIZE;
 
     private static final char PADDING_SYMBOL       = '=';
-    
+
     /**
      * EN-TÊTE DU MESSAGE
      */
