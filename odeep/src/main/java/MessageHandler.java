@@ -11,5 +11,5 @@
 
 public interface MessageHandler {
 
-    public abstract void handleMessage(String message);
+    public abstract void handleMessage(PeerConnection c, PeerMessage m);
 }
