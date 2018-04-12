@@ -3,8 +3,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;
-import message.FileSharingNode;
+import Node.FileSharingNode;
 import message.MessageHandler;
+import message.MessageType;
 import peer.PeerInformations;
 import peer.PeerMessage;
 
