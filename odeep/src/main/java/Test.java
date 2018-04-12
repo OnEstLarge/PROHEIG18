@@ -17,20 +17,16 @@ public class Test {
 
         final String idGroup = "group1";
 
-        final PeerInformations myInfo = new PeerInformations("Loic", "10.192.95.152", 4444);
-        PeerInformations jee = new PeerInformations("Jee", "10.192.91.55", 4444);
-        PeerInformations olivier = new PeerInformations("Jee", "10.192.91.55", 4444);
-        PeerInformations florent = new PeerInformations("Jee", "10.192.91.55", 4444);
+        final PeerInformations myInfo = new PeerInformations("schurch", "10.192.95.152", 4444);
+        PeerInformations lionel = new PeerInformations("lionel", "", 4444);
         final HashMap<String, PeerInformations> users = new HashMap<String, PeerInformations>();
-        users.put("jee", jee);
-        users.put("olivier", olivier);
-        users.put("florent", florent);
+        users.put("lionel", lionel);
 
         final FileSharingNode n = new FileSharingNode(myInfo);
         MessageHandler sendMessageHandler = new SMESHandler();
         MessageHandler sendFileHandler = new SFILHandler();
 
-        n.addPeer(jee, florent, olivier);
+        n.addPeer(lionel);
         n.addMessageHandler(MessageType.SMES, sendMessageHandler);
         n.addMessageHandler(MessageType.SFIL, sendFileHandler);
 
@@ -55,6 +51,7 @@ public class Test {
                     String type = a[0];
                     String pseudo = a[1];
                     String content = a[2];
+
                     if(type.equals(MessageType.SMES)) {
                         PeerMessage m = new PeerMessage(type, idGroup, myInfo.getID(), pseudo, content.getBytes());
                         n.sendToPeer(m, users.get(pseudo));
