@@ -1,6 +1,7 @@
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 import Node.FileSharingNode;
@@ -17,16 +18,18 @@ public class Test {
 
         final String idGroup = "group1";
 
-        final PeerInformations myInfo = new PeerInformations("schurch", "10.192.95.152", 4444);
-        PeerInformations lionel = new PeerInformations("lionel", "10.192.95.98", 4444);
+        final PeerInformations myInfo = new PeerInformations("schurch", "10.192.95.152", 4445);
+        PeerInformations docker = new PeerInformations("docker", "192.168.99.100", 4444);
+
+
         final HashMap<String, PeerInformations> users = new HashMap<String, PeerInformations>();
-        users.put("lionel", lionel);
+        users.put("docker", docker);
 
         final FileSharingNode n = new FileSharingNode(myInfo);
         MessageHandler sendMessageHandler = new SMESHandler();
         MessageHandler sendFileHandler = new SFILHandler();
 
-        n.addPeer(lionel);
+        n.addPeer(docker);
         n.addMessageHandler(MessageType.SMES, sendMessageHandler);
         n.addMessageHandler(MessageType.SFIL, sendFileHandler);
 
@@ -42,6 +45,7 @@ public class Test {
             }
 
             public void run(){
+
                 Scanner scanner = new Scanner(System.in);
                 while(true){
 
@@ -63,7 +67,6 @@ public class Test {
                         } catch(IOException e){}
                     }
                 }
-
             }
         }
 

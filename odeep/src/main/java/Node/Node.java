@@ -132,7 +132,7 @@ public class Node {
 
         try {
             System.out.println("lol");
-            serverSocket = new ServerSocket(4445);
+            serverSocket = new ServerSocket(myInfos.getPort());
             System.out.println("lol2");
             while (nodeIsRunning) {
                 //socket wait for connection

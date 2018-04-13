@@ -35,16 +35,17 @@ public class PeerConnection {
     }
 
     public PeerMessage receiveMessage() throws InvalidFormatException{
-        byte[] b = new byte[4032];
+        byte[] b = new byte[4096];
         try{
-            System.out.println(is == null);
             while(is.read(b) != -1);
 
         } catch(IOException e) {
 
         }
-        System.out.println(b.length);
-        return new PeerMessage(b);
+        System.out.println("rcv length: " + b.length);
+        PeerMessage rcv = new PeerMessage(b);
+        System.out.println("type rcv: " + rcv.getType());
+        return rcv;
     }
 
     public void sendMessage(PeerMessage message) {

@@ -128,4 +128,13 @@ public class PeerMessageTest {
         goodMessage += new String(goodMessageContent);
         assertEquals(goodMessage, new String(goodPeerMessage.getFormattedMessage()));
     }
+
+    @Test
+    public void getFormattedMessageTest2() {
+        testName = "getFormattedMessageTest2";
+        byte[] b = goodPeerMessage.getFormattedMessage();
+        String goodMessage = "XXXX,idGroup=========,idFrom==========,idTo============,00000001,";
+        goodMessage += new String(goodMessageContent);
+        assertEquals(goodMessage, new String(b));
+    }
 }
