@@ -42,7 +42,7 @@ public class FileSharingNode extends Node {
             int i = 0;
             while (fis.read(buffer) != -1){
                 //on envoie les morceaux du fichier
-                c.sendMessage(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination.getID(), buffer));
+                c.sendMessage(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination.getID(), i, buffer));
                 i++;
                 System.out.println(((i+1)*buffer.length)/(double)file.length()*100 % 1 + "%");
             }

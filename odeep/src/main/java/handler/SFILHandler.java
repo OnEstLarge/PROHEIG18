@@ -19,7 +19,7 @@ public class SFILHandler  implements MessageHandler {
         try {
 
             InputStream is = c.getIs();
-            FileOutputStream fos = new FileOutputStream("rcv.txt");
+            FileOutputStream fos = new FileOutputStream("rcv.pdf");
 
             int read = 0;
             int totalRead = 0;
@@ -27,7 +27,9 @@ public class SFILHandler  implements MessageHandler {
 
             byte[] buffer = new byte[4096];
 
-            while((read = is.read(buffer, 0, Math.min(buffer.length, remaining))) != -1){
+            while((read = is.read(buffer, 0, Math.min(buffer.length, remaining)))  > 0){
+                //on ajuste la taille du content lu
+                read -= PeerMessage.HEADER_SIZE;
                 totalRead += read;
                 remaining -= read;
                 System.out.println("read " + totalRead + " bytes");

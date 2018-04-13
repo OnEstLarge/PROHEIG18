@@ -19,20 +19,25 @@ public class Test {
 
         final String idGroup = "group1";
 
-        final PeerInformations myInfo = new PeerInformations("schurch", "192.168.1.160", 4444);
-        PeerInformations docker = new PeerInformations("docker", "192.168.1.134", 4444);
-        PeerInformations loicpc = new PeerInformations("loicpc", "192.168.1.144", 4444);
+        final PeerInformations schurch = new PeerInformations("schurch", "192.168.1.160", 4444);
+        final PeerInformations docker = new PeerInformations("docker", "192.168.1.134", 4444);
+        final PeerInformations loicpc = new PeerInformations("loicpc", "192.168.1.144", 4444);
+
+        final PeerInformations myInfo = schurch;
 
         final HashMap<String, PeerInformations> users = new HashMap<String, PeerInformations>();
         users.put("docker", docker);
         users.put("loicpc", loicpc);
+        users.put("schurch", schurch);
 
         final FileSharingNode n = new FileSharingNode(myInfo);
+
         MessageHandler sendMessageHandler = new SMESHandler();
         MessageHandler sendFileHandler = new SFILHandler();
 
         n.addPeer(docker);
         n.addPeer(loicpc);
+        n.addPeer(schurch);
         n.addMessageHandler(MessageType.SMES, sendMessageHandler);
         n.addMessageHandler(MessageType.SFIL, sendFileHandler);
 
