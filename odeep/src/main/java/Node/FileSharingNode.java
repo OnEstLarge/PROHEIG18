@@ -30,7 +30,7 @@ public class FileSharingNode extends Node {
         if (file == null || groupID == null || destination == null){
             throw new NullPointerException();
         }
-        byte buffer[] = new byte[4032];
+        byte chunk[] = new byte[4032];
         FileInputStream fis = new FileInputStream(file);
 
         //on crée la connexion
@@ -38,13 +38,16 @@ public class FileSharingNode extends Node {
 
         //on envoie la taille du fichier à envoyer
         c.sendMessage(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination.getID(),(""+file.length()).getBytes()));
-            int j;
+            int chunkLen = 0;
+            int remaining = (int)file.length();
             int i = 0;
-            while (fis.read(buffer) != -1){
+            while ((chunkLen = fis.read(chunk, 0, Math.min(4032, remaining))) != -1){
+                remaining -= chunkLen;
                 //on envoie les morceaux du fichier
-                c.sendMessage(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination.getID(), i, buffer));
+                c.sendMessage(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination.getID(), i, chunk));
                 i++;
-                System.out.println(((i+1)*buffer.length)/(double)file.length()*100 % 1 + "%");
+                System.out.println(((i+1)*chunk.length)/(double)file.length()*100 % 1 + "%");
+                chunk = new byte[remaining];
             }
         fis.close();
     }
