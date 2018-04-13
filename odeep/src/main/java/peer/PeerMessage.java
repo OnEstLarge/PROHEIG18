@@ -96,18 +96,25 @@ public class PeerMessage {
         if(rawData.length < HEADER_SIZE + 1){
             throw new InvalidFormatException("incorrect message");
         }
+        System.out.println(new String(rawData));
         int index = 0;
         this.type           = new String(Arrays.copyOfRange(rawData,index, TYPE_LENGTH));
-        index += TYPE_LENGTH;
+        System.out.println("constr type " + this.type);
+        index += TYPE_LENGTH+1;
         this.idGroup        = new String(Arrays.copyOfRange(rawData,index, index + ID_GROUP_MAX_LENGTH));
-        index += ID_GROUP_MAX_LENGTH;
+        System.out.println("constr idGroup " + this.idGroup);
+        index += ID_GROUP_MAX_LENGTH+1;
         this.idFrom         = new String(Arrays.copyOfRange(rawData,index , index + ID_MAX_LENGTH));
-        index += ID_MAX_LENGTH;
+        System.out.println("constr idfrom " + this.idFrom);
+        index += ID_MAX_LENGTH+1;
         this.idTo           = new String(Arrays.copyOfRange(rawData,index, index + ID_MAX_LENGTH));
-        index += ID_MAX_LENGTH;
-        this.noPacket       = Integer.parseInt((new String(Arrays.copyOfRange(rawData,index, index +NO_PACKET_DIGITS))).replaceAll("=", "0"));
-        index += NO_PACKET_DIGITS;
+        System.out.println("constr idto " + this.idTo);
+        index += ID_MAX_LENGTH+1;
+        this.noPacket       = Integer.parseInt(new String(Arrays.copyOfRange(rawData,index, index +NO_PACKET_DIGITS)));
+        System.out.println("constr noPa " + this.noPacket);
+        index += NO_PACKET_DIGITS+1;
         this.messageContent = Arrays.copyOfRange(rawData,index, rawData.length);
+        System.out.println(new String(messageContent));
     }
 
     /**
@@ -227,7 +234,9 @@ public class PeerMessage {
         message.append(addPadding(idFrom, ID_MAX_LENGTH, PADDING_SYMBOL)).append(",");
         message.append(addPadding(idTo, ID_MAX_LENGTH, PADDING_SYMBOL)).append(",");
         message.append(formatInt(noPacket, NO_PACKET_DIGITS)).append(",");
-        message.append(addPadding(new String(messageContent), MESSAGE_CONTENT_SIZE, PADDING_SYMBOL));
+
+        // -1 sinon bug
+        message.append(addPadding(new String(messageContent), MESSAGE_CONTENT_SIZE-1, PADDING_SYMBOL));
 
         return message.toString().getBytes();
     }

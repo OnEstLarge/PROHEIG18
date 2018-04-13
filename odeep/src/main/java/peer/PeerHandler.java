@@ -37,7 +37,7 @@ public class PeerHandler implements Runnable {
         PeerMessage message = null;
         try {
             message = connection.receiveMessage();
-            System.out.println("lolc");
+            System.out.println("lolc: " + message.getType());
         } catch(InvalidFormatException e) {}
         //handle message
         System.out.println(message.getType());

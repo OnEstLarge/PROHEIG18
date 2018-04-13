@@ -36,13 +36,18 @@ public class PeerConnection {
 
     public PeerMessage receiveMessage() throws InvalidFormatException{
         byte[] b = new byte[4096];
+        int h = 4;
         try{
-            while(is.read(b) != -1);
+            while((h=is.read(b)) != -1){
+                System.out.println(h);
+
+            }
 
         } catch(IOException e) {
 
         }
         System.out.println("rcv length: " + b.length);
+        System.out.println("rcv tab: " + new String(b));
         PeerMessage rcv = new PeerMessage(b);
         System.out.println("type rcv: " + rcv.getType());
         return rcv;

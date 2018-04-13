@@ -18,8 +18,8 @@ public class Test {
 
         final String idGroup = "group1";
 
-        final PeerInformations myInfo = new PeerInformations("schurch", "10.192.95.152", 4445);
-        PeerInformations docker = new PeerInformations("docker", "192.168.99.100", 4444);
+        final PeerInformations myInfo = new PeerInformations("schurch", "192.168.1.160", 4445);
+        PeerInformations docker = new PeerInformations("docker", "192.168.1.134", 4444);
 
 
         final HashMap<String, PeerInformations> users = new HashMap<String, PeerInformations>();
