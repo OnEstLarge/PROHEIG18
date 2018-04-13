@@ -1,6 +1,7 @@
 package Node;
 
 import message.MessageType;
+import peer.PeerConnection;
 import peer.PeerInformations;
 import peer.PeerMessage;
 
@@ -31,17 +32,19 @@ public class FileSharingNode extends Node {
         }
         byte buffer[] = new byte[4032];
         FileInputStream in = new FileInputStream(file);
-        BufferedOutputStream out = new BufferedOutputStream(new Socket(destination.getAddress(), destination.getPort()).getOutputStream());
+        //BufferedOutputStream out = new BufferedOutputStream(new Socket(destination.getAddress(), destination.getPort()).getOutputStream());
+        //PeerConnection c = new PeerConnection();
+        //sendToPeer(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination.getID()),"Sending file".getBytes());
             int j;
             int i = 0;
             while ((j = in.read(buffer)) != -1){
-                sendToPeer(new PeerMessage(MessageType.SFIL.toString(), groupID, this.getNodePeer().getID(), destination.getID(), buffer), destination);
-                out.write(buffer, 0, j);
+                sendToPeer(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination.getID(), buffer), destination);
+                //out.write(buffer, 0, j);
                 i++;
                 System.out.println(((i+1)*buffer.length)/(double)file.length()*100 % 1 + "%");
             }
 
-        out.close();
+        //out.close();
         in.close();
     }
 

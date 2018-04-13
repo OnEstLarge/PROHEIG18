@@ -37,7 +37,7 @@ public class PeerMessage {
     public static final int  HEADER_SIZE          = TYPE_LENGTH + ID_GROUP_MAX_LENGTH + 2 * ID_MAX_LENGTH + NO_PACKET_DIGITS + 4;
     public static final int  MESSAGE_CONTENT_SIZE = BLOCK_SIZE - HEADER_SIZE;
 
-    private static final char PADDING_SYMBOL       = '=';
+    public static final char PADDING_SYMBOL       = '=';
 
     /**
      * EN-TÊTE DU MESSAGE
@@ -97,20 +97,22 @@ public class PeerMessage {
             throw new InvalidFormatException("incorrect message");
         }
         System.out.println(new String(rawData));
+
         int index = 0;
-        this.type           = new String(Arrays.copyOfRange(rawData,index, TYPE_LENGTH));
+        final String PAD = "" + PADDING_SYMBOL;
+        this.type           = new String(Arrays.copyOfRange(rawData,index, TYPE_LENGTH)).replaceAll(PAD, "");
         System.out.println("constr type " + this.type);
         index += TYPE_LENGTH+1;
-        this.idGroup        = new String(Arrays.copyOfRange(rawData,index, index + ID_GROUP_MAX_LENGTH));
+        this.idGroup        = new String(Arrays.copyOfRange(rawData,index, index + ID_GROUP_MAX_LENGTH)).replaceAll(PAD, "");
         System.out.println("constr idGroup " + this.idGroup);
         index += ID_GROUP_MAX_LENGTH+1;
-        this.idFrom         = new String(Arrays.copyOfRange(rawData,index , index + ID_MAX_LENGTH));
+        this.idFrom         = new String(Arrays.copyOfRange(rawData,index , index + ID_MAX_LENGTH)).replaceAll(PAD, "");
         System.out.println("constr idfrom " + this.idFrom);
         index += ID_MAX_LENGTH+1;
-        this.idTo           = new String(Arrays.copyOfRange(rawData,index, index + ID_MAX_LENGTH));
+        this.idTo           = new String(Arrays.copyOfRange(rawData,index, index + ID_MAX_LENGTH)).replaceAll(PAD, "");
         System.out.println("constr idto " + this.idTo);
         index += ID_MAX_LENGTH+1;
-        this.noPacket       = Integer.parseInt(new String(Arrays.copyOfRange(rawData,index, index +NO_PACKET_DIGITS)));
+        this.noPacket       = Integer.parseInt(new String(Arrays.copyOfRange(rawData,index, index +NO_PACKET_DIGITS)).replaceAll(PAD, ""));
         System.out.println("constr noPa " + this.noPacket);
         index += NO_PACKET_DIGITS+1;
         this.messageContent = Arrays.copyOfRange(rawData,index, rawData.length);

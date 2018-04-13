@@ -16,6 +16,8 @@ public class PeerConnection {
     private OutputStream os;
     private PeerInformations peer;
 
+    public InputStream getIs() {return is;}
+    public OutputStream getOs() {return os;}
 
     public PeerConnection(Socket socket) {
 
@@ -36,13 +38,10 @@ public class PeerConnection {
 
     public PeerMessage receiveMessage() throws InvalidFormatException{
         byte[] b = new byte[4096];
-        int h = 4;
         try{
-            while((h=is.read(b)) != -1){
-                System.out.println(h);
-
-            }
-
+            //while((h=is.read(b)) != -1){}
+            is.read(b);
+            //on va juste lire le premier message reçu, si d'autre message arrive, c'est le handler qui gère.
         } catch(IOException e) {
 
         }
