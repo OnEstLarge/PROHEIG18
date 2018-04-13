@@ -28,21 +28,16 @@ public class PeerHandler implements Runnable {
     }
 
     public void run() {
-        System.out.println("lola");
-        //new PeerConenction
         PeerConnection connection = new PeerConnection(clientSocket);
-        System.out.println("lolb");
-        System.out.println(connection == null);
-        //receive message from the connection
+
         PeerMessage message = null;
         try {
             message = connection.receiveMessage();
-            System.out.println("lolc: " + message.getType());
         } catch(InvalidFormatException e) {}
+
         //handle message
-        System.out.println(message.getType());
         node.getMapMessage().get(message.getType()).handleMessage(connection, message); //gerer erreur possible
-        System.out.println("lold");
+
         //close connection
         connection.close();
     }

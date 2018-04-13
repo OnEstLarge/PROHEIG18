@@ -61,8 +61,6 @@ public class Test {
 
                     if(type.equals(MessageType.SMES)) {
                         PeerMessage m = new PeerMessage(type, idGroup, myInfo.getID(), pseudo, content.getBytes());
-                        System.out.println(m.getFormattedMessage());
-                        //n.sendToPeer(m, users.get(pseudo));
                         try {
                             PeerConnection p = new PeerConnection(users.get(pseudo));
                             p.sendMessage(m);

@@ -131,18 +131,13 @@ public class Node {
         Socket clientSocket = null;
 
         try {
-            System.out.println("lol");
             serverSocket = new ServerSocket(myInfos.getPort());
-            System.out.println("lol2");
             while (nodeIsRunning) {
                 //socket wait for connection
                 try {
-                    System.out.println("lol3");
                     clientSocket = serverSocket.accept();
-                    System.out.println("lol4");
 
                     PeerHandler peerHandler = new PeerHandler(this, clientSocket);
-                    System.out.println("lol5");
                 } catch (IOException ex) {
                     //TODO
                 }

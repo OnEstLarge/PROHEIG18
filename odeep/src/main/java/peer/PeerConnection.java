@@ -39,16 +39,14 @@ public class PeerConnection {
     public PeerMessage receiveMessage() throws InvalidFormatException{
         byte[] b = new byte[4096];
         try{
-            //while((h=is.read(b)) != -1){}
-            is.read(b);
             //on va juste lire le premier message reçu, si d'autre message arrive, c'est le handler qui gère.
+            is.read(b);
+
         } catch(IOException e) {
 
         }
-        System.out.println("rcv length: " + b.length);
         System.out.println("rcv tab: " + new String(b));
         PeerMessage rcv = new PeerMessage(b);
-        System.out.println("type rcv: " + rcv.getType());
         return rcv;
     }
 
