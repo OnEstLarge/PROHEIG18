@@ -31,23 +31,22 @@ public class FileSharingNode extends Node {
             throw new NullPointerException();
         }
         byte buffer[] = new byte[4032];
-        FileInputStream in = new FileInputStream(file);
+        FileInputStream fis = new FileInputStream(file);
 
         //on crée la connexion
         PeerConnection c = new PeerConnection(destination);
 
-        //on envoie un premier message d'information
-        //TODO: envoyer la taille du fichier à envoyer
-        c.sendMessage(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination.getID(),"Sending file".getBytes()));
+        //on envoie la taille du fichier à envoyer
+        c.sendMessage(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination.getID(),(""+file.length()).getBytes()));
             int j;
             int i = 0;
-            while ((j = in.read(buffer)) != -1){
+            while (fis.read(buffer) != -1){
                 //on envoie les morceaux du fichier
                 c.sendMessage(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination.getID(), buffer));
                 i++;
                 System.out.println(((i+1)*buffer.length)/(double)file.length()*100 % 1 + "%");
             }
-        in.close();
+        fis.close();
     }
 
     /**

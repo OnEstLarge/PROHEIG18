@@ -13,16 +13,25 @@ public class SFILHandler  implements MessageHandler {
 
     public void handleMessage(PeerConnection c, PeerMessage m){
 
-        //le premier message d'info reçu, après il faudra utiliser la taille
-        System.out.println("Receiving " + new String(m.getMessageContent()).replaceAll(""+PeerMessage.PADDING_SYMBOL, ""));
+        int fileSize = Integer.parseInt(new String(m.getMessageContent()).replaceAll(""+PeerMessage.PADDING_SYMBOL, ""));
+        System.out.println("Receiving: " + fileSize);
 
         try {
 
             InputStream is = c.getIs();
             FileOutputStream fos = new FileOutputStream("rcv.txt");
-            byte[] b = new byte[4096];
-            while((is.read(b)) != -1){
-                fos.write(new PeerMessage(b).getMessageContent());
+
+            int read = 0;
+            int totalRead = 0;
+            int remaining = fileSize;
+
+            byte[] buffer = new byte[4096];
+
+            while((read = is.read(buffer, 0, Math.min(buffer.length, remaining))) != -1){
+                totalRead += read;
+                remaining -= read;
+                System.out.println("read " + totalRead + " bytes");
+                fos.write(new PeerMessage(buffer).getMessageContent());
             }
             fos.close();
         } catch (FileNotFoundException e) {
