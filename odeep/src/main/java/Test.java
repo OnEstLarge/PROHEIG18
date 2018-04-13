@@ -66,8 +66,6 @@ public class Test {
                         try {
                             PeerConnection p = new PeerConnection(users.get(pseudo));
                             p.sendMessage(m);
-                            PeerMessage m2 = new PeerMessage(type, idGroup, myInfo.getID(), pseudo, "tedst".getBytes());
-                            p.sendMessage(m2);
                             p.close();
                         }catch(IOException e) {
                             System.out.println("error main");

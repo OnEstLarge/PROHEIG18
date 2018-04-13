@@ -14,6 +14,8 @@ public class SMESHandler implements MessageHandler{
         System.out.println("**   " + new String(m.getMessageContent()).replaceAll("" + PeerMessage.PADDING_SYMBOL, "") + "\n**");
         System.out.println("******************************************************************");
 
+
+        //TODO: On gère si le message reçu fait plus de 4096byte, pour l'instant on affiche jsute la suite
         byte[] b = new byte[4096];
         try {
             while (c.getIs().read(b) != -1) {
