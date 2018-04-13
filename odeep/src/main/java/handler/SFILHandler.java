@@ -33,7 +33,7 @@ public class SFILHandler  implements MessageHandler {
                 totalRead += read;
                 remaining -= read;
                 System.out.println("read " + totalRead + " bytes");
-                fos.write(new PeerMessage(buffer).getMessageContent());
+                fos.write(new PeerMessage(buffer).getMessageContent(),0 , read);
             }
             fos.close();
         } catch (FileNotFoundException e) {

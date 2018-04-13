@@ -52,6 +52,7 @@ public class PeerConnection {
 
     public void sendMessage(PeerMessage message) {
         try {
+            System.out.println("TOSNED" + message.getType() + " --- " +new String(message.getMessageContent()));
             os.write(message.getFormattedMessage());
         } catch (IOException e) {
             e.printStackTrace();
