@@ -116,7 +116,7 @@ public class PeerMessage {
         System.out.println("constr noPa " + this.noPacket);
         index += NO_PACKET_DIGITS+1;
         this.messageContent = Arrays.copyOfRange(rawData,index, rawData.length);
-        System.out.println(new String(messageContent));
+        //System.out.println(new String(messageContent));
     }
 
     /**

@@ -25,15 +25,16 @@ public class SFILHandler  implements MessageHandler {
             int totalRead = 0;
             int remaining = fileSize;
 
-            byte[] buffer = new byte[4096];
+            byte[] buffer = new byte[4032];
 
-            while((read = is.read(buffer, 0, Math.min(buffer.length, remaining)))  != -1){
+            while((read = is.read(buffer, 0, Math.min(buffer.length, remaining)))  > 0){
                 //on ajuste la taille du content lu
-                read -= PeerMessage.HEADER_SIZE;
+                //read -= PeerMessage.HEADER_SIZE;
                 totalRead += read;
                 remaining -= read;
+                System.out.println(new String(buffer).substring(0,15));
                 System.out.println("read " + totalRead + " bytes");
-                fos.write(new PeerMessage(buffer).getMessageContent());
+                fos.write(buffer);//new PeerMessage(buffer).getMessageContent());
             }
             fos.close();
         } catch (FileNotFoundException e) {

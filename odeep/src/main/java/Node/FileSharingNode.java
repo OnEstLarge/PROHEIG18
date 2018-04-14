@@ -38,17 +38,21 @@ public class FileSharingNode extends Node {
 
         //on envoie la taille du fichier à envoyer
         c.sendMessage(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination.getID(),(""+file.length()).getBytes()));
-            int chunkLen = 0;
-            int remaining = (int)file.length();
-            int i = 0;
-            while ((chunkLen = fis.read(chunk, 0, Math.min(4032, remaining))) != -1){
-                remaining -= chunkLen;
-                //on envoie les morceaux du fichier
-                c.sendMessage(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination.getID(), i, chunk));
-                i++;
-                System.out.println(((i+1)*chunk.length)/(double)file.length()*100 % 1 + "%");
-                chunk = new byte[remaining];
-            }
+
+        int chunkLen = 0;
+        int remaining = (int)file.length();
+        //int i = 0;
+        while ((chunkLen = fis.read(chunk, 0, Math.min(4032, remaining))) != -1){
+            remaining -= chunkLen;
+            //on envoie les morceaux du fichier
+            //c.sendMessage(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination.getID(), i, chunk));
+
+            //On envoie pas de peerMessage, mais on passe simplement le fichier dans le stream à partir du même socket que la connexion initiale
+            c.getOs().write(chunk);
+            //i++;
+            //System.out.println(((i+1)*chunk.length)/(double)file.length()*100 % 1 + "%");
+            chunk = new byte[Math.min(4032, remaining)];
+        }
         fis.close();
     }
 
