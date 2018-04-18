@@ -13,13 +13,15 @@ public class SFILHandler  implements MessageHandler {
 
     public void handleMessage(PeerConnection c, PeerMessage m){
 
-        int fileSize = Integer.parseInt(new String(m.getMessageContent()).replaceAll(""+PeerMessage.PADDING_SYMBOL, ""));
-        System.out.println("Receiving: " + fileSize);
+        String[] rcv = new String(m.getMessageContent()).replaceAll(""+PeerMessage.PADDING_SYMBOL, "").split(":");
+        int fileSize = Integer.parseInt(rcv[1]);
+        String filename = rcv[0];
+        System.out.println("Receiving: " + filename + ", size: " + fileSize);
 
         try {
 
             InputStream is = c.getIs();
-            FileOutputStream fos = new FileOutputStream("rcv.pdf");
+            FileOutputStream fos = new FileOutputStream(filename);
 
             int read = 0;
             int totalRead = 0;

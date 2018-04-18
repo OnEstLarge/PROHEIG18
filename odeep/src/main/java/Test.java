@@ -19,25 +19,34 @@ public class Test {
 
         final String idGroup = "group1";
 
-        final PeerInformations schurch = new PeerInformations("schurch", "192.168.1.160", 4444);
-        final PeerInformations docker = new PeerInformations("docker", "192.168.1.134", 4444);
-        final PeerInformations loicpc = new PeerInformations("loicpc", "192.168.1.144", 4444);
+        final PeerInformations schurch = new PeerInformations("schurch", "10.192.95.126",4444);
+        final PeerInformations lionel = new PeerInformations("lionel", "10.192.95.141", 4444);
+        final PeerInformations florent = new PeerInformations("florent", "10.192.95.126", 4444);
+        final PeerInformations romain = new PeerInformations("romain", "10.192.95.126", 4444);
+        final PeerInformations olivier = new PeerInformations("olivier", "10.192.95.126", 4444);
+        final PeerInformations mathieu = new PeerInformations("mathieu", "10.192.95.126", 4444);
 
         final PeerInformations myInfo = schurch;
 
         final HashMap<String, PeerInformations> users = new HashMap<String, PeerInformations>();
-        users.put("docker", docker);
-        users.put("loicpc", loicpc);
         users.put("schurch", schurch);
+        users.put("lionel", lionel);
+        users.put("florent", florent);
+        users.put("romain",romain);
+        users.put("olivier",olivier);
+        users.put("mathieu",mathieu);
 
         final FileSharingNode n = new FileSharingNode(myInfo);
 
         MessageHandler sendMessageHandler = new SMESHandler();
         MessageHandler sendFileHandler = new SFILHandler();
 
-        n.addPeer(docker);
-        n.addPeer(loicpc);
         n.addPeer(schurch);
+        n.addPeer(lionel);
+        n.addPeer(florent);
+        n.addPeer(romain);
+        n.addPeer(olivier);
+        n.addPeer(mathieu);
         n.addMessageHandler(MessageType.SMES, sendMessageHandler);
         n.addMessageHandler(MessageType.SFIL, sendFileHandler);
 
