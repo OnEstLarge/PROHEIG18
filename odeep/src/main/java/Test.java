@@ -21,7 +21,7 @@ public class Test {
 
         final PeerInformations schurch = new PeerInformations("schurch", "10.192.95.126",4444);
         final PeerInformations lionel = new PeerInformations("lionel", "10.192.95.141", 4444);
-        final PeerInformations florent = new PeerInformations("florent", "10.192.95.126", 4444);
+        final PeerInformations florent = new PeerInformations("florent", "10.192.92.103", 4444);
         final PeerInformations romain = new PeerInformations("romain", "10.192.95.126", 4444);
         final PeerInformations olivier = new PeerInformations("olivier", "10.192.95.126", 4444);
         final PeerInformations mathieu = new PeerInformations("mathieu", "10.192.95.126", 4444);
