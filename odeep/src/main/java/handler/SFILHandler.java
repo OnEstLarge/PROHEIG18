@@ -14,6 +14,7 @@ public class SFILHandler  implements MessageHandler {
     public void handleMessage(PeerConnection c, PeerMessage m){
 
         String[] rcv = new String(m.getMessageContent()).replaceAll(""+PeerMessage.PADDING_SYMBOL, "").split(":");
+        System.out.println("filename: " + rcv[0] + "   size: " + rcv[1]);
         int fileSize = Integer.parseInt(rcv[1]);
         String filename = rcv[0];
         System.out.println("Receiving: " + filename + ", size: " + fileSize);

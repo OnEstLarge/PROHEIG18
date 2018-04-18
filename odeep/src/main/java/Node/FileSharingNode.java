@@ -37,7 +37,8 @@ public class FileSharingNode extends Node {
         PeerConnection c = new PeerConnection(destination);
 
         //on envoie la taille du fichier à envoyer
-        c.sendMessage(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination.getID(),(file.getName() + ":" + file.length()).getBytes()));
+        String toSend = file.getName() + ":" + (int)file.length();
+        c.sendMessage(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination.getID(),toSend.getBytes()));
 
         int chunkLen = 0;
         int remaining = (int)file.length();
