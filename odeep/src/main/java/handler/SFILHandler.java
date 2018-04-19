@@ -18,6 +18,8 @@ public class SFILHandler  implements MessageHandler {
         int fileSize = Integer.parseInt(rcv[1]);
         String filename = rcv[0];
 
+        System.out.println("Receiving "  + filename);
+
         try {
 
             InputStream is = c.getIs();
@@ -34,11 +36,12 @@ public class SFILHandler  implements MessageHandler {
                 //read -= PeerMessage.HEADER_SIZE;
                 totalRead += read;
                 remaining -= read;
-                System.out.println("read " + totalRead + " bytes");
+                //System.out.println("read " + totalRead + " bytes");
                 fos.write(buffer,0,read);//new PeerMessage(buffer).getMessageContent());
                 //buffer = new byte[Math.min(4032, remaining)];
             }
             fos.close();
+            System.out.println("Reception completed!");
         } catch (FileNotFoundException e) {
 
         } catch (IOException e) {}

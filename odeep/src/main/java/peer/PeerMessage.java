@@ -96,24 +96,24 @@ public class PeerMessage {
         if(rawData.length < HEADER_SIZE + 1){
             throw new InvalidFormatException("incorrect message");
         }
-        System.out.println(new String(rawData));
+        //System.out.println(new String(rawData));
 
         int index = 0;
         final String PAD = "" + PADDING_SYMBOL;
         this.type           = new String(Arrays.copyOfRange(rawData,index, TYPE_LENGTH)).replaceAll(PAD, "");
-        System.out.println("constr type " + this.type);
+        //System.out.println("constr type " + this.type);
         index += TYPE_LENGTH+1;
         this.idGroup        = new String(Arrays.copyOfRange(rawData,index, index + ID_GROUP_MAX_LENGTH)).replaceAll(PAD, "");
-        System.out.println("constr idGroup " + this.idGroup);
+        //System.out.println("constr idGroup " + this.idGroup);
         index += ID_GROUP_MAX_LENGTH+1;
         this.idFrom         = new String(Arrays.copyOfRange(rawData,index , index + ID_MAX_LENGTH)).replaceAll(PAD, "");
-        System.out.println("constr idfrom " + this.idFrom);
+        //System.out.println("constr idfrom " + this.idFrom);
         index += ID_MAX_LENGTH+1;
         this.idTo           = new String(Arrays.copyOfRange(rawData,index, index + ID_MAX_LENGTH)).replaceAll(PAD, "");
-        System.out.println("constr idto " + this.idTo);
+        //System.out.println("constr idto " + this.idTo);
         index += ID_MAX_LENGTH+1;
         this.noPacket       = Integer.parseInt(new String(Arrays.copyOfRange(rawData,index, index +NO_PACKET_DIGITS)).replaceAll(PAD, ""));
-        System.out.println("constr noPa " + this.noPacket);
+        //System.out.println("constr noPa " + this.noPacket);
         index += NO_PACKET_DIGITS+1;
         this.messageContent = Arrays.copyOfRange(rawData,index, rawData.length);
         //System.out.println(new String(messageContent));

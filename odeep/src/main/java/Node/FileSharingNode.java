@@ -53,10 +53,10 @@ public class FileSharingNode extends Node {
             //i++;
             //System.out.println(((i+1)*chunk.length)/(double)file.length()*100 % 1 + "%");
             //chunk = new byte[Math.min(4032, remaining)];
-            System.out.println(remaining);
+            //System.out.println(remaining);
         }
         fis.close();
-        System.out.println("message");
+        System.out.println("Message send!");
     }
 
     /**
