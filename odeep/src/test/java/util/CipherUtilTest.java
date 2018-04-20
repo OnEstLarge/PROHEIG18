@@ -1,3 +1,5 @@
+package util;
+
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.junit.jupiter.api.Test;
 import util.CipherUtil;
@@ -9,7 +11,15 @@ import java.security.*;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+/*
+ -----------------------------------------------------------------------------------
+ Odeep
+ Fichier     : Util.CipherUtil.java
+ Auteur(s)   : Kopp Olivier
+ Date        : 05.04.2018
+ Compilateur : jdk 1.8.0_144
+ -----------------------------------------------------------------------------------
+*/
 class CipherUtilTest {
 
     @Test

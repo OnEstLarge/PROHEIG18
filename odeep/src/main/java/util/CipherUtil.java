@@ -1,5 +1,13 @@
 package util;
-
+/*
+ -----------------------------------------------------------------------------------
+ Odeep
+ Fichier     : util.CipherUtil.java
+ Auteur(s)   : Kopp Olivier
+ Date        : 05.04.2018
+ Compilateur : jdk 1.8.0_144
+ -----------------------------------------------------------------------------------
+*/
 import org.bouncycastle.crypto.BlockCipher;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.engines.AESEngine;
