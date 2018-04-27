@@ -31,7 +31,7 @@ public class ServerPeerToPeer {
         public void run() {
             ServerSocket serverSocket = null;
             try {
-                serverSocket = new ServerSocket(80);
+                serverSocket = new ServerSocket(8080);
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
@@ -71,7 +71,7 @@ public class ServerPeerToPeer {
         @Override
         public void run() {
             try {
-                while ((in.read(bufferIn) != 1) && !stopConnection) {
+                while ((in.read(bufferIn) != 1) ) {
                     PeerMessage pm = new PeerMessage(bufferIn);
                     String type = pm.getType();
                     if (type.equals("HELO")) {
@@ -88,39 +88,42 @@ public class ServerPeerToPeer {
         }
 
         private void greetings(PeerMessage pm) {
+            System.out.println("Greetings");
             peopleInServ.put(pm.getIdFrom(), clientToSever);
+            System.out.println(peopleInServ);
 
         }
 
         private void punch(PeerMessage pm) {
+            System.out.println(pm.getIdTo());
             if(peopleInServ.containsKey(pm.getIdTo())) {
-                redirectMessage(pm);
-                punchAdressTo(pm);
+                giveInfoToDestinator(pm);
+                giveInfoToSender(pm);
             }
 
         }
 
-        void redirectMessage(PeerMessage pm) {
+        void giveInfoToDestinator(PeerMessage pm) {
             System.out.println("Appelle de redirect");
 
             try {
                 String to = pm.getIdTo();
                 bufferOut = bufferIn.clone();
                 BufferedOutputStream outTo = new BufferedOutputStream(peopleInServ.get(to).getOutputStream());
-                outTo.write(clientToSever.getInetAddress().toString().getBytes());
-                outTo.write(clientToSever.getPort());
+                outTo.write((clientToSever.getInetAddress().toString() + " port " + clientToSever.getPort()).getBytes());
                 outTo.flush();
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
         }
 
-        void punchAdressTo(PeerMessage pm){
+        void giveInfoToSender(PeerMessage pm){
+            System.out.println("Appelle de giveInfoToSender");
             Socket socketTo = peopleInServ.get(pm.getIdTo());
             String IP = socketTo.getInetAddress().toString();
             int port = socketTo.getPort();
             try {
-                out.write(IP.getBytes());
+                out.write(IP.getBytes() );
                 out.write(port);
                 out.flush();
             }catch(IOException e){
