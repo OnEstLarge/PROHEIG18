@@ -76,6 +76,10 @@ public class Test {
                     if(type.equals(MessageType.SMES)) {
                         PeerMessage m = new PeerMessage(type, idGroup, myInfo.getID(), pseudo, content.getBytes());
                         try {
+
+                            //ICI on crée le peerInfo avec ce que nous renvoie le serveur relay
+                            //ça sera tout le temps fait dans le client j'imagine
+
                             PeerConnection p = new PeerConnection(users.get(pseudo));
                             p.sendMessage(m);
                             p.close();
