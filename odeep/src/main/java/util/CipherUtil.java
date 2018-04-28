@@ -16,14 +16,15 @@ import org.bouncycastle.crypto.paddings.PKCS7Padding;
 import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.jcajce.provider.digest.SHA3;
-import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import com.google.common.primitives.Bytes;
-import org.bouncycastle.jce.spec.ECParameterSpec;
+import org.bouncycastle.util.encoders.Base64;
 
-import javax.crypto.KeyAgreement;
+import javax.crypto.*;
 import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 
 
@@ -35,6 +36,7 @@ public class CipherUtil {
 
     public final static int HMAC_SIZE = 32;
     public final static int AES_KEY_SIZE = 16;
+    public final static int RSA_KEY_SIZE = 4096;
     /**
      * retourne la concatenation des data chiffrée et du HMAC
      * @param data données en claire
@@ -73,7 +75,7 @@ public class CipherUtil {
         if(data == null || key == null){
             throw new NullPointerException();
         }
-        if(key.length != AES_KEY_SIZE){
+        if(key.length != 2 * AES_KEY_SIZE){
             throw new InvalidParameterException("Incorrect key length");
         }
         byte[][] keys = splitKey(key);
@@ -93,7 +95,7 @@ public class CipherUtil {
         if(data == null || key == null){
             throw new NullPointerException();
         }
-        if(key.length != AES_KEY_SIZE){
+        if(key.length != 2 * AES_KEY_SIZE){
             throw new InvalidParameterException("Incorrect key length");
         }
         byte[][] keys = splitKey(key);
@@ -105,7 +107,12 @@ public class CipherUtil {
             rawData[i] = data[i];
         }
         byte[] decipherData = AESProcessing(rawData, keys[0], false);
-        return erasePadding(decipherData, 0);
+        int padSize = 0;
+        int index = decipherData.length - 1;
+        while(decipherData[index--] == 0){
+            padSize++;
+        }
+        return Arrays.copyOfRange(decipherData, 0, decipherData.length - padSize);
     }
 
     /**
@@ -233,9 +240,9 @@ public class CipherUtil {
     }
 
     /**
-     * Efface le padding à la fin des data
+     * Efface tout les caracteres a la fin d'un tableau jusqu'a rencontrer le caractere de debut de padding
      * @param data
-     * @param pad caractère de padding
+     * @param pad caractère de debut de padding
      * @return un tableau contenant les données sans padding
      */
     public static byte[] erasePadding(byte[] data, int pad){
@@ -244,10 +251,8 @@ public class CipherUtil {
         }
         int paddingSize = 0;
         for(int i = data.length-1; i >= 0; i--){
+            paddingSize++;
             if(data[i] == pad){
-                paddingSize++;
-            }
-            else{
                 break;
             }
         }
@@ -258,41 +263,91 @@ public class CipherUtil {
         return dataWithoutPadding;
     }
 
-    /**
-     * génére une pair clé publique/clé privée utilisable dans ECDH.
-     * @return
-     * @throws NoSuchAlgorithmException si l'algorithme n'est pas reconnue
-     * @throws InvalidAlgorithmParameterException si la courbe elliptique n'est pas connue
-     * @throws NoSuchProviderException
-     */
-    public static KeyPair GenerateECDHKeys() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException, NoSuchProviderException {
-        ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("curve25519");
-        KeyPairGenerator g = KeyPairGenerator.getInstance("ECDH", "BC");
-        g.initialize(ecSpec, new SecureRandom());
-        KeyPair kp = g.generateKeyPair();
-        return kp;
-    }
-
-    /**
-     * Génére une clé secret de 256 à l'aide d'ECDH, de la clé publique du destinataire et de la clé privée d'un utilisateur
-     * @param publicKey
-     * @param privateKey
-     * @return tableau contenant la clé générée
-     * @throws InvalidKeyException
-     * @throws NoSuchProviderException
-     * @throws NoSuchAlgorithmException
-     */
-    public static byte[] doECDH(PublicKey publicKey, PrivateKey privateKey) throws InvalidKeyException, NoSuchProviderException, NoSuchAlgorithmException {
-        if(publicKey == null || privateKey == null){
+    public static String erasePadding(String s, int pad){
+        if(s == null){
             throw new NullPointerException();
         }
-        KeyAgreement ka = KeyAgreement.getInstance("ECDH", "BC");
-        ka.init(privateKey);
-        ka.doPhase(publicKey, true);
-
-        byte[] secret = ka.generateSecret();
-        return secret;
+        int paddingSize = 0;
+        for(int i = s.length()-1; i >= 0; i--){
+            paddingSize++;
+            if(s.charAt(i) == pad){
+                break;
+            }
+        }
+        String dataWithoutPadding = s.substring(0, s.length()-paddingSize);
+        return dataWithoutPadding;
     }
 
+    /**
+     * génére une pair clé publique/clé privée utilisable dans RSA 4096.
+     * @return
+     * @throws NoSuchAlgorithmException si l'algorithme n'est pas reconnue
+     * @throws NoSuchProviderException si le fournisseur est inconnu
+     */
+    public static KeyPair GenerateRSAKey() throws NoSuchAlgorithmException, NoSuchProviderException {
+        KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA", "BC");
+        kpg.initialize(RSA_KEY_SIZE, new SecureRandom());
+        return kpg.generateKeyPair();
+    }
+
+    /**
+     * permet de chiffrer un tableau de byte à l'aide de RSA
+     * @param key clé publique du destinataire
+     * @param plain tableau de byte à chiffrer
+     * @return
+     * @throws NoSuchPaddingException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeyException
+     * @throws BadPaddingException
+     * @throws IllegalBlockSizeException
+     */
+    public static byte[] RSAEncrypt(PublicKey key, byte[] plain) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        byte[] cipherText = cipher.doFinal(plain);
+        return cipherText;
+    }
+
+    /**
+     * permet de dechiffrer un tableau de byte grace a RSA
+     * @param key clé privée de l'utilisateur
+     * @param cipherText donnée chiffrée
+     * @return
+     * @throws NoSuchPaddingException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeyException
+     * @throws BadPaddingException
+     * @throws IllegalBlockSizeException
+     */
+    public static byte[] RSADecrypt(PrivateKey key, byte[] cipherText) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        cipher.init(Cipher.DECRYPT_MODE, key);
+        byte[] dectyptedText = cipher.doFinal(cipherText);
+        return dectyptedText;
+    }
+
+    /**
+     * permet de convertir un tableau de byte en une clé publique RSA, utile lors de la reception de la clé par le réseau
+     * @param b tableau de byte contenant la clé encodée
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
+    public static PublicKey byteToPublicKey(byte[] b) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        String s = new String(b);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        X509EncodedKeySpec eks = new X509EncodedKeySpec(Base64.decode(s));
+        PublicKey publicKey = keyFactory.generatePublic(eks);
+        return publicKey;
+    }
+
+    /**
+     * permet de transformer une clé publique RSA en tableau de byte, permmettant par la suite l'envoi de cette clé
+     * @param pk clé publique à convertir
+     * @return
+     */
+    public static byte[] publicKeyToByte(PublicKey pk) {
+        return Base64.encode(pk.getEncoded());
+    }
 
 }

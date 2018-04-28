@@ -9,6 +9,7 @@ package Node;/*
 */
 
 
+import handler.RSAHandler;
 import message.MessageHandler;
 import peer.PeerHandler;
 import peer.PeerInformations;
@@ -190,6 +191,22 @@ public class Node {
         }
     }
 
+    public RSAHandler getTempRSAInfo() {
+        return tempRsaInfo;
+    }
+
+    public void setTempRSAInfo(RSAHandler tempRSAInfo) {
+        this.tempRsaInfo = tempRSAInfo;
+    }
+
+    public void setKey(byte[] key) {
+        this.key = key;
+    }
+
+    public byte[] getKey() {
+        return key;
+    }
+
     // Informations sur le pair de ce noeud
     private PeerInformations myInfos;
 
@@ -201,4 +218,11 @@ public class Node {
 
     // Permet de déterminer sur le noeud est actif
     private boolean nodeIsRunning = true;
+
+    //permet de conserver temporairement la pair de clé RSA utilisé lors d'un protocole Diffie Hellman
+    private RSAHandler tempRsaInfo = null;
+
+    //test
+    //cette clé sera stocker dans les groupes
+    private byte[] key = null;
 }

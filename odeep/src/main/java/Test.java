@@ -1,10 +1,13 @@
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.HashMap;
 import java.util.Scanner;
 import Node.FileSharingNode;
+import handler.RSAHandler;
 import handler.SFILHandler;
 import handler.SMESHandler;
 import message.MessageHandler;
@@ -12,6 +15,7 @@ import message.MessageType;
 import peer.PeerConnection;
 import peer.PeerInformations;
 import peer.PeerMessage;
+import util.CipherUtil;
 
 public class Test {
 
@@ -19,8 +23,8 @@ public class Test {
 
         final String idGroup = "group1";
 
-        final PeerInformations schurch = new PeerInformations("schurch", "10.192.95.151",4444);
-        final PeerInformations lionel = new PeerInformations("lionel", "10.192.95.141", 4444);
+        final PeerInformations schurch = new PeerInformations("schurch", "192.168.1.110",4444);
+        final PeerInformations lionel = new PeerInformations("lionel", "192.168.1.119", 4444);
         final PeerInformations florent = new PeerInformations("florent", "10.192.92.92", 4444);
         final PeerInformations romain = new PeerInformations("romain", "10.192.93.186", 4444);
         final PeerInformations olivier = new PeerInformations("olivier", "10.192.93.97", 4444);
@@ -87,6 +91,28 @@ public class Test {
                         try{
                             n.sendFileToPeer(file, idGroup, users.get(pseudo));
                         } catch(IOException e){}
+                    }
+                    else if(type.equals(MessageType.DHS1)){
+                        try {
+                            n.setKey(CipherUtil.generateKey());
+                            n.setKey("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
+                            RSAHandler RSA = new RSAHandler();
+                            RSA.setKeys();
+                            n.setTempRSAInfo(RSA);
+                            System.out.println("key is : " + new String (n.getKey()));
+
+                            PeerConnection p = new PeerConnection(users.get(pseudo));
+                            p.sendMessage(new PeerMessage(type, idGroup, myInfo.getID(), pseudo,n.getTempRSAInfo().getPublicKey()));
+                            p.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (InvalidAlgorithmParameterException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchAlgorithmException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchProviderException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }

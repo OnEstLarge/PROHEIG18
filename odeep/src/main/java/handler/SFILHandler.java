@@ -3,6 +3,7 @@ package handler;
 import message.MessageHandler;
 import peer.PeerConnection;
 import peer.PeerMessage;
+import util.CipherUtil;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -13,7 +14,7 @@ public class SFILHandler  implements MessageHandler {
 
     public void handleMessage(PeerConnection c, PeerMessage m){
 
-        String[] rcv = new String(m.getMessageContent()).replaceAll(""+PeerMessage.PADDING_SYMBOL, "").split(":");
+        String[] rcv = new String(CipherUtil.erasePadding(m.getMessageContent(), PeerMessage.PADDING_START)).split(":");
 
         int fileSize = Integer.parseInt(rcv[1]);
         String filename = rcv[0];
