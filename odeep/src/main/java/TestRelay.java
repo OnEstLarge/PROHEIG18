@@ -1,7 +1,10 @@
+import peer.PeerConnection;
+import peer.PeerHandler;
 import peer.PeerMessage;
 
 import java.io.*;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 public class TestRelay {
@@ -10,6 +13,29 @@ public class TestRelay {
         Socket clientSocket = null;
         BufferedReader in = null;
         PrintWriter out = null;
+
+        new Thread(new Runnable(){
+                public void run() {
+                    ServerSocket serverSocket = null;
+                    Socket clientSocket = null;
+
+                    try {
+                        serverSocket = new ServerSocket(4444);
+                        while (true) {
+                            //socket wait for connection
+                            try {
+                                clientSocket = serverSocket.accept();
+
+                                System.out.println("IL EST LAAAAAAAA");
+                                clientSocket.close();
+                            } catch (IOException ex) {
+                                //TODO
+                            }
+                        }
+
+                    } catch (IOException ex) {}
+                }
+        }).start();
 
         try {
             clientSocket = new Socket("206.189.49.105", 8080);
@@ -30,11 +56,36 @@ public class TestRelay {
             out.println("PUNC-schurch-kirikou");
             out.flush();
 
+            boolean shutdown = false;
             String line = "";
-            while((line = in.readLine()) != null){
+            while(!shutdown & (line = in.readLine()) != null){
                 System.out.println(line);
+                String[] rcv = line.split("-");
+                if(rcv[0].equals("PUNC")) {
+                    String pseudo = rcv[1];
+                    String ip = rcv[2].replaceAll("/", "");
+                    int port = Integer.parseInt(rcv[3]);
+                    System.out.println("trying to punch on :" + pseudo + " ip: "+ ip+ " port: "+ port);
+                    for(int i = 0; i < 4; ++i) {
+                        try {
+                            System.out.println("trying...");
+                            Socket client = new Socket(ip, port);
+                            PeerConnection c = new PeerConnection(client);
+                            PeerMessage m = new PeerMessage("SMES", "AAAAAAAA", "schurch", pseudo, "JE TE PUNCH".getBytes());
+                            c.sendMessage(m);
+                            c.close();
+                            try {
+                                new Thread().sleep(100);
+                            }catch(InterruptedException e) {}
+                        }catch(IOException e) {}
+                    }
+                }
             }
-            clientSocket = new Socket("206.189.49.105", 8080);
+
+
+
+
+
         } catch (IOException e) {
             System.out.println(e.getMessage());
         } finally {
