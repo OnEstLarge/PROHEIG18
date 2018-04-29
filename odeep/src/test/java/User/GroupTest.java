@@ -19,7 +19,7 @@ class GroupTest {
 
     @BeforeEach
     void setUp() {
-        g = new Group();
+        g = new Group("group1");
     }
 
     @Test

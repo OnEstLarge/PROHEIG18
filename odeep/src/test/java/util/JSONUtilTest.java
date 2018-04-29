@@ -1,4 +1,5 @@
 package util;
+
 /*
  -----------------------------------------------------------------------------------
  Odeep
@@ -8,6 +9,7 @@ package util;
  Compilateur : jdk 1.8.0_144
  -----------------------------------------------------------------------------------
 */
+
 import User.Group;
 import User.Person;
 import org.junit.jupiter.api.Test;
@@ -18,14 +20,14 @@ class JSONUtilTest {
 
     @Test
     void toJson() {
-        Group g = new Group(new Person("user1"), new Person("user2"), new Person("user3"));
+        Group g = new Group("GroupID_1", new Person("user1"), new Person("user2"), new Person("user3"));
         String json = JSONUtil.toJson(g);
         System.out.println(json);
     }
 
     @Test
     void parseJson() {
-        Group g = new Group(new Person("user1"), new Person("user2"), new Person("user3"));
+        Group g = new Group("GroupID_1", new Person("user1"), new Person("user2"), new Person("user3"));
         String json = JSONUtil.toJson(g);
         Group g2 = JSONUtil.parseJson(json, Group.class);
         assertTrue(g2.getMembers().size() == 3);

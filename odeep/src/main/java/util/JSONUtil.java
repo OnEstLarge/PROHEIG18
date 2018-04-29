@@ -1,13 +1,15 @@
 package util;
+
 /*
  -----------------------------------------------------------------------------------
  Odeep
  Fichier     : util.JSONUtil.java
- Auteur(s)   : Kopp Olivier
+ Auteur(s)   : Kopp Olivier, Jee Mathieu
  Date        : 20.04.2018
  Compilateur : jdk 1.8.0_144
  -----------------------------------------------------------------------------------
 */
+
 import com.google.gson.*;
 
 import java.io.FileNotFoundException;
@@ -18,7 +20,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 /**
- * Permet la User/deserialisation d'objet ainsi que la mise a jour du fichier de configuration des groupes
+ * Permet la ser/deserialisation d'objet, ainsi que la mise a jour du fichier de configuration des groupes
  */
 public class JSONUtil {
 
