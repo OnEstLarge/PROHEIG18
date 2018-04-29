@@ -11,6 +11,9 @@ package peer;/*
 import com.sun.media.sound.InvalidFormatException;
 import org.bouncycastle.util.Arrays;
 
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
+
 /**
  * Header Format:
  *
@@ -37,6 +40,8 @@ public class PeerMessage {
     public static final int  HEADER_SIZE          = TYPE_LENGTH + ID_GROUP_MAX_LENGTH + 2 * ID_MAX_LENGTH + NO_PACKET_DIGITS + 4;
     public static final int  MESSAGE_CONTENT_SIZE = BLOCK_SIZE - HEADER_SIZE;
 
+
+    public static final char PADDING_START        = '_';
     public static final char PADDING_SYMBOL       = '=';
 
     /**
@@ -126,7 +131,7 @@ public class PeerMessage {
      * @return      true si le format du type de message passé en argument est correct
      */
     public static boolean isValidTypeFormat(String type) {
-        return type != null && type.length() == TYPE_LENGTH && isUpperCase(type);
+        return type != null && type.length() == TYPE_LENGTH;
     }
 
     /**
@@ -195,12 +200,38 @@ public class PeerMessage {
      */
     public static String addPadding(String text, int sizeWithPad, char padSymbol) {
         StringBuilder result = new StringBuilder(text);
+        if(result.length() < sizeWithPad){
+            result.append(PADDING_START);
+        }
 
         while(result.length() < sizeWithPad) {
             result.append(padSymbol);
         }
 
         return result.toString();
+    }
+
+    /**
+     * ajout du padding à un tableau de byte
+     *
+     * @param data tableau de byte à padder
+     * @param sizeWithPad taille finale du tableau
+     *
+     * @return le tableau paddé
+     */
+    public static byte[] addPadding(byte[] data, int sizeWithPad) {
+        byte[] result = new byte[sizeWithPad];
+        int index = 0;
+        for(; index < data.length; index++){
+            result[index] = data[index];
+        }
+        result[index] = PADDING_START;
+        index++;
+        for(; index < sizeWithPad; index++){
+            result[index] = PADDING_SYMBOL;
+        }
+
+        return result;
     }
 
     public String getType() {
@@ -238,9 +269,12 @@ public class PeerMessage {
         message.append(formatInt(noPacket, NO_PACKET_DIGITS)).append(",");
 
         // -1 sinon bug
-        message.append(addPadding(new String(messageContent), MESSAGE_CONTENT_SIZE-1, PADDING_SYMBOL));
+        byte[] messageWithPad = addPadding(messageContent, MESSAGE_CONTENT_SIZE-1);
+        byte[] toSend = new byte[message.toString().getBytes().length + messageWithPad.length];
+        System.arraycopy(message.toString().getBytes(), 0, toSend, 0, message.toString().getBytes().length);
+        System.arraycopy(messageWithPad, 0, toSend, message.toString().getBytes().length, messageWithPad.length);
 
-        return message.toString().getBytes();
+        return toSend;
     }
 
 }

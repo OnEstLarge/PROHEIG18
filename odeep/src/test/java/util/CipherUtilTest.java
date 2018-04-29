@@ -1,13 +1,16 @@
 package util;
 
 import org.bouncycastle.crypto.InvalidCipherTextException;
+import org.bouncycastle.util.encoders.Base64;
 import org.junit.jupiter.api.Test;
 import util.CipherUtil;
 
 import javax.crypto.KeyAgreement;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.security.*;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -52,6 +55,7 @@ class CipherUtilTest {
         assertEquals(32, keyByte.length);
         byte[] cipherText = CipherUtil.AESEncrypt(plainText, keyByte);
         byte[] decipherText = CipherUtil.AESDEcrypt(cipherText, keyByte);
+        System.out.println(new String(decipherText));
         assertTrue(Arrays.equals(plainText, decipherText));
     }
 
@@ -80,18 +84,4 @@ class CipherUtilTest {
     void splitKey() {
     }
 
-    @Test
-    void doECDH() throws InvalidKeyException, NoSuchProviderException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
-        KeyPair keyA = CipherUtil.GenerateECDHKeys();
-        KeyPair keyB = CipherUtil.GenerateECDHKeys();
-        byte[] secretA = CipherUtil.doECDH(keyA.getPublic(), keyB.getPrivate());
-        byte[] secretB = CipherUtil.doECDH(keyB.getPublic(), keyA.getPrivate());
-        assertTrue(Arrays.equals(secretA,secretB));
-        System.out.print("Secret : ");
-        for(int i = 0; i < secretA.length; i++){
-            System.out.format("%02x ", secretA[i]);
-        }
-
-    }
-
-    }
+}

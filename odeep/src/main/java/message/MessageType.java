@@ -8,8 +8,9 @@ public class MessageType {
     public final static String SMES = "SMES"; // envoie d'un message
     public final static String NOK = "NOK"; // réponse générique négative
     public final static String OK = "OK"; // réponse positive
-    public final static String RKEY = "RKEY"; // demande de la clé public du destinataire pour le protocole ECDH
-    public final static String ECDH = "ECDH"; // message de protocole ECDH
+    public final static String DHS1 = "DHS1"; //premier envoie du protocole DH (envoie de sa clé publique
+    public final static String DHR1 = "DHR1"; //premiere reponse du protocole DH (le destinataire nous renvoie sa clé)
+    public final static String DHS2 = "DHS2"; //deuxieme envoie du protocole DH (envoie de la clé, chiffrée avec le secret partagé)
     public final static String HELO = "HELO"; //initialisation de la connexion au serveur relai
     public final static String BYE = "BYE"; // fin de connexion au serveur relai
 }

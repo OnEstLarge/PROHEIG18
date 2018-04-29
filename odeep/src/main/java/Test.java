@@ -2,6 +2,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
@@ -10,6 +11,15 @@ import User.Group;
 import User.Person;
 import com.google.gson.JsonObject;
 import config.GenerateConfigFile;
+
+import java.security.InvalidAlgorithmParameterException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.util.HashMap;
+import java.util.Scanner;
+import Node.FileSharingNode;
+import handler.RSAHandler;
+
 import handler.SFILHandler;
 import handler.SMESHandler;
 import message.MessageHandler;
@@ -17,14 +27,20 @@ import message.MessageType;
 import peer.PeerConnection;
 import peer.PeerInformations;
 import peer.PeerMessage;
+
 import util.JSONUtil;
+
+import util.CipherUtil;
+
 
 public class Test {
 
     public static void main(String[] args) {
 
-        final PeerInformations schurch = new PeerInformations("schurch", "10.192.95.151",4444);
-        final PeerInformations lionel = new PeerInformations("lionel", "10.192.95.141", 4444);
+        final String idGroup = "group1";
+
+        final PeerInformations schurch = new PeerInformations("schurch", "192.168.1.110",4444);
+        final PeerInformations lionel = new PeerInformations("lionel", "192.168.1.119", 4444);
         final PeerInformations florent = new PeerInformations("florent", "10.192.92.92", 4444);
         final PeerInformations romain = new PeerInformations("romain", "10.192.93.186", 4444);
         final PeerInformations olivier = new PeerInformations("olivier", "10.192.93.97", 4444);
@@ -55,7 +71,7 @@ public class Test {
         n.addMessageHandler(MessageType.SFIL, sendFileHandler);
 
 
-        ////////////////////TEST CONFIG FILE////////////
+        ////////////////////GENERATE CONFIG FILE////////////
         Group group1 = new Group("group1", new Person(mathieu.getID()),  new Person("FrouzDu78"), new Person("PussySlayer69"), new Person("Pierre-André"));
         Group group2 = new Group("group2", new Person(mathieu.getID()), new Person("LionelSuceur44"));
 
@@ -77,7 +93,7 @@ public class Test {
         }
         ////////////////////////////////////////////////
 
-        /*
+
         //lancer un client qui lit stdin, simule l'interface graphique
         class Client implements Runnable {
 
@@ -103,6 +119,10 @@ public class Test {
                     if(type.equals(MessageType.SMES)) {
                         PeerMessage m = new PeerMessage(type, idGroup, myInfo.getID(), pseudo, content.getBytes());
                         try {
+
+                            //ICI on crée le peerInfo avec ce que nous renvoie le serveur relay
+                            //ça sera tout le temps fait dans le client j'imagine
+
                             PeerConnection p = new PeerConnection(users.get(pseudo));
                             p.sendMessage(m);
                             p.close();
@@ -115,6 +135,28 @@ public class Test {
                             n.sendFileToPeer(file, idGroup, users.get(pseudo));
                         } catch(IOException e){}
                     }
+                    else if(type.equals(MessageType.DHS1)){
+                        try {
+                            n.setKey(CipherUtil.generateKey());
+                            n.setKey("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
+                            RSAHandler RSA = new RSAHandler();
+                            RSA.setKeys();
+                            n.setTempRSAInfo(RSA);
+                            System.out.println("key is : " + new String (n.getKey()));
+
+                            PeerConnection p = new PeerConnection(users.get(pseudo));
+                            p.sendMessage(new PeerMessage(type, idGroup, myInfo.getID(), pseudo,n.getTempRSAInfo().getPublicKey()));
+                            p.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (InvalidAlgorithmParameterException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchAlgorithmException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchProviderException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
         }
@@ -122,7 +164,7 @@ public class Test {
         Client client = new Client();
 
         n.AcceptingConnections();
-*/
+
     }
 
 }

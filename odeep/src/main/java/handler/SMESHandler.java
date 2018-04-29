@@ -3,6 +3,7 @@ package handler;
 import message.MessageHandler;
 import peer.PeerConnection;
 import peer.PeerMessage;
+import util.CipherUtil;
 
 import java.io.IOException;
 
@@ -10,8 +11,8 @@ public class SMESHandler implements MessageHandler{
 
     public void handleMessage(PeerConnection c, PeerMessage m){
         System.out.println("******************************************************************");
-        System.out.println("**INCOMING MESSAGE FROM " + m.getIdFrom() + " SAYING\n**");
-        System.out.println("**   " + new String(m.getMessageContent()).replaceAll("" + PeerMessage.PADDING_SYMBOL, "") + "\n**");
+        System.out.println("**INCOMING MESSAGE FROM " + CipherUtil.erasePadding(m.getIdFrom(), PeerMessage.PADDING_START) + " SAYING\n**");
+        System.out.println("**   " + new String(CipherUtil.erasePadding(m.getMessageContent(), PeerMessage.PADDING_START) + "\n**"));
         System.out.println("******************************************************************");
 
 
