@@ -1,10 +1,15 @@
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
+
 import Node.FileSharingNode;
+import User.Group;
+import User.Person;
+import com.google.gson.JsonObject;
+import config.GenerateConfigFile;
 import handler.SFILHandler;
 import handler.SMESHandler;
 import message.MessageHandler;
@@ -12,12 +17,11 @@ import message.MessageType;
 import peer.PeerConnection;
 import peer.PeerInformations;
 import peer.PeerMessage;
+import util.JSONUtil;
 
 public class Test {
 
     public static void main(String[] args) {
-
-        final String idGroup = "group1";
 
         final PeerInformations schurch = new PeerInformations("schurch", "10.192.95.151",4444);
         final PeerInformations lionel = new PeerInformations("lionel", "10.192.95.141", 4444);
@@ -26,7 +30,7 @@ public class Test {
         final PeerInformations olivier = new PeerInformations("olivier", "10.192.93.97", 4444);
         final PeerInformations mathieu = new PeerInformations("mathieu", "10.192.91.89", 4444);
 
-        final PeerInformations myInfo = schurch;
+        final PeerInformations myInfo = mathieu;
 
         final HashMap<String, PeerInformations> users = new HashMap<String, PeerInformations>();
         users.put("schurch", schurch);
@@ -51,6 +55,29 @@ public class Test {
         n.addMessageHandler(MessageType.SFIL, sendFileHandler);
 
 
+        ////////////////////TEST CONFIG FILE////////////
+        Group group1 = new Group("group1", new Person(mathieu.getID()),  new Person("FrouzDu78"), new Person("PussySlayer69"), new Person("Pierre-André"));
+        Group group2 = new Group("group2", new Person(mathieu.getID()), new Person("LionelSuceur44"));
+
+        List<Group> groups = new ArrayList<Group>();
+        groups.add(group1);
+        groups.add(group2);
+
+        GenerateConfigFile configFile = new GenerateConfigFile("config", mathieu.getID(), groups);
+
+
+        try {
+
+            JSONUtil.updateConfig(JSONUtil.toJson(configFile));
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        ////////////////////////////////////////////////
+
+        /*
         //lancer un client qui lit stdin, simule l'interface graphique
         class Client implements Runnable {
 
@@ -95,7 +122,7 @@ public class Test {
         Client client = new Client();
 
         n.AcceptingConnections();
-
+*/
     }
 
 }
