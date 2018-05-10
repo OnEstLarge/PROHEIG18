@@ -3,15 +3,18 @@ package server;
 import message.MessageType;
 import netscape.javascript.JSObject;
 import peer.PeerMessage;
+import util.DatabaseUtil;
 
 import java.io.*;
 import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.HashMap;
 
 public class ServerPeerToPeer {
 
+    private DatabaseUtil databaseUtil;
     private HashMap<String, Socket> peopleInServ = new HashMap<String, Socket>();
     private HashMap<String, HashMap<String, JSObject>> groupeIntoNomJson = new HashMap<String, HashMap<String, JSObject>>();
 
@@ -22,6 +25,11 @@ public class ServerPeerToPeer {
 
 
     public void serveClient() {
+        try {
+            databaseUtil.initConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         new Thread(new server.ServerPeerToPeer.Receptioniste()).start();
     }
 
@@ -42,7 +50,6 @@ public class ServerPeerToPeer {
                 try {
                     Socket client = serverSocket.accept();
                     new Thread(new server.ServerPeerToPeer.ServeurWorker(client)).start();
-                   // new Thread(new updatePeaple()).start();
                 } catch (IOException e) {
                     System.out.println(e.getMessage());
                 }
@@ -50,26 +57,6 @@ public class ServerPeerToPeer {
         }
     }
 
-    /*
-    private class updatePeaple implements Runnable {
-        void updatePeaple(){}
-
-        public void run(){
-            try {
-                Thread.sleep(60000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            HashMap<String, Socket> copie = (HashMap<String, Socket>)peopleInServ.clone();
-            for(String s : copie.keySet()) {
-                Socket socket = copie.get(s);
-                if(!socket.isConnected()){
-                    peopleInServ.remove(s);
-                }
-            }
-        }
-    }
-    */
     private class ServeurWorker implements Runnable {
         boolean stopConnection = false;
         Socket clientToSever;
@@ -95,16 +82,47 @@ public class ServerPeerToPeer {
                 while ((in.read(bufferIn) != 1)) {
                     PeerMessage pm = new PeerMessage(bufferIn);
                     String type = pm.getType();
-                    if (type.equals(MessageType.HELO)) {
-                        greetings(pm);
-                    }
+                    switch (type) {
+                        case MessageType.HELO:
+                            greetings(pm);
+                            break;
+                        case MessageType.BYE:
+                            bye(pm);
+                            break;
+                        case MessageType.INFO:
+                            giveInfoToDestinator(pm);
+                            break;
+                        case MessageType.INVI:
+                        case MessageType.RFIL:
+                        case MessageType.DHR1:
+                        case MessageType.DHS2:
+                        case MessageType.DHS1:
+                        case MessageType.SFIL:
+                        case MessageType.SMES:
+                        case MessageType.UPDT:
+                            redirect(pm);
+                            break;
 
-                    if (type.equals(MessageType.INFO)) {
-                        giveInfoToDestinator(pm);
-                    }
+                        case MessageType.UPLO:
+                            //Mettre la methode pour acceder au serveur
+                            try {
+                                databaseUtil.addGroupIfNotExists(pm.getIdGroup());
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
 
-                    if (type.equals(MessageType.SMES) || type.equals(MessageType.SFIL) || type.equals(MessageType.INVT) || type.equals(MessageType.UPDT) ){
-                        redirect(pm);
+                            //Lecture pour avoir le fichier JSON
+                            for(){
+
+                            }
+
+                            databaseUtil.uploadJSON();//Le fichier JSON
+                            break;
+
+                        case MessageType.DOWN:
+                            String s = databaseUtil.downloadJSON(pm.getIdGroup());
+                            PeerMessage peerMessage = new PeerMessage("DOWN")
+
                     }
                 }
             } catch (IOException e) {
@@ -140,13 +158,19 @@ public class ServerPeerToPeer {
                 }
             } else {
                 try {
-                    PeerMessage nok = new PeerMessage(MessageType.NOK,"AAAAAAA","AAAAAAA","AAAAAAA", ("").getBytes());
+                    PeerMessage nok = new PeerMessage(MessageType.DISC,pm.getIdGroup(),pm.getIdFrom(),pm.getIdTo(), ("").getBytes());
                     out.write(nok.getFormattedMessage());
                     out.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
+            }
+        }
+
+        void bye(PeerMessage pm){
+            if(peopleInServ.containsKey(pm.getIdFrom())){
+                peopleInServ.remove(pm.getIdFrom());
             }
         }
 
