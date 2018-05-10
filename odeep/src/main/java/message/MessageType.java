@@ -13,4 +13,9 @@ public class MessageType {
     public final static String DHS2 = "DHS2"; //deuxieme envoie du protocole DH (envoie de la clé, chiffrée avec le secret partagé)
     public final static String HELO = "HELO"; //initialisation de la connexion au serveur relai
     public final static String BYE = "BYE"; // fin de connexion au serveur relai
+    public final static String INVT = "INVT"; //invitation à un groupe
+    public final static String INFO = "INFO"; //demande d'info pour le pear to pear local
+    public final static String UPDT = "UPDT"; //pour le update
+    public final static String DISC = "DISC"; //indique que le destinataire d'un message est deconnecté
+    public final static String NFIL = "NFIL"; //indique qu'on ne possede pas le fichier
 }
