@@ -1,10 +1,12 @@
+
+
+
 package server;
 
+import netscape.javascript.JSObject;
 import peer.PeerMessage;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
@@ -12,12 +14,14 @@ import java.util.HashMap;
 public class ServerPeerToPeer {
 
 
-    protected HashMap<String, Socket> peopleInServ = new HashMap<String, Socket>();
+    private HashMap<String, Socket> peopleInServ = new HashMap<String, Socket>();
+    private HashMap<String, HashMap<String, JSObject>> groupeIntoNomJson = new HashMap<String, HashMap<String, JSObject>>();
 
     public static void main(String[] args) {
         server.ServerPeerToPeer m = new server.ServerPeerToPeer();
         m.serveClient();
     }
+
 
     public void serveClient() {
         new Thread(new server.ServerPeerToPeer.Receptioniste()).start();
@@ -71,15 +75,30 @@ public class ServerPeerToPeer {
         @Override
         public void run() {
             try {
-                while ((in.read(bufferIn) != 1) ) {
+                while ((in.read(bufferIn) != 1)) {
                     PeerMessage pm = new PeerMessage(bufferIn);
                     String type = pm.getType();
                     if (type.equals("HELO")) {
                         greetings(pm);
                     }
 
-                    if (type.equals("PUNC")) {
-                        punch(pm);
+                    if (type.equals("INFO")) {
+                        giveInfoToDestinator(pm);
+                    }
+
+                    if (type.equals("SMES") || type.equals("SFIL") || type.equals("INVT")) {
+                        redirect(pm);
+                    }
+
+
+                    if (type.equals("UPDT")) {
+                        byte[] sizeArray = pm.getMessageContent();
+                        int size = Integer.parseInt(sizeArray.toString());
+                        File a = new File("config.json");
+                        FileWriter fw = new FileWriter(a);
+                        while ((in.read(bufferIn)) != -1 && size != 0) {
+
+                        }
                     }
                 }
             } catch (IOException e) {
@@ -91,15 +110,6 @@ public class ServerPeerToPeer {
             System.out.println("Greetings");
             peopleInServ.put(pm.getIdFrom(), clientToSever);
             System.out.println(peopleInServ);
-
-        }
-
-        private void punch(PeerMessage pm) {
-            System.out.println(pm.getIdTo());
-            if(peopleInServ.containsKey(pm.getIdTo())) {
-                giveInfoToDestinator(pm);
-                giveInfoToSender(pm);
-            }
 
         }
 
@@ -117,6 +127,52 @@ public class ServerPeerToPeer {
             }
         }
 
+
+        void redirect(PeerMessage pm) {
+            if (peopleInServ.containsKey(pm.getIdTo())) {
+                try {
+                    BufferedOutputStream toOut = new BufferedOutputStream(peopleInServ.get(pm.getIdTo()).getOutputStream());
+                    toOut.write(pm.getFormattedMessage());
+                    toOut.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    out.write(("Personne non disponible").getBytes());
+                    out.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+
+
+        void updateJSON(PeerMessage pm, JSObject o) {
+            if (groupeIntoNomJson.containsKey(pm.getIdGroup())) {
+                if (groupeIntoNomJson.get(pm.getIdGroup()).containsKey(pm.getIdFrom())) {
+                    groupeIntoNomJson.get(pm.getIdGroup()).put(pm.getIdFrom(), o);
+                } else {
+                    groupeIntoNomJson.get(pm.getIdGroup()).put(pm.getIdFrom(), o);
+                }
+            } else {
+                groupeIntoNomJson.put(pm.getIdGroup(), new HashMap<String, JSObject>());
+                groupeIntoNomJson.get(pm.getIdGroup()).put(pm.getIdFrom(), o);
+            }
+
+        }
+
+        /* Parite pour le p2p
+        private void punch(PeerMessage pm) {
+            System.out.println(pm.getIdTo());
+            if(peopleInServ.containsKey(pm.getIdTo())) {
+                giveInfoToDestinator(pm);
+                giveInfoToSender(pm);
+            }
+
+        }
+
         void giveInfoToSender(PeerMessage pm){
             System.out.println("Appelle de giveInfoToSender");
             Socket socketTo = peopleInServ.get(pm.getIdTo());
@@ -130,6 +186,7 @@ public class ServerPeerToPeer {
                 System.out.println(e.getMessage());
             }
         }
+        */
     }
 
 
