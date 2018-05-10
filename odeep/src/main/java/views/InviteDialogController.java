@@ -53,7 +53,6 @@ public class InviteDialogController {
      */
     @FXML
     private void handleOk() {
-        //if(group < RootLayoutController.listView.size()){
         if(isInputValid()){
             Label newIp = new Label();
             newIp.setText(newUserIPField.getText());
@@ -103,4 +102,3 @@ public class InviteDialogController {
         }
     }
 }
-
