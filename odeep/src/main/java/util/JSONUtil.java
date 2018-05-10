@@ -24,7 +24,7 @@ import java.lang.reflect.Type;
  */
 public class JSONUtil {
 
-    private static String CONFIG_FILE_NAME = "./config.json";
+    private static String CONFIG_FILE_NAME = "config.json";
 
     public static <T extends Serializable> String toJson(T object){
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -35,17 +35,10 @@ public class JSONUtil {
         return (T)(new Gson().fromJson(data, c));
     }
 
-    public static void updateConfig(String data) throws FileNotFoundException, UnsupportedEncodingException {
-        PrintWriter pw = new PrintWriter(CONFIG_FILE_NAME, "UTF-8");
+    public static void updateConfig(String groupID, String data) throws FileNotFoundException, UnsupportedEncodingException {
+        PrintWriter pw = new PrintWriter(groupID + "/" + CONFIG_FILE_NAME, "UTF-8");
         pw.write(data);
         pw.close();
-    }
-
-    private static Class<?> extractClassFromType(Type t) throws ClassCastException {
-        if (t instanceof Class<?>) {
-            return (Class<?>)t;
-        }
-        return (Class<?>)((ParameterizedType)t).getRawType();
     }
 
 }

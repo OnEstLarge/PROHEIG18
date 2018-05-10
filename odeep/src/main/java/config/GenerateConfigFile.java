@@ -3,19 +3,17 @@ package config;
 import User.Group;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class GenerateConfigFile implements Serializable {
 
     private String filename;
     private String username;
-    private List<Group> groupList;
+    private Group group;
 
 
-    public GenerateConfigFile(String filename, String username, List<Group> groupList) {
+    public GenerateConfigFile(String filename, String username, Group group) {
         this.username = username;
-        this.groupList = new ArrayList<Group>(groupList);
+        this.group    = group;
     }
 
     public void generate() {
@@ -26,7 +24,7 @@ public class GenerateConfigFile implements Serializable {
         this.username = username;
     }
 
-    public void setGroupList(List<Group> groupList) {
-        this.groupList = groupList;
+    public void setGroup(Group group) {
+        this.group = group;
     }
 }

@@ -79,12 +79,13 @@ public class Test {
         groups.add(group1);
         groups.add(group2);
 
-        GenerateConfigFile configFile = new GenerateConfigFile("config", mathieu.getID(), groups);
+        GenerateConfigFile configFile1 = new GenerateConfigFile("config", mathieu.getID(), group1);
+        //GenerateConfigFile configFile2 = new GenerateConfigFile("config", mathieu.getID(), group2);
 
 
         try {
 
-            JSONUtil.updateConfig(JSONUtil.toJson(configFile));
+            JSONUtil.updateConfig(group1.getID(), JSONUtil.toJson(configFile1));
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();

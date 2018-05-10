@@ -10,16 +10,15 @@ package util;
  -----------------------------------------------------------------------------------
 */
 
+import User.Group;
+import User.Person;
+import config.GenerateConfigFile;
+import message.MessageType;
 import peer.PeerMessage;
 
 import javax.swing.plaf.nimbus.State;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.io.*;
+import java.sql.*;
 import java.util.Properties;
 
 /**
@@ -34,16 +33,37 @@ public class InterfaceUtil {
      * @return true,    groupe créé
      *         false,   groupe déjà existant ou erreur
      */
-    public static boolean createGroup(String groupID) {
+    public static boolean createGroup(String groupID, String idFrom, String idTo) {
 
         // Check la validité du string groupID
         if(PeerMessage.isValidIdFormat(groupID, PeerMessage.ID_GROUP_MIN_LENGTH, PeerMessage.ID_GROUP_MAX_LENGTH)) {
 
+            // Crée le groupe localement
+            String dir = "./shared_files" + groupID ;
+            File file = new File(dir);
+            GenerateConfigFile configFile = null;
+            Group group = new Group(groupID, new Person(idFrom));
+
+            if(!file.exists() || !file.isDirectory()) {
+                file.mkdirs();
+
+                configFile = new GenerateConfigFile("config", idFrom, group);
+                
+                try {
+                    JSONUtil.updateConfig(group.getID(), JSONUtil.toJson(configFile));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+
+
             // Demande au serveur si le groupe existe déjà
             String serverIP = loadProperties("server.properties", "ip");
 
+            //PeerMessage message = new PeerMessage(MessageType.NEWG, groupID, idFrom, idTo, );
 
-            // Si non, crée le groupe localement
         }
 
         return false;
@@ -84,7 +104,5 @@ public class InterfaceUtil {
 
         return result;
     }
-
-
 
 }
