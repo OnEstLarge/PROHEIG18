@@ -36,7 +36,7 @@ public class JSONUtil {
     }
 
     public static void updateConfig(String groupID, String data) throws FileNotFoundException, UnsupportedEncodingException {
-        PrintWriter pw = new PrintWriter(groupID + "/" + CONFIG_FILE_NAME, "UTF-8");
+        PrintWriter pw = new PrintWriter("./shared_files/" + groupID + "/" + CONFIG_FILE_NAME, "UTF-8");
         pw.write(data);
         pw.close();
     }

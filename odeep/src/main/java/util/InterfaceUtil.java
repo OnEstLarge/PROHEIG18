@@ -39,7 +39,7 @@ public class InterfaceUtil {
         if(PeerMessage.isValidIdFormat(groupID, PeerMessage.ID_GROUP_MIN_LENGTH, PeerMessage.ID_GROUP_MAX_LENGTH)) {
 
             // Crée le groupe localement
-            String dir = "./shared_files" + groupID ;
+            String dir = "./shared_files/" + groupID ;
             File file = new File(dir);
             GenerateConfigFile configFile = null;
             Group group = new Group(groupID, new Person(idFrom));
@@ -47,8 +47,8 @@ public class InterfaceUtil {
             if(!file.exists() || !file.isDirectory()) {
                 file.mkdirs();
 
-                configFile = new GenerateConfigFile("config", idFrom, group);
-                
+                configFile = new GenerateConfigFile(group);
+
                 try {
                     JSONUtil.updateConfig(group.getID(), JSONUtil.toJson(configFile));
                 } catch (FileNotFoundException e) {

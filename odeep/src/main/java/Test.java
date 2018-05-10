@@ -79,9 +79,12 @@ public class Test {
         groups.add(group1);
         groups.add(group2);
 
-        GenerateConfigFile configFile1 = new GenerateConfigFile("config", mathieu.getID(), group1);
-        //GenerateConfigFile configFile2 = new GenerateConfigFile("config", mathieu.getID(), group2);
+        String dir = "./shared_files/" + group1.getID() ;
+        File file = new File(dir);
+        file.mkdirs();
 
+        GenerateConfigFile configFile1 = new GenerateConfigFile(group1);
+        //GenerateConfigFile configFile2 = new GenerateConfigFile("config", mathieu.getID(), group2);
 
         try {
 
