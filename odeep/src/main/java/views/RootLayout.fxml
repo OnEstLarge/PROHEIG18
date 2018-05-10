@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 
@@ -41,8 +42,9 @@
             <children>
                 <Button fx:id="downloadButton" layoutX="65.0" layoutY="60.0" mnemonicParsing="false" text="Download" AnchorPane.rightAnchor="64.0" AnchorPane.topAnchor="60.0" />
                 <Button fx:id="inviteButton" layoutX="78.0" layoutY="121.0" mnemonicParsing="false" onAction="#handleInvite" text="Invite" AnchorPane.rightAnchor="77.0" AnchorPane.topAnchor="121.0" />
-                <Button fx:id="createButton" layoutX="75.0" layoutY="188.0" mnemonicParsing="false" onAction="#handleCreateButtonAction" text="Create" AnchorPane.rightAnchor="74.0" AnchorPane.topAnchor="188.0" />
-                <Button fx:id="quitButton" layoutX="81.0" layoutY="254.0" mnemonicParsing="false" onAction="#handleQuit" text="Quit" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="254.0" />
+                <Button fx:id="quitButton" layoutX="81.0" layoutY="326.0" mnemonicParsing="false" onAction="#handleQuit" text="Quit" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="326.0" />
+                <Button fx:id="createButton" layoutX="75.0" layoutY="220.0" mnemonicParsing="false" onAction="#handleCreateButtonAction" text="Create" AnchorPane.rightAnchor="74.0" AnchorPane.topAnchor="220.0" />
+            <TextField fx:id="groupNameField" layoutX="26.0" layoutY="188.0" promptText="Group name &gt; 6" />
             </children>
         </AnchorPane>
     </right>

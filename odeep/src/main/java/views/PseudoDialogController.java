@@ -23,7 +23,7 @@ public class PseudoDialogController {
      *
      * @param pseudoStage
      */
-    public void setPseudoStage(Stage pseudoStage) {
+    public void setDialogStage(Stage pseudoStage) {
         this.pseudoStage = pseudoStage;
     }
 
