@@ -149,8 +149,6 @@ public class Test {
                             p.close();
                         } catch (IOException e) {
                             e.printStackTrace();
-                        } catch (InvalidAlgorithmParameterException e) {
-                            e.printStackTrace();
                         } catch (NoSuchAlgorithmException e) {
                             e.printStackTrace();
                         } catch (NoSuchProviderException e) {
@@ -163,7 +161,7 @@ public class Test {
 
         Client client = new Client();
 
-        n.AcceptingConnections();
+        n.acceptingConnections();
 
     }
 
