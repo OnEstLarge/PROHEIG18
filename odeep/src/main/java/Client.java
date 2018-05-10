@@ -25,6 +25,7 @@ public class Client {
     private static BufferedOutputStream out;
 
     private static FileSharingNode n;
+    private static boolean nodeIsRunning = true;
 
     public static void main(String[] args) {
 
@@ -99,6 +100,7 @@ public class Client {
             int read;
             byte[] buffer = new byte[4096];
 
+            System.out.println("Start reading in Client.ReadFromServer");
             try {
                 while ((read = in.read(buffer)) != -1) {
                     PeerMessage pm = new PeerMessage(buffer);
@@ -106,6 +108,7 @@ public class Client {
 
                     redirectToHandler(pm, n, new PeerConnection(clientSocketToServerPublic));
                 }
+                System.out.println("End of reading in Client.ReadFromServer");
 
             } catch (IOException e) {
                 System.out.println(e.getMessage());
@@ -136,6 +139,11 @@ public class Client {
 
         //TODO faire les trucs de l'inteface graphique ici
         public void run(){
+
+            while(nodeIsRunning) {
+                Scanner scanner = new Scanner(System.in);
+                System.out.println(scanner.nextLine());
+            }
 
         }
     }
