@@ -254,6 +254,10 @@ public class PeerMessage {
         return messageContent;
     }
 
+    public int getNoPacket() {
+        return noPacket;
+    }
+
     /**
      * Retourne le message de format peer.PeerMessage et prêt à l'envoi
      *

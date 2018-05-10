@@ -17,20 +17,15 @@ public class RFILHandler implements MessageHandler{
     @Override
     public void handleMessage(PeerConnection c, PeerMessage m) {
         RandomAccessFile f = null;
+        byte[] key = null;
         try {
             f = new RandomAccessFile("./" + m.getIdGroup() + "/key", "r");
+            key = new byte[(int)f.length()];
+            f.readFully(key);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        byte[] key = new byte[0];
-        try {
-            key = new byte[(int)f.length()];
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            f.readFully(key);
-        } catch (IOException e) {
+        catch (IOException e) {
             e.printStackTrace();
         }
         File fileAsked = null;

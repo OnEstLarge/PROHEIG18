@@ -5,16 +5,17 @@ import peer.PeerConnection;
 import peer.PeerMessage;
 import util.CipherUtil;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 public class SFILHandler  implements MessageHandler {
 
     public void handleMessage(PeerConnection c, PeerMessage m){
 
-        String[] rcv = new String(CipherUtil.erasePadding(m.getMessageContent(), PeerMessage.PADDING_START)).split(":");
+        byte[] rcv = CipherUtil.erasePadding(m.getMessageContent(), PeerMessage.PADDING_START);
+        if(m.getNoPacket() == 0){
+            String[] fileInfo = new String(rcv).split(":");
+            File file = new File("./shared_file/" + m.getIdGroup() + "/" + fileInfo[0]);
+        }
 
         int fileSize = Integer.parseInt(rcv[1]);
         String filename = rcv[0];
