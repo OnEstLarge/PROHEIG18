@@ -127,7 +127,7 @@ public class Node {
     /**
      *
      */
-    public void AcceptingConnections() {
+    public void acceptingConnections() {
         ServerSocket serverSocket = null;
         Socket clientSocket = null;
 

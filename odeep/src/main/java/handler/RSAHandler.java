@@ -1,8 +1,6 @@
 package handler;
 
-import com.sun.media.sound.InvalidFormatException;
 import message.MessageType;
-import org.bouncycastle.crypto.InvalidCipherTextException;
 import peer.PeerConnection;
 import peer.PeerInformations;
 import peer.PeerMessage;
@@ -23,12 +21,12 @@ public class RSAHandler {
 
     public RSAHandler(){}
 
-    public void setKeys() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException, IOException {
+    public void setKeys() throws NoSuchAlgorithmException, NoSuchProviderException {
         kp = CipherUtil.GenerateRSAKey();
         publicKey = CipherUtil.publicKeyToByte(kp.getPublic());
     }
 
-    public void sendRSAPublicKey(Node n, byte[] b, PeerMessage message) throws InvalidFormatException {
+    public void sendRSAPublicKey(Node n, byte[] b, PeerMessage message) {
         String sender = CipherUtil.erasePadding(message.getIdFrom(), PeerMessage.PADDING_START);
         String receiver = CipherUtil.erasePadding(message.getIdTo(), PeerMessage.PADDING_START);
         String group = CipherUtil.erasePadding(message.getIdGroup(), PeerMessage.PADDING_START);
@@ -54,11 +52,26 @@ public class RSAHandler {
         }
     }
 
-    public void sendEncryptedKey(Node n, PeerMessage messageReceved) throws NoSuchAlgorithmException, IOException, InvalidKeySpecException, InvalidCipherTextException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, NoSuchPaddingException {
+    public void sendEncryptedKey(Node n, PeerMessage messageReceved) {
         String sender = CipherUtil.erasePadding(messageReceved.getIdFrom(), PeerMessage.PADDING_START);
         byte[] foreignKey = CipherUtil.erasePadding(messageReceved.getMessageContent(), PeerMessage.PADDING_START);
 
-        byte[] encryptedKey = CipherUtil.RSAEncrypt(CipherUtil.byteToPublicKey(foreignKey), n.getKey());
+        byte[] encryptedKey = new byte[0];
+        try {
+            encryptedKey = CipherUtil.RSAEncrypt(CipherUtil.byteToPublicKey(foreignKey), n.getKey());
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
         PeerMessage message = new PeerMessage(MessageType.DHS2, messageReceved.getIdGroup(), messageReceved.getIdTo(), messageReceved.getIdFrom(), encryptedKey);
 
         PeerInformations pi = null;
@@ -77,12 +90,27 @@ public class RSAHandler {
         }
     }
 
-    public byte[] getFinalKey(PeerMessage m) throws InvalidCipherTextException, IOException, NoSuchPaddingException, NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException, InvalidKeyException {
+    public byte[] getFinalKey(PeerMessage m) {
         byte[] message = CipherUtil.erasePadding(m.getMessageContent(), PeerMessage.PADDING_START);
-        return CipherUtil.RSADecrypt(kp.getPrivate(), message);
+        try {
+            return CipherUtil.RSADecrypt(kp.getPrivate(), message);
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+        finally {
+            return null;
+        }
     }
 
-    public byte[] getPublicKey() throws IOException {
+    public byte[] getPublicKey() {
         return publicKey;
     }
 }

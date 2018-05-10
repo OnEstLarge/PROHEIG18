@@ -49,28 +49,10 @@ public class PeerHandler implements Runnable {
 
         //handle message
         if(message.getType().equals(MessageType.DHR1)){
-            try {
-                RSA = node.getTempRSAInfo();
-                if(RSA != null) {
-                    RSA.sendEncryptedKey(node, message);
-                    node.setTempRSAInfo(null);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (InvalidKeyException e) {
-                e.printStackTrace();
-            } catch (InvalidCipherTextException e) {
-                e.printStackTrace();
-            } catch (InvalidKeySpecException e) {
-                e.printStackTrace();
-            } catch (NoSuchPaddingException e) {
-                e.printStackTrace();
-            } catch (IllegalBlockSizeException e) {
-                e.printStackTrace();
-            } catch (BadPaddingException e) {
-                e.printStackTrace();
+            RSA = node.getTempRSAInfo();
+            if(RSA != null) {
+                RSA.sendEncryptedKey(node, message);
+                node.setTempRSAInfo(null);
             }
         }
         else if (message.getType().equals(MessageType.DHS1)){
@@ -79,10 +61,6 @@ public class PeerHandler implements Runnable {
                 RSA.setKeys();
                 RSA.sendRSAPublicKey(node, RSA.getPublicKey(), message);
                 node.setTempRSAInfo(RSA);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InvalidAlgorithmParameterException e) {
-                e.printStackTrace();
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             } catch (NoSuchProviderException e) {
@@ -90,26 +68,8 @@ public class PeerHandler implements Runnable {
             }
         }
         else if(message.getType().equals(MessageType.DHS2)){
-            try {
-                node.setKey(node.getTempRSAInfo().getFinalKey(message));
-                node.setTempRSAInfo(null);
-            } catch (InvalidCipherTextException e) {
-                e.printStackTrace();
-            } catch (InvalidFormatException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (InvalidKeyException e) {
-                e.printStackTrace();
-            } catch (NoSuchPaddingException e) {
-                e.printStackTrace();
-            } catch (BadPaddingException e) {
-                e.printStackTrace();
-            } catch (IllegalBlockSizeException e) {
-                e.printStackTrace();
-            }
+            node.setKey(node.getTempRSAInfo().getFinalKey(message));
+            node.setTempRSAInfo(null);
             System.out.println("final key is : " + new String(node.getKey()));
         }
         else {

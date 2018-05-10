@@ -58,7 +58,7 @@ public class InviteDialogController {
             Label newIp = new Label();
             newIp.setText(newUserIPField.getText());
             int group = Integer.parseInt(groupeIDField.getText())-1;
-            RootLayoutController.listView.get(group).getItems().add(newIp);
+            RootLayoutController.getListView().get(group).getItems().add(newIp);
 
             okClicked = true;
             dialogStage.close();
@@ -72,7 +72,7 @@ public class InviteDialogController {
         }else{
             try{
                 int id = Integer.parseInt(groupeIDField.getText());
-                if(id -1 > RootLayoutController.listView.size()){
+                if(id -1 > RootLayoutController.getListView().size()){
                     errorMessage += "Group ID invalid. No group with this id.\n";
                 }
             }catch(NumberFormatException e){

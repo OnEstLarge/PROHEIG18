@@ -1,9 +1,11 @@
 package handler;
-import message.*;
+
+
+import message.MessageHandler;
 import peer.PeerConnection;
 import peer.PeerMessage;
 
-public class BYEHandler implements MessageHandler {
+public class NFILHandler implements MessageHandler {
     @Override
     public void handleMessage(PeerConnection c, PeerMessage m) {
 
