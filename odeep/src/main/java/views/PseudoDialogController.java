@@ -1,16 +1,19 @@
 package views;
 
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import main.Main;
 import peer.PeerMessage;
 
 public class PseudoDialogController {
 
     private Stage dialogStage;
-    private boolean okClicked = false;
+    private boolean nameOK = false;
+    private Main mainApp;
 
     @FXML
     private TextField userPseudoField;
@@ -19,6 +22,8 @@ public class PseudoDialogController {
     private void initialize() {
     }
 
+
+
     /**
      * Sets the stage of this dialog.
      *
@@ -26,6 +31,15 @@ public class PseudoDialogController {
      */
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
+        dialogStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            public void handle(WindowEvent we) {
+                System.exit(0);
+            }
+        });
+    }
+
+    public void setMainApp(Main mainApp) {
+        this.mainApp = mainApp;
     }
 
     /**
@@ -33,8 +47,8 @@ public class PseudoDialogController {
      *
      * @return
      */
-    public boolean isOkClicked() {
-        return okClicked;
+    public boolean isNameOK() {
+        return nameOK;
     }
 
     /**
@@ -44,10 +58,10 @@ public class PseudoDialogController {
     private void handleOk() {
 
         if(isInputValid()){
-            Main.setUserPseudo(userPseudoField.getText());
+            mainApp.setUserPseudo(userPseudoField.getText());
+            nameOK = true;
         }
 
-        okClicked = true;
         dialogStage.close();
 
         // TODO: créer les dossiers nécessaire

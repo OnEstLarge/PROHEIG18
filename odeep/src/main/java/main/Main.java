@@ -22,7 +22,7 @@ public class Main extends Application {
     private Stage primaryStage;
     private BorderPane rootLayout;
     private List<Group> groups;
-    private static String userPseudo;
+    private String userPseudo ="123";
 
     @Override
     public void start(Stage primaryStage) {
@@ -33,7 +33,10 @@ public class Main extends Application {
 
     public void initRootLayout() {
         if (true) {
-            showPseudoDialog();
+            boolean ok = showPseudoDialog();
+            while(!ok){
+                ok = showPseudoDialog();
+            }
             System.out.println(userPseudo);
         }
         try {
@@ -103,11 +106,12 @@ public class Main extends Application {
             // Set the invite controller
             PseudoDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage);
+            controller.setMainApp(this);
 
             // Show the dialog and wait  until the user closes it
             dialogStage.showAndWait();
 
-            return controller.isOkClicked();
+            return controller.isNameOK();
         }catch(IOException e){
             e.printStackTrace();
             return false;
@@ -123,12 +127,12 @@ public class Main extends Application {
         return primaryStage;
     }
 
-    public static String getUserPseudo() {
+    public String getUserPseudo() {
         return userPseudo;
     }
 
-    public static void setUserPseudo(String pseudo) {
-        userPseudo = pseudo;
+    public void setUserPseudo(String pseudo) {
+        this.userPseudo = pseudo;
     }
 
     public static void main(String[] args) {
