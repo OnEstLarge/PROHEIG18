@@ -1,14 +1,17 @@
 import Node.FileSharingNode;
-import handler.BYEHandler;
+import Node.Node;
 import handler.RSAHandler;
 import handler.SFILHandler;
 import handler.SMESHandler;
 import message.MessageType;
+import peer.PeerConnection;
 import peer.PeerInformations;
 import peer.PeerMessage;
 
 import java.io.*;
 import java.net.*;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.Enumeration;
 import java.util.Scanner;
 
@@ -68,7 +71,8 @@ public class Client {
     //initialise la connection avec le serveur et de lancer le server d'écoute du client
     public void initConnections(String ip, int port) {
         try {
-            clientSocketToServerPublic = new Socket(ip, port);
+            //clientSocketToServerPublic = new PeerConnection(new Socket(ip,port));
+            clientSocketToServerPublic = new Socket(ip,port);
             in = new BufferedInputStream(clientSocketToServerPublic.getInputStream());
             out = new BufferedOutputStream(clientSocketToServerPublic.getOutputStream());
         } catch (IOException e) {
@@ -98,9 +102,9 @@ public class Client {
             try {
                 while ((read = in.read(buffer)) != -1) {
                     PeerMessage pm = new PeerMessage(buffer);
-                    String type = pm.getType();
+                    //String type = pm.getType();
 
-
+                    redirectToHandler(pm, n, new PeerConnection(clientSocketToServerPublic));
                 }
 
             } catch (IOException e) {
@@ -133,6 +137,39 @@ public class Client {
         //TODO faire les trucs de l'inteface graphique ici
         public void run(){
 
+        }
+    }
+
+    private void redirectToHandler(PeerMessage message, Node node, PeerConnection connection) {
+        RSAHandler RSA;
+
+        //handle message
+        if(message.getType().equals(MessageType.DHR1)){
+            RSA = node.getTempRSAInfo();
+            if(RSA != null) {
+                RSA.sendEncryptedKey(node, message);
+                node.setTempRSAInfo(null);
+            }
+        }
+        else if (message.getType().equals(MessageType.DHS1)){
+            try {
+                RSA = new RSAHandler();
+                RSA.setKeys();
+                RSA.sendRSAPublicKey(node, RSA.getPublicKey(), message);
+                node.setTempRSAInfo(RSA);
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (NoSuchProviderException e) {
+                e.printStackTrace();
+            }
+        }
+        else if(message.getType().equals(MessageType.DHS2)){
+            node.setKey(node.getTempRSAInfo().getFinalKey(message));
+            node.setTempRSAInfo(null);
+            System.out.println("final key is : " + new String(node.getKey()));
+        }
+        else {
+            node.getMapMessage().get(message.getType()).handleMessage(connection, message); //gerer erreur possible
         }
     }
 
