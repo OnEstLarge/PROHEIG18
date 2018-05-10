@@ -103,7 +103,7 @@ public class ServerPeerToPeer {
                         giveInfoToDestinator(pm);
                     }
 
-                    if (type.equals(MessageType.SMES) || type.equals(MessageType.SFIL) || type.equals(MessageType.INVT) || type.equals(MessageType.UPDT)){
+                    if (type.equals(MessageType.SMES) || type.equals(MessageType.SFIL) || type.equals(MessageType.INVT) || type.equals(MessageType.UPDT) ){
                         redirect(pm);
                     }
                 }
