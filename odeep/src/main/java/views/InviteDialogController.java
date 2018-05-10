@@ -59,8 +59,8 @@ public class InviteDialogController {
         if (isInputValid()) {
             Label newPseudo = new Label();
             newPseudo.setText(newUserPseudoField.getText());
-            for(int i = 0; i < RootLayoutController.getListView().size(); ++i){
-                if(groupeIDField.getText().equals(RootLayoutController.getListView().get(i).getId())){
+            for (int i = 0; i < RootLayoutController.getListView().size(); ++i) {
+                if (groupeIDField.getText().equals(RootLayoutController.getListView().get(i).getId())) {
                     RootLayoutController.getListView().get(i).getItems().add(newPseudo);
                     break;
                 }
@@ -73,30 +73,23 @@ public class InviteDialogController {
 
     private boolean isInputValid() {
         String errorMessage = "";
-        if (groupeIDField.getText() == null || groupeIDField.getText().length() == 0) {
-            errorMessage += "Group ID incorrect.\n";
-        } else {
-            String pseudo = groupeIDField.getText();
-            boolean found = false;
-            for (ListView view : RootLayoutController.getListView()) {
-                if (pseudo.equals(view.getId())) {
-                    found = true;
-                    break;
-                }
-            }
-
-            if (found != true) {
-                errorMessage += "Group ID invalid. No group with this id.\n";
+        String pseudo = groupeIDField.getText();
+        boolean found = false;
+        for (ListView view : RootLayoutController.getListView()) {
+            if (pseudo.equals(view.getId())) {
+                found = true;
+                break;
             }
         }
 
-        if (newUserPseudoField.getText() == null || newUserPseudoField.getText().length() == 0) {
-            errorMessage += "Pseudo incorrect.\n";
-        } else {
-            if (!PeerMessage.isValidIdFormat(newUserPseudoField.getText(), PeerMessage.ID_MIN_LENGTH, PeerMessage.ID_MAX_LENGTH)) {
-                errorMessage += "Pseudo invalid format.\n";
-            }
+        if (found != true) {
+            errorMessage += "Group ID invalid. No group with this id.\n";
         }
+
+        if (!PeerMessage.isValidIdFormat(newUserPseudoField.getText(), PeerMessage.ID_MIN_LENGTH, PeerMessage.ID_MAX_LENGTH)) {
+            errorMessage += "Pseudo invalid format.\n";
+        }
+
         if (errorMessage.length() == 0) {
             return true;
         } else {
