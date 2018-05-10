@@ -7,18 +7,25 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import java.io.IOException;
+import java.util.List;
+
 import views.InviteDialogController;
 import views.RootLayoutController;
+import User.Group;
 
-import java.io.IOException;
+
+
 
 public class Main extends Application {
 
     private Stage primaryStage;
     private BorderPane rootLayout;
+    private List<Group> groups;
+    public RootLayoutController rootLayoutController;
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage){
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("ODEEP");
         initRootLayout();
@@ -36,8 +43,8 @@ public class Main extends Application {
             primaryStage.setScene(scene);
 
             // Give the controller access to the main app.
-            RootLayoutController controller = loader.getController();
-            controller.setMainApp(this);
+            rootLayoutController = loader.getController();
+            rootLayoutController.setMainApp(this);
 
             primaryStage.show();
         } catch (IOException e) {
@@ -45,7 +52,7 @@ public class Main extends Application {
         }
     }
 
-    public boolean showInviteDialog(String string){
+    public boolean showInviteDialog(){
         try{
             // Load the FXML filer and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
