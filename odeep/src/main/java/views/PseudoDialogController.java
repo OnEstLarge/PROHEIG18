@@ -2,13 +2,14 @@ package views;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import main.Main;
+import peer.PeerMessage;
 
 public class PseudoDialogController {
 
-    private Stage pseudoStage;
+    private Stage dialogStage;
     private boolean okClicked = false;
 
     @FXML
@@ -21,10 +22,10 @@ public class PseudoDialogController {
     /**
      * Sets the stage of this dialog.
      *
-     * @param pseudoStage
+     * @param dialogStage
      */
-    public void setDialogStage(Stage pseudoStage) {
-        this.pseudoStage = pseudoStage;
+    public void setDialogStage(Stage dialogStage) {
+        this.dialogStage = dialogStage;
     }
 
     /**
@@ -43,13 +44,36 @@ public class PseudoDialogController {
     private void handleOk() {
 
         if(isInputValid()){
-            // TODO: verifier si jamais le pseudo est deja pris
+            Main.setUserPseudo(userPseudoField.getText());
         }
+
+        okClicked = true;
+        dialogStage.close();
 
         // TODO: créer les dossiers nécessaire
     }
 
     private boolean isInputValid(){
-       return true;
+        String errorMessage = "";
+        String pseudo = userPseudoField.getText();
+
+        if(!PeerMessage.isValidIdFormat(pseudo, PeerMessage.ID_MIN_LENGTH, PeerMessage.ID_MAX_LENGTH)){
+            errorMessage += "Pseudo format invalid. It must be between " + PeerMessage.ID_MIN_LENGTH + " and " + PeerMessage.ID_MAX_LENGTH + " characters long.\n";
+        }
+        // TODO: verifier si jamais le pseudo est deja pris
+
+        if (errorMessage.length() == 0) {
+            return true;
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.initOwner(dialogStage);
+            alert.setTitle("Invalid Fields");
+            alert.setHeaderText("Please correct invalid fields");
+            alert.setContentText(errorMessage);
+
+            alert.showAndWait();
+
+            return false;
+        }
     }
 }

@@ -12,7 +12,8 @@ public class MessageType {
     public final static String BYE = "BYE"; // fin de connexion au serveur relai
     public final static String INVI = "INVI"; //invitation à un groupe
     public final static String INFO = "INFO"; //demande d'info pour le pear to pear local
-    public final static String UPDT = "UPDT"; //download le fichier de config depuis le serveur
+    public final static String DOWN = "DOWN"; //download le fichier de config depuis le serveur
+    public final static String UPDT = "UPDT"; // notifie l'utilisateur qu'il faut download le fichier du groupe
     public final static String UPLO = "UPLO"; //upload le fichier de config sur le serveur
     public final static String DISC = "DISC"; //indique que le destinataire d'un message est deconnecté
     public final static String NFIL = "NFIL"; //indique qu'on ne possede pas le fichier
