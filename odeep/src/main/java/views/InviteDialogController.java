@@ -3,9 +3,12 @@ package views;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
 import javafx.scene.control.TextField;
+import peer.PeerMessage;
+import sun.dc.path.PathError;
 
 public class InviteDialogController {
 
@@ -16,7 +19,7 @@ public class InviteDialogController {
     private TextField groupeIDField;
 
     @FXML
-    private TextField newUserIPField;
+    private TextField newUserPseudoField;
 
     @FXML
     private void initialize() {
@@ -53,43 +56,50 @@ public class InviteDialogController {
      */
     @FXML
     private void handleOk() {
-        if(isInputValid()){
-            Label newIp = new Label();
-            newIp.setText(newUserIPField.getText());
-            int group = Integer.parseInt(groupeIDField.getText())-1;
-            RootLayoutController.getListView().get(group).getItems().add(newIp);
+        if (isInputValid()) {
+            Label newPseudo = new Label();
+            newPseudo.setText(newUserPseudoField.getText());
+            for(int i = 0; i < RootLayoutController.getListView().size(); ++i){
+                if(groupeIDField.getText().equals(RootLayoutController.getListView().get(i).getId())){
+                    RootLayoutController.getListView().get(i).getItems().add(newPseudo);
+                    break;
+                }
+            }
 
             okClicked = true;
             dialogStage.close();
         }
     }
 
-    private boolean isInputValid(){
-        String errorMessage="";
-        if(groupeIDField.getText() == null || groupeIDField.getText().length() == 0){
-            errorMessage += "Group ID false.\n";
-        }else{
-            try{
-                int id = Integer.parseInt(groupeIDField.getText());
-                if(id -1 > RootLayoutController.getListView().size()){
-                    errorMessage += "Group ID invalid. No group with this id.\n";
+    private boolean isInputValid() {
+        String errorMessage = "";
+        if (groupeIDField.getText() == null || groupeIDField.getText().length() == 0) {
+            errorMessage += "Group ID incorrect.\n";
+        } else {
+            String pseudo = groupeIDField.getText();
+            boolean found = false;
+            for (ListView view : RootLayoutController.getListView()) {
+                if (pseudo.equals(view.getId())) {
+                    found = true;
+                    break;
                 }
-            }catch(NumberFormatException e){
-                errorMessage += "No valid format for groupe ID (must be an int)!\n";
+            }
+
+            if (found != true) {
+                errorMessage += "Group ID invalid. No group with this id.\n";
             }
         }
 
-        if (newUserIPField.getText() == null || newUserIPField.getText().length() == 0) {
-            errorMessage += "IP false.\n";
-        }else{
-            String ip = newUserIPField.getText();
-            if(ip == "faux"){
-                errorMessage += "IP invalid format.\n";
+        if (newUserPseudoField.getText() == null || newUserPseudoField.getText().length() == 0) {
+            errorMessage += "Pseudo incorrect.\n";
+        } else {
+            if (!PeerMessage.isValidIdFormat(newUserPseudoField.getText(), PeerMessage.ID_MIN_LENGTH, PeerMessage.ID_MAX_LENGTH)) {
+                errorMessage += "Pseudo invalid format.\n";
             }
         }
-        if(errorMessage.length() == 0){
+        if (errorMessage.length() == 0) {
             return true;
-        }else{
+        } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.initOwner(dialogStage);
             alert.setTitle("Invalid Fields");

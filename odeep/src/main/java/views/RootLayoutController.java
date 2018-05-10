@@ -56,6 +56,7 @@ public class RootLayoutController implements Initializable {
 
             // TODO: s'ajouter au groupe et mettre les fichiers dispo a jour.
             listView.add(view);
+            view.setId(groupNameField.getText());
             pane.setText(groupNameField.getText());
             pane.setContent(view);
             pane.setCollapsible(true);
@@ -68,10 +69,9 @@ public class RootLayoutController implements Initializable {
                     System.out.println("testtest");
                 }
             });
-
-            groupNameField.setText("");
             accordion.getPanes().add(pane);
         }
+        groupNameField.setText("");
     }
 
 
