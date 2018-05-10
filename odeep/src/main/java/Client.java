@@ -1,8 +1,6 @@
 import Node.FileSharingNode;
 import Node.Node;
-import handler.RSAHandler;
-import handler.SFILHandler;
-import handler.SMESHandler;
+import handler.*;
 import message.MessageType;
 import peer.PeerConnection;
 import peer.PeerInformations;
@@ -26,6 +24,7 @@ public class Client {
 
     private static FileSharingNode n;
     private static boolean nodeIsRunning = true;
+    private static String myPseudo;
 
     public static void main(String[] args) {
 
@@ -33,6 +32,7 @@ public class Client {
         //Si première ouverture -> demander pseudo
 
         //Sinon, on peut le pseudo dans le fichier de config
+        myPseudo = "WESHWESH";
 
         //Get local IP used
         String localIP = null;
@@ -53,19 +53,31 @@ public class Client {
             }
         }catch (SocketException e) {}
 
-        System.out.println(localIP);
+        System.out.println("Your local ip: " +localIP);
 
 
-        PeerInformations myInfos = new PeerInformations("MON PSEUDO WESH", localIP, LOCAL_PORT);
+        PeerInformations myInfos = new PeerInformations(myPseudo, localIP, LOCAL_PORT);
+        System.out.println("Created myInfos");
         n = new FileSharingNode(myInfos);
+        System.out.println("Created the node");
         //Ajouter tous les handlers
-        //listening for incoming connections
-        n.acceptingConnections();
-
+        n.addMessageHandler(MessageType.INVI, new INVIHandler());
+        n.addMessageHandler(MessageType.DISC, new DISCHandler());
+        n.addMessageHandler(MessageType.NFIL, new NFILHandler());
+        n.addMessageHandler(MessageType.RFIL, new RFILHandler());
+        n.addMessageHandler(MessageType.SFIL, new SFILHandler());
+        n.addMessageHandler(MessageType.SMES, new SMESHandler());
+        n.addMessageHandler(MessageType.UPDT, new UPDTHandler());
+        System.out.println("Added the handlers");
 
         //connection au server publique
         Client c = new Client();
+        System.out.println("Connecting to server");
         c.initConnections(IP_SERVER, PORT_SERVER);
+
+        //listening for incoming connections
+        System.out.println("Launching node listening");
+        n.acceptingConnections();
 
     }
 
@@ -74,10 +86,19 @@ public class Client {
         try {
             //clientSocketToServerPublic = new PeerConnection(new Socket(ip,port));
             clientSocketToServerPublic = new Socket(ip,port);
+            System.out.println("Connected to server");
             in = new BufferedInputStream(clientSocketToServerPublic.getInputStream());
             out = new BufferedOutputStream(clientSocketToServerPublic.getOutputStream());
+
+            //Greetings to server, receivinig response
+            PeerMessage greetings = new PeerMessage(MessageType.HELO, "XXXXXX", myPseudo, "XXXXXX", 0, "".getBytes());
+            out.write(greetings.getFormattedMessage());
+            out.flush();
+
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
+            System.out.println("Could not connect to the server");
+            return;
         }
 
         new Thread(new ConnectionServer()).start();
@@ -88,7 +109,9 @@ public class Client {
         public ConnectionServer(){
         }
         public void run(){
+            System.out.println("Reading from server start");
             new Thread(new ReadFromServer()).start();
+            System.out.println("writing to server start");
             new Thread(new WriteToServer()).start();
         }
 
@@ -140,8 +163,9 @@ public class Client {
         //TODO faire les trucs de l'inteface graphique ici
         public void run(){
 
+            Scanner scanner = new Scanner(System.in);
             while(nodeIsRunning) {
-                Scanner scanner = new Scanner(System.in);
+                System.out.println("Scanner read next line");
                 System.out.println(scanner.nextLine());
             }
 
@@ -180,5 +204,12 @@ public class Client {
             node.getMapMessage().get(message.getType()).handleMessage(connection, message); //gerer erreur possible
         }
     }
+
+   /* private void sendFileToPeer(dest, file) {
+        sendToserver(send to file dest);
+        recupip();
+        try send to this ip;
+        try catch() {send through server socket}
+    }*/
 
 }
