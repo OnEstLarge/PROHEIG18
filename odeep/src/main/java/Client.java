@@ -5,7 +5,9 @@ import message.MessageType;
 import peer.PeerConnection;
 import peer.PeerInformations;
 import peer.PeerMessage;
+import util.CipherUtil;
 
+import javax.crypto.Cipher;
 import java.io.*;
 import java.net.*;
 import java.security.NoSuchAlgorithmException;
@@ -14,7 +16,7 @@ import java.util.Enumeration;
 import java.util.Scanner;
 
 public class Client {
-    private static final String IP_SERVER = "206.189.49.105";
+    private static final String IP_SERVER = "192.168.0.214";//"206.189.49.105";
     private static final int PORT_SERVER = 8080;
     private static final int LOCAL_PORT = 4444;
 
@@ -25,6 +27,10 @@ public class Client {
     private static FileSharingNode n;
     private static boolean nodeIsRunning = true;
     private static String myPseudo;
+    private static String localIP;
+
+    private  static String response = null;
+
 
     public static void main(String[] args) {
 
@@ -35,7 +41,7 @@ public class Client {
         myPseudo = "WESHWESH";
 
         //Get local IP used
-        String localIP = null;
+        localIP = null;
         try {
             Enumeration e = NetworkInterface.getNetworkInterfaces();
             while (e.hasMoreElements()) {
@@ -91,7 +97,7 @@ public class Client {
             out = new BufferedOutputStream(clientSocketToServerPublic.getOutputStream());
 
             //Greetings to server, receivinig response
-            PeerMessage greetings = new PeerMessage(MessageType.HELO, "XXXXXX", myPseudo, "XXXXXX", 0, "".getBytes());
+            PeerMessage greetings = new PeerMessage(MessageType.HELO, "XXXXXX", myPseudo, "XXXXXX", 0, localIP.getBytes());
             out.write(greetings.getFormattedMessage());
             out.flush();
 
@@ -126,10 +132,17 @@ public class Client {
             System.out.println("Start reading in Client.ReadFromServer");
             try {
                 while ((read = in.read(buffer)) != -1) {
+
                     PeerMessage pm = new PeerMessage(buffer);
                     //String type = pm.getType();
 
-                    redirectToHandler(pm, n, new PeerConnection(clientSocketToServerPublic));
+                    if(pm.getType().equals(MessageType.INFO)) {
+                        System.out.println("Received info, writing in response static");
+                        response = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
+                    } else {
+                        redirectToHandler(pm, n, new PeerConnection(clientSocketToServerPublic));
+                    }
+
                 }
                 System.out.println("End of reading in Client.ReadFromServer");
 
@@ -163,10 +176,26 @@ public class Client {
         //TODO faire les trucs de l'inteface graphique ici
         public void run(){
 
-            Scanner scanner = new Scanner(System.in);
+            /*Scanner scanner = new Scanner(System.in);
             while(nodeIsRunning) {
                 System.out.println("Scanner read next line");
-                System.out.println(scanner.nextLine());
+                String resp = scanner.nextLine();
+                if(resp.)
+            }*/
+            //PeerMessage p = new PeerMessage(MessageType.INFO, myPseudo, myPseudo, "XXXXXXX", "".getBytes());
+            System.out.println("Asking for info about myself...");
+            String a = askForInfos(myPseudo);
+            System.out.println("Info reveived: " + a);
+
+            System.out.println("SMESIINNGG");
+
+
+            PeerMessage smeshing = new PeerMessage(MessageType.SMES, "XXXXXX", myPseudo, myPseudo, "coucou".getBytes());
+            try {
+                out.write(smeshing.getFormattedMessage());
+                out.flush();
+            } catch(IOException e) {
+
             }
 
         }
@@ -211,5 +240,24 @@ public class Client {
         try send to this ip;
         try catch() {send through server socket}
     }*/
+
+   private String askForInfos(String pseudo) {
+       PeerMessage askInfo = new PeerMessage(MessageType.INFO, "XXXXXX", myPseudo, myPseudo, "".getBytes());
+       try {
+           out.write(askInfo.getFormattedMessage());
+           out.flush();
+           while(response == null){
+               try {
+                   Thread.sleep(100);
+               }catch(InterruptedException e) {}
+           }
+           String p = response;
+           response = null;
+           return p;
+
+       } catch(IOException e) {
+           return null;
+       }
+   }
 
 }
