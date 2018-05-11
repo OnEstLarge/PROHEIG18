@@ -1,14 +1,12 @@
 package util;
 
+import message.MessageType;
+import peer.PeerMessage;
+
+import java.net.Socket;
+
 public class SynchronizeConfigUtil {
 
-    public static void uploadJSON(String filenameJSON, String group){
 
-    }
-
-    public static String downloadJSON(String group){
-
-        return null;
-    }
 
 }

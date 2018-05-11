@@ -1,19 +1,20 @@
 import Node.FileSharingNode;
 import Node.Node;
+import User.Group;
+import User.Person;
 import handler.*;
 import message.MessageType;
 import peer.PeerConnection;
 import peer.PeerInformations;
 import peer.PeerMessage;
 import util.CipherUtil;
+import util.JSONUtil;
 
-import javax.crypto.Cipher;
 import java.io.*;
 import java.net.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.Enumeration;
-import java.util.Scanner;
 
 public class Client {
     private static final String IP_SERVER = "192.168.0.214";//"206.189.49.105";
@@ -29,7 +30,7 @@ public class Client {
     private static String myPseudo;
     private static String localIP;
 
-    private  static String response = null;
+    private static String response = null;
 
 
     public static void main(String[] args) {
@@ -51,15 +52,17 @@ public class Client {
                     Inet4Address i = null;
                     try {
                         i = (Inet4Address) ee.nextElement();
-                        if(!i.getHostAddress().endsWith(".1") && !i.getHostAddress().endsWith(".255")) {
+                        if (!i.getHostAddress().endsWith(".1") && !i.getHostAddress().endsWith(".255")) {
                             localIP = i.getHostAddress();
                         }
-                    } catch (ClassCastException ex) {}
+                    } catch (ClassCastException ex) {
+                    }
                 }
             }
-        }catch (SocketException e) {}
+        } catch (SocketException e) {
+        }
 
-        System.out.println("Your local ip: " +localIP);
+        System.out.println("Your local ip: " + localIP);
 
 
         PeerInformations myInfos = new PeerInformations(myPseudo, localIP, LOCAL_PORT);
@@ -91,7 +94,7 @@ public class Client {
     public void initConnections(String ip, int port) {
         try {
             //clientSocketToServerPublic = new PeerConnection(new Socket(ip,port));
-            clientSocketToServerPublic = new Socket(ip,port);
+            clientSocketToServerPublic = new Socket(ip, port);
             System.out.println("Connected to server");
             in = new BufferedInputStream(clientSocketToServerPublic.getInputStream());
             out = new BufferedOutputStream(clientSocketToServerPublic.getOutputStream());
@@ -111,10 +114,11 @@ public class Client {
     }
 
     //initialise la connection au serveur avec une thread pour la lecture et l'autre pour l'écriture
-    private class ConnectionServer implements Runnable{
-        public ConnectionServer(){
+    private class ConnectionServer implements Runnable {
+        public ConnectionServer() {
         }
-        public void run(){
+
+        public void run() {
             System.out.println("Reading from server start");
             new Thread(new ReadFromServer()).start();
             System.out.println("writing to server start");
@@ -124,8 +128,8 @@ public class Client {
     }
 
     //Classe permettant de threader la lecture des packets server
-    private class ReadFromServer implements Runnable{
-        public void run(){
+    private class ReadFromServer implements Runnable {
+        public void run() {
             int read;
             byte[] buffer = new byte[4096];
 
@@ -136,7 +140,7 @@ public class Client {
                     PeerMessage pm = new PeerMessage(buffer);
                     //String type = pm.getType();
 
-                    if(pm.getType().equals(MessageType.INFO)) {
+                    if (pm.getType().equals(MessageType.INFO)) {
                         System.out.println("Received info, writing in response static");
                         response = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
                     } else {
@@ -171,10 +175,10 @@ public class Client {
     }
 
     //Classe permettant de threader l'envoie de packet au server
-    public class WriteToServer implements Runnable{
+    public class WriteToServer implements Runnable {
 
         //TODO faire les trucs de l'inteface graphique ici
-        public void run(){
+        public void run() {
 
             /*Scanner scanner = new Scanner(System.in);
             while(nodeIsRunning) {
@@ -194,7 +198,7 @@ public class Client {
             try {
                 out.write(smeshing.getFormattedMessage());
                 out.flush();
-            } catch(IOException e) {
+            } catch (IOException e) {
 
             }
 
@@ -205,14 +209,13 @@ public class Client {
         RSAHandler RSA;
 
         //handle message
-        if(message.getType().equals(MessageType.DHR1)){
+        if (message.getType().equals(MessageType.DHR1)) {
             RSA = node.getTempRSAInfo();
-            if(RSA != null) {
+            if (RSA != null) {
                 RSA.sendEncryptedKey(node, message, message.getIdGroup());
                 node.setTempRSAInfo(null);
             }
-        }
-        else if (message.getType().equals(MessageType.DHS1)){
+        } else if (message.getType().equals(MessageType.DHS1)) {
             try {
                 RSA = new RSAHandler();
                 RSA.setKeys();
@@ -223,13 +226,11 @@ public class Client {
             } catch (NoSuchProviderException e) {
                 e.printStackTrace();
             }
-        }
-        else if(message.getType().equals(MessageType.DHS2)){
+        } else if (message.getType().equals(MessageType.DHS2)) {
             node.setKey(node.getTempRSAInfo().getFinalKey(message), message.getIdGroup());
             node.setTempRSAInfo(null);
             System.out.println("final key is : " + new String(node.getKey(message.getIdGroup())));
-        }
-        else {
+        } else {
             node.getMapMessage().get(message.getType()).handleMessage(connection, message); //gerer erreur possible
         }
     }
@@ -241,23 +242,76 @@ public class Client {
         try catch() {send through server socket}
     }*/
 
-   private String askForInfos(String pseudo) {
-       PeerMessage askInfo = new PeerMessage(MessageType.INFO, "XXXXXX", myPseudo, myPseudo, "".getBytes());
-       try {
-           out.write(askInfo.getFormattedMessage());
-           out.flush();
-           while(response == null){
-               try {
-                   Thread.sleep(100);
-               }catch(InterruptedException e) {}
-           }
-           String p = response;
-           response = null;
-           return p;
+    private static String askForInfos(String pseudo) {
+        PeerMessage askInfo = new PeerMessage(MessageType.INFO, "XXXXXX", myPseudo, myPseudo, "".getBytes());
+        try {
+            out.write(askInfo.getFormattedMessage());
+            out.flush();
+            while (response == null) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                }
+            }
+            String p = response;
+            response = null;
+            return p;
 
-       } catch(IOException e) {
-           return null;
-       }
-   }
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    public static void uploadJSON(String filenameJSON, String groupID, String idFrom) {
+        //TODO tester validité des paramètres
+
+        PeerMessage uploadMessage = new PeerMessage(MessageType.UPLO, groupID, idFrom, idFrom, groupID.getBytes());
+
+        try {
+            // Averti le serveur qu'un upload va être effectué
+            out.write(uploadMessage.getFormattedMessage());
+            out.flush();
+
+            // Récupère et chiffre de fichier config.json
+            RandomAccessFile configFile = new RandomAccessFile(filenameJSON, "r");
+            byte[] configFileByte = new byte[(int) configFile.length()];
+            configFile.readFully(configFileByte);
+
+            byte[] cipherConfig = CipherUtil.AESEncrypt(configFileByte, n.getKey(groupID));
+
+            // Upload le config.json chiffré au serveur
+            out.write(cipherConfig);
+            out.flush();
+
+            Group group = JSONUtil.parseJson(new String(configFileByte), Group.class);
+            for (Person person : group.getMembers()) {
+                PeerMessage pm = new PeerMessage(MessageType.UPDT, groupID, idFrom, person.getID(), "".getBytes());
+                try {
+                    Socket localConnection = new Socket(askForInfos(person.getID()), 4444);
+                    BufferedOutputStream o = new BufferedOutputStream(localConnection.getOutputStream());
+                    o.write(pm.getFormattedMessage());
+                    o.flush();
+                    o.close();
+                    localConnection.close();
+                } catch (IOException e) {
+                    System.out.println(e.getMessage());
+                    if (e.getMessage().equals("Connection refused")) {
+                        //Si la connexion en locale échoue, on utilise le server relais
+                        out.write(pm.getFormattedMessage());
+                        out.flush();
+                    }
+                }
+
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String downloadJSON(String group) {
+
+        return null;
+    }
 
 }
