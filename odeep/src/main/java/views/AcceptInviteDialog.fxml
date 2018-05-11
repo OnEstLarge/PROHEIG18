@@ -4,7 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="123.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="views.InviteDialogController">
+<AnchorPane prefHeight="123.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="views.AcceptInviteDialogController">
     <children>
         <Label fx:id="messageLabel" layoutX="54.0" layoutY="27.0" text="Vous avez été invité dans un groupe" AnchorPane.leftAnchor="54.0" AnchorPane.topAnchor="27.0" />
         <Button defaultButton="true" layoutX="81.0" layoutY="72.0" mnemonicParsing="false" onAction="#handleOk" prefHeight="25.0" prefWidth="67.0" text="Accepter" AnchorPane.bottomAnchor="26.0" AnchorPane.rightAnchor="163.0" />
