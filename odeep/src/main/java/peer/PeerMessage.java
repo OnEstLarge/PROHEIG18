@@ -119,7 +119,7 @@ public class PeerMessage {
         this.idTo           = CipherUtil.erasePadding(new String(Arrays.copyOfRange(rawData,index, index + ID_MAX_LENGTH)), PADDING_START);
         //System.out.println("constr idto " + this.idTo);
         index += ID_MAX_LENGTH+1;
-        this.noPacket       = Integer.parseInt(new String(Arrays.copyOfRange(rawData,index, index +NO_PACKET_DIGITS));
+        this.noPacket       = Integer.parseInt(new String(Arrays.copyOfRange(rawData,index, index +NO_PACKET_DIGITS)));
         //System.out.println("constr noPa " + this.noPacket);
         index += NO_PACKET_DIGITS+1;
         this.messageContent = CipherUtil.erasePadding(Arrays.copyOfRange(rawData,index, rawData.length), PADDING_START);
