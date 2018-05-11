@@ -10,7 +10,7 @@
         <Label layoutX="38.0" layoutY="45.0" text="User pseudo" AnchorPane.leftAnchor="38.0" AnchorPane.topAnchor="45.0" />
         <TextField fx:id="newUserPseudoField" layoutX="126.0" layoutY="41.0" text=" " AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="41.0" />
         <Button defaultButton="true" layoutX="148.0" layoutY="61.0" mnemonicParsing="false" onAction="#handleOk" prefHeight="25.0" prefWidth="52.0" text="OK" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="100.0" />
-        <Button layoutX="214.0" layoutY="61.0" mnemonicParsing="false" onAction="#handleCancel" text="Cancel" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="34.0" />
+        <Button cancelButton="true" layoutX="214.0" layoutY="61.0" mnemonicParsing="false" onAction="#handleCancel" text="Cancel" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="34.0" />
         <Label layoutX="38.0" layoutY="14.0" text="Groupe id" />
         <TextField fx:id="groupeIDField" layoutX="126.0" layoutY="10.0" promptText="1" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="10.0" />
     </children>
