@@ -264,6 +264,9 @@ public class CipherUtil {
             if(data[i] == pad){
                 break;
             }
+            if(data[i] == PeerMessage.PADDING_SYMBOL){
+                return data;
+            }
         }
         byte[] dataWithoutPadding = new byte[data.length - paddingSize];
         for(int i = 0; i < dataWithoutPadding.length; i++){
@@ -284,6 +287,9 @@ public class CipherUtil {
             paddingSize++;
             if(s.charAt(i) == pad){
                 break;
+            }
+            if(s.charAt(i) == PeerMessage.PADDING_SYMBOL){
+                return s;
             }
         }
         String dataWithoutPadding = s.substring(0, s.length()-paddingSize);
