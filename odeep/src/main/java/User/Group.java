@@ -12,7 +12,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Group implements Serializable{
+public class Group implements Serializable {
 
     private String ID;
     private List<Person> members;
@@ -62,7 +62,7 @@ public class Group implements Serializable{
     }
 
     public List<Person> getMembers() {
-        return members;
+        return new ArrayList<Person>(members);
     }
 
     public String getID() {

@@ -1,12 +1,10 @@
 package views;
 
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import peer.PeerMessage;
+import javafx.stage.WindowEvent;
 
 public class AcceptInviteDialogController {
 
@@ -31,6 +29,11 @@ public class AcceptInviteDialogController {
      */
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
+        dialogStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            public void handle(WindowEvent we) {
+                handleRefuse();
+            }
+        });
     }
 
     /**
@@ -47,6 +50,7 @@ public class AcceptInviteDialogController {
      */
     @FXML
     private void handleRefuse() {
+        System.out.println("refusé");
         dialogStage.close();
     }
 
@@ -57,6 +61,7 @@ public class AcceptInviteDialogController {
     private void handleOk() {
         // TODO: ajouter le groupe sur l'interface et récuperer les fichiers.
         okClicked = true;
+        System.out.println("accepté");
         dialogStage.close();
 
     }
