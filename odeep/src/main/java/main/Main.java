@@ -1,5 +1,6 @@
 package main;
 
+import User.Person;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -8,7 +9,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import views.InviteDialogController;
@@ -21,7 +24,9 @@ public class Main extends Application {
 
     private Stage primaryStage;
     private BorderPane rootLayout;
-    private List<Group> groups;
+    private List<Group> groups = new ArrayList();
+    private File file;
+    private Person oli = new Person("Olivier", file);
     private String userPseudo ="123";
 
     @Override
@@ -34,10 +39,9 @@ public class Main extends Application {
     public void initRootLayout() {
         if (true) {
             boolean ok = showPseudoDialog();
-            while(!ok){
+            while(!ok){ // Ask for a pseudo until a valid one is entered.
                 ok = showPseudoDialog();
             }
-            System.out.println(userPseudo);
         }
         try {
             // Load root layout from fxml file.
@@ -52,6 +56,7 @@ public class Main extends Application {
             // Give the controller access to the main app.
             RootLayoutController controller = loader.getController();
             controller.setMainApp(this);
+            controller.fillFileMap(groups);
 
             primaryStage.show();
         } catch (IOException e) {

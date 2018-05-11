@@ -1,5 +1,6 @@
 package views;
 
+import User.Person;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -87,7 +88,7 @@ public class InviteDialogController {
         }
 
         if (!PeerMessage.isValidIdFormat(newUserPseudoField.getText(), PeerMessage.ID_MIN_LENGTH, PeerMessage.ID_MAX_LENGTH)) {
-            errorMessage += "Pseudo invalid format.\n";
+            errorMessage += "Pseudo invalid format. Pseudo must be between " + PeerMessage.ID_MIN_LENGTH + " and " + PeerMessage.ID_MAX_LENGTH + "characters long.\n";
         }
 
         if (errorMessage.length() == 0) {
