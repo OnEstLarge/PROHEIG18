@@ -10,7 +10,9 @@ package peer;/*
 
 import com.sun.media.sound.InvalidFormatException;
 import org.bouncycastle.util.Arrays;
+import util.CipherUtil;
 
+import javax.crypto.Cipher;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 
@@ -238,23 +240,23 @@ public class PeerMessage {
     }
 
     public String getType() {
-        return type;
+        return CipherUtil.erasePadding(type, PeerMessage.PADDING_START);
     }
 
     public String getIdFrom() {
-        return idFrom;
+        return CipherUtil.erasePadding(idFrom, PeerMessage.PADDING_START);
     }
 
     public String getIdTo() {
-        return idTo;
+        return CipherUtil.erasePadding(idTo, PeerMessage.PADDING_START);
     }
 
     public String getIdGroup() {
-        return idGroup;
+        return CipherUtil.erasePadding(idGroup, PeerMessage.PADDING_START);
     }
 
     public byte[] getMessageContent() {
-        return messageContent;
+        return CipherUtil.erasePadding(messageContent, PeerMessage.PADDING_START);
     }
 
     public int getNoPacket() {

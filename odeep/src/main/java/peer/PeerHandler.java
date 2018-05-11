@@ -68,9 +68,9 @@ public class PeerHandler implements Runnable {
             }
         }
         else if(message.getType().equals(MessageType.DHS2)){
-            node.setKey(node.getTempRSAInfo().getFinalKey(message));
+            node.setKey(node.getTempRSAInfo().getFinalKey(message), message.getIdGroup());
             node.setTempRSAInfo(null);
-            System.out.println("final key is : " + new String(node.getKey()));
+            System.out.println("final key is : " + new String(node.getKey(message.getIdGroup())));
         }
         else {
             node.getMapMessage().get(message.getType()).handleMessage(connection, message); //gerer erreur possible

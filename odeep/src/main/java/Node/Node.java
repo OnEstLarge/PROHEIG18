@@ -199,11 +199,32 @@ public class Node {
         this.tempRsaInfo = tempRSAInfo;
     }
 
-    public void setKey(byte[] key) {
-        this.key = key;
+    public void setKey(byte[] key, String group) {
+        File keyFile = new File("./shared_files/" + group + "/key");
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(keyFile);
+            fos.write(key);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public byte[] getKey() {
+    public byte[] getKey(String group) {
+        RandomAccessFile f = null;
+        byte[] key = null;
+        try {
+            f = new RandomAccessFile("./shared_files/" + group + "/key", "r");
+            key = new byte[(int)f.length()];
+            f.readFully(key);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
         return key;
     }
 
@@ -221,10 +242,6 @@ public class Node {
 
     //permet de conserver temporairement la pair de clé RSA utilisé lors d'un protocole Diffie Hellman
     private RSAHandler tempRsaInfo = null;
-
-    //test
-    //cette clé sera stocker dans les groupes
-    private byte[] key = null;
 
     public static String filename = null;
     public static int filesize = 0;
