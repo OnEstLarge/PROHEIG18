@@ -47,7 +47,7 @@ public class InterfaceUtil {
                 JSONUtil.updateConfig(group.getID(), jsonConfig);
 
                 // Chiffrement du config.json
-                RandomAccessFile f = new RandomAccessFile("./shared_files" + groupID + "/key", "r");
+                RandomAccessFile f = new RandomAccessFile("./shared_files/" + groupID + "/key", "r");
                 byte[] key = new byte[(int) f.length()];
                 f.readFully(key);
                 byte[] cipherConfig = CipherUtil.AESEncrypt(JSONUtil.toJson(jsonConfig).getBytes(), key);
@@ -71,6 +71,38 @@ public class InterfaceUtil {
                 e.printStackTrace();
             }
         }
+        return false;
+    }
+
+    public static void addFile(String filename, String userID, String groupID) {
+
+        // Vérifie que le nom de fichier est disponible (au sein du groupe)
+        if(checkFilename(filename, groupID)) {
+            try {
+
+                //Récupère le contenu du fichier config.json
+                RandomAccessFile f = new RandomAccessFile("./shared_files/" + groupID + "/config.json", "r");
+                byte[] configData = new byte[(int) f.length()];
+                f.readFully(configData);
+
+                Group group = JSONUtil.parseJson(new String(configData), Group.class);
+
+                // Ajoute le fichier à la liste des fichiers de l'utilisateur
+                group.addFile(filename, userID);
+
+                // Affecte la modification au fichier config.json
+                JSONUtil.updateConfig(groupID, JSONUtil.toJson(group));
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static boolean checkFilename(String filename, String groupID) {
+
         return false;
     }
 

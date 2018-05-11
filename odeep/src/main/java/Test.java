@@ -1,4 +1,3 @@
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -17,6 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.HashMap;
 import java.util.Scanner;
+
 import Node.FileSharingNode;
 import handler.RSAHandler;
 
@@ -39,7 +39,7 @@ public class Test {
 
         final String idGroup = "group1";
 
-        final PeerInformations schurch = new PeerInformations("schurch", "192.168.1.110",4444);
+        final PeerInformations schurch = new PeerInformations("schurch", "192.168.1.110", 4444);
         final PeerInformations lionel = new PeerInformations("lionel", "192.168.1.119", 4444);
         final PeerInformations florent = new PeerInformations("florent", "10.192.92.92", 4444);
         final PeerInformations romain = new PeerInformations("romain", "10.192.93.186", 4444);
@@ -52,9 +52,9 @@ public class Test {
         users.put("schurch", schurch);
         users.put("lionel", lionel);
         users.put("florent", florent);
-        users.put("romain",romain);
-        users.put("olivier",olivier);
-        users.put("mathieu",mathieu);
+        users.put("romain", romain);
+        users.put("olivier", olivier);
+        users.put("mathieu", mathieu);
 
         final FileSharingNode n = new FileSharingNode(myInfo);
 
@@ -72,14 +72,14 @@ public class Test {
 
 
         ////////////////////GENERATE CONFIG FILE////////////
-        Group group1 = new Group("group1", new Person(mathieu.getID()),  new Person("FrouzDu78"), new Person("PussySlayer69"), new Person("Pierre-André"));
+        Group group1 = new Group("group1", new Person(mathieu.getID()), new Person("FrouzDu78"), new Person("PussySlayer69"), new Person("Pierre-André"));
         Group group2 = new Group("group2", new Person(mathieu.getID()), new Person("LionelSuceur44"));
 
         List<Group> groups = new ArrayList<Group>();
         groups.add(group1);
         groups.add(group2);
 
-        String dir = "./shared_files/" + group1.getID() ;
+        String dir = "./shared_files/" + group1.getID();
         File file = new File(dir);
         file.mkdirs();
 
@@ -103,24 +103,25 @@ public class Test {
 
             private Thread activity;
 
-            public Client(){
+            public Client() {
                 activity = new Thread(this);
                 activity.start();
             }
 
-            public void run(){
+            public void run() {
 
                 Scanner scanner = new Scanner(System.in);
-                while(true){
+                while (true) {
 
                     String mess = scanner.nextLine();
 
                     String[] a = mess.split(" ");
                     String type = a[0];
-                    String pseudo = a[1];
-                    String content = a[2];
+                    String group = a[1];
+                    String pseudo = a[2];
+                    String content = a[3];
 
-                    if(type.equals(MessageType.SMES)) {
+                    if (type.equals(MessageType.SMES)) {
                         PeerMessage m = new PeerMessage(type, idGroup, myInfo.getID(), pseudo, content.getBytes());
                         try {
 
@@ -130,26 +131,26 @@ public class Test {
                             PeerConnection p = new PeerConnection(users.get(pseudo));
                             p.sendMessage(m);
                             p.close();
-                        }catch(IOException e) {
+                        } catch (IOException e) {
                             System.out.println("error main");
                         }
-                    } else if(type.equals(MessageType.SFIL)) {
+                    } else if (type.equals(MessageType.SFIL)) {
                         File file = new File(content);
-                        try{
-                            n.sendFileToPeer(file, idGroup, users.get(pseudo));
-                        } catch(IOException e){}
-                    }
-                    else if(type.equals(MessageType.DHS1)){
                         try {
-                            n.setKey(CipherUtil.generateKey());
-                            n.setKey("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
+                            n.sendFileToPeer(file, idGroup, users.get(pseudo));
+                        } catch (IOException e) {
+                        }
+                    } else if (type.equals(MessageType.DHS1)) {
+                        try {
+                            n.setKey(CipherUtil.generateKey(), group);
+
                             RSAHandler RSA = new RSAHandler();
                             RSA.setKeys();
                             n.setTempRSAInfo(RSA);
-                            System.out.println("key is : " + new String (n.getKey()));
+                            System.out.println("key is : " + new String(n.getKey(group)));
 
                             PeerConnection p = new PeerConnection(users.get(pseudo));
-                            p.sendMessage(new PeerMessage(type, idGroup, myInfo.getID(), pseudo,n.getTempRSAInfo().getPublicKey()));
+                            p.sendMessage(new PeerMessage(type, idGroup, myInfo.getID(), pseudo, n.getTempRSAInfo().getPublicKey()));
                             p.close();
                         } catch (IOException e) {
                             e.printStackTrace();
