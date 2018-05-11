@@ -1,8 +1,11 @@
 package util;
 
+import com.sun.media.sound.InvalidFormatException;
+import message.MessageType;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.util.encoders.Base64;
 import org.junit.jupiter.api.Test;
+import peer.PeerMessage;
 import util.CipherUtil;
 
 import javax.crypto.KeyAgreement;
@@ -41,7 +44,7 @@ class CipherUtilTest {
         System.out.println("plain : " + new String(plain,"UTF-8"));
         System.out.println("cipher : " + new String(cipher,"UTF-8"));
 
-        byte[] plain2 = CipherUtil.AESDEcrypt(cipher, keyByte);
+        byte[] plain2 = CipherUtil.AESDecrypt(cipher, keyByte);
         System.out.println("cipher : " + new String(cipher,"UTF-8"));
         System.out.println("plain : " + new String(plain2,"UTF-8"));
     }
@@ -54,7 +57,7 @@ class CipherUtilTest {
         byte[] keyByte = key.getBytes();
         assertEquals(32, keyByte.length);
         byte[] cipherText = CipherUtil.AESEncrypt(plainText, keyByte);
-        byte[] decipherText = CipherUtil.AESDEcrypt(cipherText, keyByte);
+        byte[] decipherText = CipherUtil.AESDecrypt(cipherText, keyByte);
         System.out.println(new String(decipherText));
         assertTrue(Arrays.equals(plainText, decipherText));
     }
@@ -81,7 +84,7 @@ class CipherUtilTest {
     }
 
     @Test
-    void splitKey() {
+    void splitKey() throws InvalidFormatException {
     }
 
 }

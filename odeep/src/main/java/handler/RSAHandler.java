@@ -19,7 +19,8 @@ public class RSAHandler {
     private KeyPair kp;
     private byte[] publicKey;
 
-    public RSAHandler(){}
+    public RSAHandler() {
+    }
 
     public void setKeys() throws NoSuchAlgorithmException, NoSuchProviderException {
         kp = CipherUtil.GenerateRSAKey();
@@ -57,21 +58,7 @@ public class RSAHandler {
         byte[] foreignKey = CipherUtil.erasePadding(messageReceved.getMessageContent(), PeerMessage.PADDING_START);
 
         byte[] encryptedKey = new byte[0];
-        try {
-            encryptedKey = CipherUtil.RSAEncrypt(CipherUtil.byteToPublicKey(foreignKey), n.getKey(group));
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        } catch (InvalidKeySpecException e) {
-            e.printStackTrace();
-        }
+        encryptedKey = CipherUtil.RSAEncrypt(CipherUtil.byteToPublicKey(foreignKey), n.getKey(group));
         PeerMessage message = new PeerMessage(MessageType.DHS2, messageReceved.getIdGroup(), messageReceved.getIdTo(), messageReceved.getIdFrom(), encryptedKey);
 
         PeerInformations pi = null;
@@ -92,22 +79,7 @@ public class RSAHandler {
 
     public byte[] getFinalKey(PeerMessage m) {
         byte[] message = CipherUtil.erasePadding(m.getMessageContent(), PeerMessage.PADDING_START);
-        try {
-            return CipherUtil.RSADecrypt(kp.getPrivate(), message);
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        }
-        finally {
-            return null;
-        }
+        return CipherUtil.RSADecrypt(kp.getPrivate(), message);
     }
 
     public byte[] getPublicKey() {

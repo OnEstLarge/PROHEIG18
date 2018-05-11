@@ -147,7 +147,9 @@ public class Test {
                             RSAHandler RSA = new RSAHandler();
                             RSA.setKeys();
                             n.setTempRSAInfo(RSA);
+
                             System.out.println("key is : " + new String(n.getKey(group)));
+
 
                             PeerConnection p = new PeerConnection(users.get(pseudo));
                             p.sendMessage(new PeerMessage(type, idGroup, myInfo.getID(), pseudo, n.getTempRSAInfo().getPublicKey()));

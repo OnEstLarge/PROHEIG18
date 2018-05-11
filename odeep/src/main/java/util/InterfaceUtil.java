@@ -67,8 +67,6 @@ public class InterfaceUtil {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
-            } catch (InvalidCipherTextException e) {
-                e.printStackTrace();
             }
         }
         return false;
