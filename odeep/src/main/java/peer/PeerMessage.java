@@ -39,8 +39,9 @@ public class PeerMessage {
     public static final int  ID_MAX_LENGTH        =     16;
     public static final int  NO_PACKET_DIGITS     =      8;
     public static final int  BLOCK_SIZE           =   4096;
+    public static final int  FORCE_PADDING        =     16;
     public static final int  HEADER_SIZE          = TYPE_LENGTH + ID_GROUP_MAX_LENGTH + 2 * ID_MAX_LENGTH + NO_PACKET_DIGITS + 4;
-    public static final int  MESSAGE_CONTENT_SIZE = BLOCK_SIZE - HEADER_SIZE;
+    public static final int  MESSAGE_CONTENT_SIZE = BLOCK_SIZE - HEADER_SIZE - FORCE_PADDING;
 
 
     public static final char PADDING_START        = '_';
@@ -106,23 +107,22 @@ public class PeerMessage {
         //System.out.println(new String(rawData));
 
         int index = 0;
-        final String PAD = "" + PADDING_SYMBOL;
-        this.type           = new String(Arrays.copyOfRange(rawData,index, TYPE_LENGTH)).replaceAll(PAD, "");
+        this.type           = CipherUtil.erasePadding(new String(Arrays.copyOfRange(rawData,index, TYPE_LENGTH)), PADDING_START);
         //System.out.println("constr type " + this.type);
         index += TYPE_LENGTH+1;
-        this.idGroup        = new String(Arrays.copyOfRange(rawData,index, index + ID_GROUP_MAX_LENGTH)).replaceAll(PAD, "");
+        this.idGroup        = CipherUtil.erasePadding(new String(Arrays.copyOfRange(rawData,index, index + ID_GROUP_MAX_LENGTH)), PADDING_START);
         //System.out.println("constr idGroup " + this.idGroup);
         index += ID_GROUP_MAX_LENGTH+1;
-        this.idFrom         = new String(Arrays.copyOfRange(rawData,index , index + ID_MAX_LENGTH)).replaceAll(PAD, "");
+        this.idFrom         = CipherUtil.erasePadding(new String(Arrays.copyOfRange(rawData,index , index + ID_MAX_LENGTH)), PADDING_START);
         //System.out.println("constr idfrom " + this.idFrom);
         index += ID_MAX_LENGTH+1;
-        this.idTo           = new String(Arrays.copyOfRange(rawData,index, index + ID_MAX_LENGTH)).replaceAll(PAD, "");
+        this.idTo           = CipherUtil.erasePadding(new String(Arrays.copyOfRange(rawData,index, index + ID_MAX_LENGTH)), PADDING_START);
         //System.out.println("constr idto " + this.idTo);
         index += ID_MAX_LENGTH+1;
-        this.noPacket       = Integer.parseInt(new String(Arrays.copyOfRange(rawData,index, index +NO_PACKET_DIGITS)).replaceAll(PAD, ""));
+        this.noPacket       = Integer.parseInt(new String(Arrays.copyOfRange(rawData,index, index +NO_PACKET_DIGITS));
         //System.out.println("constr noPa " + this.noPacket);
         index += NO_PACKET_DIGITS+1;
-        this.messageContent = Arrays.copyOfRange(rawData,index, rawData.length);
+        this.messageContent = CipherUtil.erasePadding(Arrays.copyOfRange(rawData,index, rawData.length), PADDING_START);
         //System.out.println(new String(messageContent));
     }
 
@@ -278,7 +278,7 @@ public class PeerMessage {
         message.append(formatInt(noPacket, NO_PACKET_DIGITS)).append(",");
 
         // -1 sinon bug
-        byte[] messageWithPad = addPadding(messageContent, MESSAGE_CONTENT_SIZE-1);
+        byte[] messageWithPad = addPadding(messageContent, MESSAGE_CONTENT_SIZE-1 + FORCE_PADDING);
         byte[] toSend = new byte[message.toString().getBytes().length + messageWithPad.length];
         System.arraycopy(message.toString().getBytes(), 0, toSend, 0, message.toString().getBytes().length);
         System.arraycopy(messageWithPad, 0, toSend, message.toString().getBytes().length, messageWithPad.length);
