@@ -55,26 +55,28 @@ public class RootLayoutController implements Initializable {
         String errorMsg = "";
         if (!PeerMessage.isValidIdFormat(groupNameField.getText(), PeerMessage.ID_GROUP_MIN_LENGTH, PeerMessage.ID_GROUP_MAX_LENGTH)) {
             errorMsg += "Group name must be between " + PeerMessage.ID_GROUP_MIN_LENGTH + " and " + PeerMessage.ID_GROUP_MAX_LENGTH + " characters long.\n";
-        }else{
+        } else {
             TitledPane pane = new TitledPane();
             ListView view = new ListView();
 
             // TODO: s'ajouter au groupe et mettre les fichiers dispo a jour.
             listView.add(view);
-            view.setId(groupNameField.getText());
-            pane.setText(groupNameField.getText());
+            final String groupName = groupNameField.getText();
+            view.setId(groupName);
+            pane.setText(groupName);
             pane.setContent(view);
             pane.setCollapsible(true);
-            mapFile.put(groupNameField.getText(), null); // TODO: ajouter les fichiers de l'utilisateur.
+            mapFile.put(groupName, null); // TODO: ajouter les fichiers de l'utilisateur.
 
             // Display the files availables in the group in the middle pane when the group is selected.
             pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
                     middleList.getItems().clear();
-                    middleList.getItems().add("test");
-                    if(mapFile.containsKey(groupNameField.getText())) {
-                        List<String> files = mapFile.get(groupNameField.getText());
+                    System.out.println(mapFile.toString());
+                    System.out.println(groupName);
+                    if (mapFile.containsKey(groupName)) {
+                        List<String> files = mapFile.get(groupName);
                         for (String s : files) {
                             middleList.getItems().add(s);
                         }
@@ -95,12 +97,12 @@ public class RootLayoutController implements Initializable {
         groupNameField.setText("");
     }
 
-    public void fillFileMap(List<Group> groups){
-        for(Group g : groups){
+    public void fillFileMap(List<Group> groups) {
+        for (Group g : groups) {
             List<String> files = new ArrayList<String>();
-            for(Person p : g.getMembers()){
-                for(String s : p.getFiles()){
-                    if(!files.contains(s)){
+            for (Person p : g.getMembers()) {
+                for (String s : p.getFiles()) {
+                    if (!files.contains(s)) {
                         files.add(s);
                     }
                 }
