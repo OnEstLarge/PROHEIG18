@@ -20,6 +20,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import com.google.common.primitives.Bytes;
 import org.bouncycastle.util.encoders.Base64;
+import peer.PeerMessage;
 
 import javax.crypto.*;
 import java.security.*;
@@ -254,6 +255,9 @@ public class CipherUtil {
         if(data == null){
             throw new NullPointerException();
         }
+        if(data[data.length - 1] != PeerMessage.PADDING_SYMBOL && data[data.length - 1] != PeerMessage.PADDING_START){
+            return data;
+        }
         int paddingSize = 0;
         for(int i = data.length-1; i >= 0; i--){
             paddingSize++;
@@ -271,6 +275,9 @@ public class CipherUtil {
     public static String erasePadding(String s, int pad){
         if(s == null){
             throw new NullPointerException();
+        }
+        if(s.charAt(s.length()-1) != PeerMessage.PADDING_SYMBOL && s.charAt(s.length()-1) != PeerMessage.PADDING_START){
+            return s;
         }
         int paddingSize = 0;
         for(int i = s.length()-1; i >= 0; i--){
