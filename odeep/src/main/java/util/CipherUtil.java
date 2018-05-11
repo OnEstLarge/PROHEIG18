@@ -264,7 +264,7 @@ public class CipherUtil {
             if(data[i] == pad){
                 break;
             }
-            if(data[i] == PeerMessage.PADDING_SYMBOL){
+            if(data[i] != PeerMessage.PADDING_SYMBOL){
                 return data;
             }
         }
@@ -288,7 +288,7 @@ public class CipherUtil {
             if(s.charAt(i) == pad){
                 break;
             }
-            if(s.charAt(i) == PeerMessage.PADDING_SYMBOL){
+            if(s.charAt(i) != PeerMessage.PADDING_SYMBOL){
                 return s;
             }
         }
