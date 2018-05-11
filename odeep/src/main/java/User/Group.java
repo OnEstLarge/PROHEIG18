@@ -39,6 +39,15 @@ public class Group implements Serializable{
         members.add(p);
     }
 
+    public void addFile(String filename, String userID) {
+        for(Person person : members) {
+            if(person.getID().equals(userID)) {
+                person.addFile(filename);
+                break;
+            }
+        }
+    }
+
     public void deleteMembers(Person person){
         int index = -1;
         for(Person p : members){

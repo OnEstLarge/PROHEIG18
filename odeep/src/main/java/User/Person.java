@@ -15,7 +15,7 @@ import java.util.List;
 
 public class Person implements Serializable{
     private String ID = "";
-    private List<File> files = new ArrayList<File>();
+    private List<String> files = new ArrayList<String>();
     private boolean isConnected = false;
 
     public Person(){}
@@ -24,23 +24,23 @@ public class Person implements Serializable{
         this.ID = ID;
     }
 
-    public Person(String ID, File... files){
+    public Person(String ID, String... files){
         this(ID);
-        for(File f : files){
+        for(String f : files){
             this.files.add(f);
         }
     }
 
-    public void addFile(File f){
+    public void addFile(String f){
         if(!files.contains(f)) {
             files.add(f);
         }
     }
 
-    public void removeFile(File file){
+    public void removeFile(String file){
         int index = -1;
-        for(File f : files){
-            if(f.getName().equals(file.getName())){
+        for(String f : files){
+            if(f.equals(file)){
                 index = files.indexOf(f);
                 break;
             }
@@ -62,7 +62,7 @@ public class Person implements Serializable{
         return isConnected;
     }
 
-    public List<File> getFiles() {
+    public List<String> getFiles() {
         return files;
     }
 }
