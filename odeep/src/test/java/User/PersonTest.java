@@ -19,19 +19,19 @@ class PersonTest {
 
     @Test
     void addFile() {
-        File f = new File("./test.txt");
-        File f2 = new File("./test.txt");
-        p.addFile(f);
+        String f1 = "file1";
+        String f2 = "file2";
+        p.addFile(f1);
         p.addFile(f2);
         assertEquals(1, p.getFiles().size());
-        assertTrue(p.getFiles().contains(f));
+        assertTrue(p.getFiles().contains(f1));
     }
 
     @Test
     void removeFile() {
-        File f1 = new File("./test1.txt");
-        File f2 = new File("./test2.txt");
-        File f3 = new File("./test3.txt");
+        String f1 = "file1";
+        String f2 = "file2";
+        String f3 = "file3";
         p.addFile(f1);
         p.addFile(f2);
         p.addFile(f3);
