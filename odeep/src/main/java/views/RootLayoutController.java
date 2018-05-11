@@ -1,13 +1,15 @@
 package views;
 
+import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
+import User.Person;
+import User.Group;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import main.Main;
 import javafx.fxml.FXML;
@@ -17,16 +19,19 @@ import peer.PeerMessage;
 public class RootLayoutController implements Initializable {
 
     private Main mainApp;
-    static int groupeID = 1;
     private static List<ListView> listView = new ArrayList();
     private Stage dialogStage;
     private boolean okClicked = false;
+    private HashMap<String, List<File>> mapFile = new HashMap<String, List<File>>();
 
     @FXML
     private Accordion accordion;
 
     @FXML
     private TextField groupNameField;
+
+    @FXML
+    private ListView middleList;
 
     public void setMainApp(Main mainApp) {
         this.mainApp = mainApp;
@@ -39,13 +44,6 @@ public class RootLayoutController implements Initializable {
      */
     public static List<ListView> getListView() {
         return listView;
-    }
-
-    /**
-     * Load the groups from the config files. Used when the application is started.
-     */
-    public void loadGroups() {
-
     }
 
     @FXML
@@ -65,8 +63,14 @@ public class RootLayoutController implements Initializable {
             pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
-                    // TODO: afficher les fichiers
-                    System.out.println("testtest");
+                    middleList.getItems().clear();
+                    middleList.getItems().add("test");
+                    if(mapFile.containsKey(groupNameField.getText())) {
+                        List<File> files = mapFile.get(groupNameField.getText());
+                        for (File f : files) {
+                            middleList.getItems().add(f.getName());
+                        }
+                    }
                 }
             });
             accordion.getPanes().add(pane);
@@ -74,6 +78,19 @@ public class RootLayoutController implements Initializable {
         groupNameField.setText("");
     }
 
+    public void fillFileMap(List<Group> groups){
+        for(Group g : groups){
+            List<File> files = new ArrayList<File>();
+            for(Person p : g.getMembers()){
+                for(File f : p.getFiles()){
+                    if(!files.contains(f)){
+                        files.add(f);
+                    }
+                }
+            }
+            mapFile.put(g.getID(), files);
+        }
+    }
 
     @FXML
     private void handleInvite() {

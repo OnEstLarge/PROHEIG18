@@ -225,6 +225,9 @@ public class PeerMessage {
         for(; index < data.length; index++){
             result[index] = data[index];
         }
+        if(index == sizeWithPad){
+            return result;
+        }
         result[index] = PADDING_START;
         index++;
         for(; index < sizeWithPad; index++){

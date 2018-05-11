@@ -225,4 +225,7 @@ public class Node {
     //test
     //cette clé sera stocker dans les groupes
     private byte[] key = null;
+
+    public static String filename = null;
+    public static int filesize = 0;
 }

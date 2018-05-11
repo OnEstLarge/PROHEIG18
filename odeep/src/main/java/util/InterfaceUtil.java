@@ -12,13 +12,11 @@ package util;
 
 import User.Group;
 import User.Person;
-import config.GenerateConfigFile;
 import message.MessageType;
+import org.bouncycastle.crypto.InvalidCipherTextException;
 import peer.PeerMessage;
 
-import javax.swing.plaf.nimbus.State;
 import java.io.*;
-import java.sql.*;
 import java.util.Properties;
 
 /**
@@ -29,43 +27,50 @@ public class InterfaceUtil {
     /**
      * Crée un groupe.
      *
-     * @param groupID   nom du groupe
+     * @param groupID nom du groupe
      * @return true,    groupe créé
-     *         false,   groupe déjà existant ou erreur
+     * false,   groupe déjà existant ou erreur
      */
     public static boolean createGroup(String groupID, String idFrom, String idTo) {
 
         // Check la validité du string groupID
-        if(PeerMessage.isValidIdFormat(groupID, PeerMessage.ID_GROUP_MIN_LENGTH, PeerMessage.ID_GROUP_MAX_LENGTH)) {
+        if (PeerMessage.isValidIdFormat(groupID, PeerMessage.ID_GROUP_MIN_LENGTH, PeerMessage.ID_GROUP_MAX_LENGTH)) {
 
-            // Crée le groupe localement
-            String dir = "./shared_files" + groupID ;
-            File file = new File(dir);
-            GenerateConfigFile configFile = null;
-            Group group = new Group(groupID, new Person(idFrom));
+            try {
+                // Demande au serveur si le groupe existe déjà
+                String serverIP = loadProperties("server.properties", "ip");
+                PeerMessage message = new PeerMessage(MessageType.NEWG, groupID, idFrom, idTo, groupID.getBytes());
 
-            if(!file.exists() || !file.isDirectory()) {
-                file.mkdirs();
+                // Génération du fichier config.json
+                Group group = new Group(groupID, new Person(idFrom));
+                String jsonConfig = JSONUtil.toJson(group);
+                JSONUtil.updateConfig(group.getID(), jsonConfig);
 
-                configFile = new GenerateConfigFile("config", idFrom, group);
-                
-                try {
-                    JSONUtil.updateConfig(group.getID(), JSONUtil.toJson(configFile));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                // Chiffrement du config.json
+                RandomAccessFile f = new RandomAccessFile("./shared_files" + groupID + "/key", "r");
+                byte[] key = new byte[(int) f.length()];
+                f.readFully(key);
+                byte[] cipherConfig = CipherUtil.AESEncrypt(JSONUtil.toJson(jsonConfig).getBytes(), key);
+
+                //TODO : PAS FINI
+                // Crée le groupe localement
+                String dir = "./shared_files/" + groupID;
+                File file = new File(dir);
+
+                if (!file.exists() || !file.isDirectory()) {
+                    file.mkdirs();
                 }
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InvalidCipherTextException e) {
+                e.printStackTrace();
             }
-
-
-            // Demande au serveur si le groupe existe déjà
-            String serverIP = loadProperties("server.properties", "ip");
-
-            //PeerMessage message = new PeerMessage(MessageType.NEWG, groupID, idFrom, idTo, );
-
         }
-
         return false;
     }
 
@@ -76,9 +81,9 @@ public class InterfaceUtil {
     /**
      * Récupère un propriété d'un fichier 'properties'.
      *
-     * @param filename  fichier 'properties'
-     * @param property  propriété concernée
-     * @return  la valeur de la propriété 'property'
+     * @param filename fichier 'properties'
+     * @param property propriété concernée
+     * @return la valeur de la propriété 'property'
      */
     public static String loadProperties(String filename, String property) {
         String result = "";

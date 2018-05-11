@@ -91,7 +91,7 @@ public class CipherUtil {
      * @return tableau de byte contenant les données déchiffrées
      * @throws InvalidCipherTextException
      */
-    public static byte[] AESDEcrypt(byte[] data, byte[] key) throws InvalidCipherTextException {
+    public static byte[] AESDecrypt(byte[] data, byte[] key) throws InvalidCipherTextException {
         if(data == null || key == null){
             throw new NullPointerException();
         }
