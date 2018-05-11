@@ -12,8 +12,8 @@ package util;
 
 import User.Group;
 import User.Person;
+import com.google.gson.Gson;
 import message.MessageType;
-import org.bouncycastle.crypto.InvalidCipherTextException;
 import peer.PeerMessage;
 
 import java.io.*;
@@ -72,18 +72,23 @@ public class InterfaceUtil {
         return false;
     }
 
+    /**
+     * @param filename
+     * @param userID
+     * @param groupID
+     */
     public static void addFile(String filename, String userID, String groupID) {
 
-        // Vérifie que le nom de fichier est disponible (au sein du groupe)
-        if(checkFilename(filename, groupID)) {
-            try {
+        try {
+            //Récupère le contenu du fichier config.json
+            RandomAccessFile f = new RandomAccessFile("./shared_files/" + groupID + "/config.json", "r");
+            byte[] configData = new byte[(int) f.length()];
+            f.readFully(configData);
 
-                //Récupère le contenu du fichier config.json
-                RandomAccessFile f = new RandomAccessFile("./shared_files/" + groupID + "/config.json", "r");
-                byte[] configData = new byte[(int) f.length()];
-                f.readFully(configData);
+            Group group = JSONUtil.parseJson(new String(configData), Group.class);
 
-                Group group = JSONUtil.parseJson(new String(configData), Group.class);
+            // Vérifie que le nom de fichier est disponible (au sein du groupe)
+            if (checkFilename(filename, group)) {
 
                 // Ajoute le fichier à la liste des fichiers de l'utilisateur
                 group.addFile(filename, userID);
@@ -91,17 +96,28 @@ public class InterfaceUtil {
                 // Affecte la modification au fichier config.json
                 JSONUtil.updateConfig(groupID, JSONUtil.toJson(group));
 
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    private static boolean checkFilename(String filename, String groupID) {
-
-        return false;
+    /**
+     * @param filename
+     * @param group
+     * @return
+     */
+    private static boolean checkFilename(String filename, Group group) {
+        for (Person person : group.getMembers()) {
+            for (String f : person.getFiles()) {
+                if (filename.equals(f)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public static void askFile(String groupID, String filename) {

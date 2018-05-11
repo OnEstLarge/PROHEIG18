@@ -28,6 +28,7 @@ import peer.PeerConnection;
 import peer.PeerInformations;
 import peer.PeerMessage;
 
+import util.InterfaceUtil;
 import util.JSONUtil;
 
 import util.CipherUtil;
@@ -83,12 +84,12 @@ public class Test {
         File file = new File(dir);
         file.mkdirs();
 
-        GenerateConfigFile configFile1 = new GenerateConfigFile(group1);
-        //GenerateConfigFile configFile2 = new GenerateConfigFile("config", mathieu.getID(), group2);
-
         try {
+            JSONUtil.updateConfig(group1.getID(), JSONUtil.toJson(group1));
 
-            JSONUtil.updateConfig(group1.getID(), JSONUtil.toJson(configFile1));
+            InterfaceUtil.addFile("testFile", "PussySlayer69", "group1");
+            InterfaceUtil.addFile("testFil2e", "FrouzDu78", "group1");
+            System.out.println("testFile added");
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
