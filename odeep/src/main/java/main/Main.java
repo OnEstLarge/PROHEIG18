@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import views.AcceptInviteDialogController;
 import views.InviteDialogController;
 import views.PseudoDialogController;
 import views.RootLayoutController;
@@ -25,8 +26,7 @@ public class Main extends Application {
     private Stage primaryStage;
     private BorderPane rootLayout;
     private List<Group> groups = new ArrayList();
-    private File file;
-    private Person oli = new Person("Olivier", file);
+    private Person oli = new Person("Olivier", "file");
     private String userPseudo ="123";
 
     @Override
@@ -123,6 +123,35 @@ public class Main extends Application {
         }
     }
 
+    public boolean showAcceptInviteDialog(String groupName){
+        try{
+            // Load the FXML filer and create a new stage for the popup dialog.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Main.class.getResource("/views/AcceptInviteDialog.fxml"));
+            AnchorPane page = loader.load();
+
+            // Create the dialog Stage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Group invitation");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+
+            // Set the invite controller
+            AcceptInviteDialogController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.getMessageLabel().setText("Vous avez été invité dans le groupe " + groupName);
+
+            // Show the dialog and wait  until the user closes it
+            dialogStage.showAndWait();
+
+            return controller.isOkClicked();
+        }catch(IOException e){
+            e.printStackTrace();
+            return false;
+        }
+    }
     /**
      * Returns the main stage.
      *

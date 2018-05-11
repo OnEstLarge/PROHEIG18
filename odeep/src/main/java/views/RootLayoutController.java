@@ -9,7 +9,6 @@ import User.Group;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import main.Main;
 import javafx.fxml.FXML;
@@ -22,7 +21,12 @@ public class RootLayoutController implements Initializable {
     private static List<ListView> listView = new ArrayList();
     private Stage dialogStage;
     private boolean okClicked = false;
-    private HashMap<String, List<File>> mapFile = new HashMap<String, List<File>>();
+
+    public HashMap<String, List<String>> getMapFile() {
+        return mapFile;
+    }
+
+    private HashMap<String, List<String>> mapFile = new HashMap<String, List<String>>();
 
     @FXML
     private Accordion accordion;
@@ -48,7 +52,10 @@ public class RootLayoutController implements Initializable {
 
     @FXML
     private void handleCreateButtonAction() {
-        if (PeerMessage.isValidIdFormat(groupNameField.getText(), PeerMessage.ID_GROUP_MIN_LENGTH, PeerMessage.ID_GROUP_MAX_LENGTH)) {
+        String errorMsg = "";
+        if (!PeerMessage.isValidIdFormat(groupNameField.getText(), PeerMessage.ID_GROUP_MIN_LENGTH, PeerMessage.ID_GROUP_MAX_LENGTH)) {
+            errorMsg += "Group name must be between " + PeerMessage.ID_GROUP_MIN_LENGTH + " and " + PeerMessage.ID_GROUP_MAX_LENGTH + " characters long.\n";
+        }else{
             TitledPane pane = new TitledPane();
             ListView view = new ListView();
 
@@ -58,6 +65,7 @@ public class RootLayoutController implements Initializable {
             pane.setText(groupNameField.getText());
             pane.setContent(view);
             pane.setCollapsible(true);
+            mapFile.put(groupNameField.getText(), null); // TODO: ajouter les fichiers de l'utilisateur.
 
             // Display the files availables in the group in the middle pane when the group is selected.
             pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -66,25 +74,34 @@ public class RootLayoutController implements Initializable {
                     middleList.getItems().clear();
                     middleList.getItems().add("test");
                     if(mapFile.containsKey(groupNameField.getText())) {
-                        List<File> files = mapFile.get(groupNameField.getText());
-                        for (File f : files) {
-                            middleList.getItems().add(f.getName());
+                        List<String> files = mapFile.get(groupNameField.getText());
+                        for (String s : files) {
+                            middleList.getItems().add(s);
                         }
                     }
                 }
             });
             accordion.getPanes().add(pane);
         }
+        if (errorMsg.length() != 0) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.initOwner(dialogStage);
+            alert.setTitle("Invalid Fields");
+            alert.setHeaderText("Please correct invalid fields");
+            alert.setContentText(errorMsg);
+
+            alert.showAndWait();
+        }
         groupNameField.setText("");
     }
 
     public void fillFileMap(List<Group> groups){
         for(Group g : groups){
-            List<File> files = new ArrayList<File>();
+            List<String> files = new ArrayList<String>();
             for(Person p : g.getMembers()){
-                for(File f : p.getFiles()){
-                    if(!files.contains(f)){
-                        files.add(f);
+                for(String s : p.getFiles()){
+                    if(!files.contains(s)){
+                        files.add(s);
                     }
                 }
             }
