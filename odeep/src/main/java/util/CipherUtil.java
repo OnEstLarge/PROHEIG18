@@ -71,7 +71,7 @@ public class CipherUtil {
      * @return tableau de byte contenant les données chiffrées
      * @throws InvalidCipherTextException
      */
-    public static byte[] AESEncrypt(byte[] data, byte[] key) throws InvalidCipherTextException {
+    public static byte[] AESEncrypt(byte[] data, byte[] key) {
         if(data == null || key == null){
             throw new NullPointerException();
         }
@@ -79,7 +79,12 @@ public class CipherUtil {
             throw new InvalidParameterException("Incorrect key length");
         }
         byte[][] keys = splitKey(key);
-        byte[] cipherData = AESProcessing(data, keys[0], true);
+        byte[] cipherData = new byte[0];
+        try {
+            cipherData = AESProcessing(data, keys[0], true);
+        } catch (InvalidCipherTextException e) {
+            e.printStackTrace();
+        }
         byte[] HMAC = generateHMAC(cipherData, keys[1]);
         return Bytes.concat(cipherData, HMAC);
     }
@@ -284,8 +289,15 @@ public class CipherUtil {
      * @throws NoSuchAlgorithmException si l'algorithme n'est pas reconnue
      * @throws NoSuchProviderException si le fournisseur est inconnu
      */
-    public static KeyPair GenerateRSAKey() throws NoSuchAlgorithmException, NoSuchProviderException {
-        KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA", "BC");
+    public static KeyPair GenerateRSAKey() {
+        KeyPairGenerator kpg = null;
+        try {
+            kpg = KeyPairGenerator.getInstance("RSA", "BC");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        }
         kpg.initialize(RSA_KEY_SIZE, new SecureRandom());
         return kpg.generateKeyPair();
     }
@@ -301,10 +313,28 @@ public class CipherUtil {
      * @throws BadPaddingException
      * @throws IllegalBlockSizeException
      */
-    public static byte[] RSAEncrypt(PublicKey key, byte[] plain) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
-        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, key);
-        byte[] cipherText = cipher.doFinal(plain);
+    public static byte[] RSAEncrypt(PublicKey key, byte[] plain) {
+        Cipher cipher = null;
+        try {
+            cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        }
+        try {
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        }
+        byte[] cipherText = new byte[0];
+        try {
+            cipherText = cipher.doFinal(plain);
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        }
         return cipherText;
     }
 
@@ -319,10 +349,28 @@ public class CipherUtil {
      * @throws BadPaddingException
      * @throws IllegalBlockSizeException
      */
-    public static byte[] RSADecrypt(PrivateKey key, byte[] cipherText) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
-        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-        cipher.init(Cipher.DECRYPT_MODE, key);
-        byte[] dectyptedText = cipher.doFinal(cipherText);
+    public static byte[] RSADecrypt(PrivateKey key, byte[] cipherText) {
+        Cipher cipher = null;
+        try {
+            cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        }
+        try {
+            cipher.init(Cipher.DECRYPT_MODE, key);
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        }
+        byte[] dectyptedText = new byte[0];
+        try {
+            dectyptedText = cipher.doFinal(cipherText);
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        }
         return dectyptedText;
     }
 
@@ -333,11 +381,21 @@ public class CipherUtil {
      * @throws NoSuchAlgorithmException
      * @throws InvalidKeySpecException
      */
-    public static PublicKey byteToPublicKey(byte[] b) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public static PublicKey byteToPublicKey(byte[] b) {
         String s = new String(b);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        KeyFactory keyFactory = null;
+        try {
+            keyFactory = KeyFactory.getInstance("RSA");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
         X509EncodedKeySpec eks = new X509EncodedKeySpec(Base64.decode(s));
-        PublicKey publicKey = keyFactory.generatePublic(eks);
+        PublicKey publicKey = null;
+        try {
+            publicKey = keyFactory.generatePublic(eks);
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
         return publicKey;
     }
 

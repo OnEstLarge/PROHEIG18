@@ -117,8 +117,9 @@ public class Test {
 
                     String[] a = mess.split(" ");
                     String type = a[0];
-                    String pseudo = a[1];
-                    String content = a[2];
+                    String group = a[1];
+                    String pseudo = a[2];
+                    String content = a[3];
 
                     if(type.equals(MessageType.SMES)) {
                         PeerMessage m = new PeerMessage(type, idGroup, myInfo.getID(), pseudo, content.getBytes());
@@ -141,8 +142,8 @@ public class Test {
                     }
                     else if(type.equals(MessageType.DHS1)){
                         try {
-                            n.setKey(CipherUtil.generateKey());
-                            n.setKey("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".getBytes());
+                            n.setKey(CipherUtil.generateKey(), group);
+
                             RSAHandler RSA = new RSAHandler();
                             RSA.setKeys();
                             n.setTempRSAInfo(RSA);
