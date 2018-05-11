@@ -51,7 +51,7 @@ public class PeerHandler implements Runnable {
         if(message.getType().equals(MessageType.DHR1)){
             RSA = node.getTempRSAInfo();
             if(RSA != null) {
-                RSA.sendEncryptedKey(node, message);
+                RSA.sendEncryptedKey(node, message, message.getIdGroup());
                 node.setTempRSAInfo(null);
             }
         }

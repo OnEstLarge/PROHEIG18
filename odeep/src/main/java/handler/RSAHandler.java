@@ -52,13 +52,13 @@ public class RSAHandler {
         }
     }
 
-    public void sendEncryptedKey(Node n, PeerMessage messageReceved) {
+    public void sendEncryptedKey(Node n, PeerMessage messageReceved, String group) {
         String sender = CipherUtil.erasePadding(messageReceved.getIdFrom(), PeerMessage.PADDING_START);
         byte[] foreignKey = CipherUtil.erasePadding(messageReceved.getMessageContent(), PeerMessage.PADDING_START);
 
         byte[] encryptedKey = new byte[0];
         try {
-            encryptedKey = CipherUtil.RSAEncrypt(CipherUtil.byteToPublicKey(foreignKey), n.getKey());
+            encryptedKey = CipherUtil.RSAEncrypt(CipherUtil.byteToPublicKey(foreignKey), n.getKey(group));
         } catch (NoSuchPaddingException e) {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
