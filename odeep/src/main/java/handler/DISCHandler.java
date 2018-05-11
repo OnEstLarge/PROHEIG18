@@ -6,7 +6,7 @@ import message.MessageHandler;
 import message.MessageType;
 import peer.PeerConnection;
 import peer.PeerMessage;
-import util.DatabaseUtil;
+import main.Client;
 import util.JSONUtil;
 
 import java.io.File;
@@ -20,7 +20,7 @@ public class DISCHandler implements MessageHandler{
         for(int i = 0; i < g.getMembers().size(); i++){
             if(g.getMembers().get(i).equals(m.getIdTo())){
                 g.getMembers().get(i).disconnect();
-                DatabaseUtil.uploadJSON(JSONUtil.toJson(g),m.getIdGroup());
+                Client.uploadJSON(JSONUtil.toJson(g),m.getIdGroup(), m.getIdTo());
             }
         }
     }
