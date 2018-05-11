@@ -242,7 +242,7 @@ public class Client {
         try catch() {send through server socket}
     }*/
 
-    private String askForInfos(String pseudo) {
+    private static String askForInfos(String pseudo) {
         PeerMessage askInfo = new PeerMessage(MessageType.INFO, "XXXXXX", myPseudo, myPseudo, "".getBytes());
         try {
             out.write(askInfo.getFormattedMessage());
@@ -262,7 +262,7 @@ public class Client {
         }
     }
 
-    private void uploadJSON(String filenameJSON, String groupID, String idFrom) {
+    public static void uploadJSON(String filenameJSON, String groupID, String idFrom) {
         //TODO tester validité des paramètres
 
         PeerMessage uploadMessage = new PeerMessage(MessageType.UPLO, groupID, idFrom, idFrom, groupID.getBytes());
@@ -284,7 +284,7 @@ public class Client {
             out.flush();
 
             Group group = JSONUtil.parseJson(new String(configFileByte), Group.class);
-            for(Person person : group.getMembers()) {
+            for (Person person : group.getMembers()) {
                 PeerMessage pm = new PeerMessage(MessageType.UPDT, groupID, idFrom, person.getID(), "".getBytes());
                 try {
                     Socket localConnection = new Socket(askForInfos(person.getID()), 4444);
@@ -293,9 +293,9 @@ public class Client {
                     o.flush();
                     o.close();
                     localConnection.close();
-;                }catch(IOException e) {
+                } catch (IOException e) {
                     System.out.println(e.getMessage());
-                    if(e.getMessage().equals("Connection refused")){
+                    if (e.getMessage().equals("Connection refused")) {
                         //Si la connexion en locale échoue, on utilise le server relais
                         out.write(pm.getFormattedMessage());
                         out.flush();
@@ -309,7 +309,7 @@ public class Client {
         }
     }
 
-    private String downloadJSON(String group) {
+    public static String downloadJSON(String group) {
 
         return null;
     }
