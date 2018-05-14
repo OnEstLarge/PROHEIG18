@@ -2,6 +2,7 @@ package handler;
 
 import Node.Node;
 import message.MessageHandler;
+import message.MessageType;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import peer.PeerConnection;
 import peer.PeerMessage;
@@ -53,7 +54,7 @@ public class SFILHandler implements MessageHandler {
             } catch (IOException ex) {
                 ex.printStackTrace();
             } catch (InvalidCipherTextException e) {
-                e.printStackTrace();
+                c.sendMessage(new PeerMessage(MessageType.PGET, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getNoPacket(), new byte[]{}));
             }
         }
     }
