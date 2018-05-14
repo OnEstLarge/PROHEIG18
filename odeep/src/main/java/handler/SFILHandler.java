@@ -16,7 +16,7 @@ public class SFILHandler implements MessageHandler {
         RandomAccessFile f = null;
         byte[] key = null;
         try {
-            f = new RandomAccessFile("./" + m.getIdGroup() + "/key", "r");
+            f = new RandomAccessFile("./shared_files/" + m.getIdGroup() + "/key", "r");
             key = new byte[(int) f.length()];
             f.readFully(key);
         } catch (FileNotFoundException e) {
@@ -25,17 +25,22 @@ public class SFILHandler implements MessageHandler {
             e.printStackTrace();
         }
 
-        byte[] rcv = CipherUtil.erasePadding(m.getMessageContent(), PeerMessage.PADDING_START);
+        byte[] rcv = new byte[0];
+        try {
+            rcv = CipherUtil.AESDecrypt(CipherUtil.erasePadding(m.getMessageContent(), PeerMessage.PADDING_START), key);
+        } catch (InvalidCipherTextException e) {
+            e.printStackTrace();
+        }
         if (m.getNoPacket() == 0) {
             String[] fileInfo = new String(rcv).split(":");
             Node.filesize = Integer.parseInt(fileInfo[1]);
             Node.filename = fileInfo[0];
             System.out.println("Receiving " + fileInfo[0]);
-            byte[] padding = new byte[PeerMessage.MESSAGE_CONTENT_SIZE];
+            byte[] padding = new byte[]{'\0'};
             FileOutputStream fos = null;
             try {
-                fos = new FileOutputStream("./shared_file/" + m.getIdGroup() + "/" + Node.filename);
-                for (int i = 0; i < (Node.filesize / PeerMessage.MESSAGE_CONTENT_SIZE) + 1; i++) {
+                fos = new FileOutputStream("./shared_files/" + m.getIdGroup() + "/" + Node.filename);
+                for (int i = 0; i < Node.filesize; i++) {
                     fos.write(padding);
                 }
                 fos.close();
@@ -44,16 +49,12 @@ public class SFILHandler implements MessageHandler {
             }
         } else {
             try {
-                RandomAccessFile raf = new RandomAccessFile("./shared_file/" + m.getIdGroup() + "/" + Node.filename, "rw");
+                RandomAccessFile raf = new RandomAccessFile("./shared_files/" + m.getIdGroup() + "/" + Node.filename, "rw");
                 raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * (m.getNoPacket() - 1));
-                byte[] message = CipherUtil.erasePadding(m.getMessageContent(), PeerMessage.PADDING_START);
-                message = CipherUtil.AESDecrypt(message, key);
-                raf.write(message);
+                raf.write(rcv);
                 raf.close();
             } catch (IOException ex) {
                 ex.printStackTrace();
-            } catch (InvalidCipherTextException e) {
-                e.printStackTrace();
             }
         }
     }
