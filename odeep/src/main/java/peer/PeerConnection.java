@@ -54,6 +54,7 @@ public class PeerConnection {
         try {
             System.out.println("TOSEND" + message.getType() + " --- " +new String(message.getMessageContent()));
             os.write(message.getFormattedMessage());
+            os.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }

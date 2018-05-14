@@ -47,7 +47,7 @@ public class Test {
         final PeerInformations olivier = new PeerInformations("olivier", "10.192.93.97", 4444);
         final PeerInformations mathieu = new PeerInformations("mathieu", "10.192.91.89", 4444);
 
-        final PeerInformations myInfo = mathieu;
+        final PeerInformations myInfo = schurch;
 
         final HashMap<String, PeerInformations> users = new HashMap<String, PeerInformations>();
         users.put("schurch", schurch);
