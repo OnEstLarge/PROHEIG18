@@ -9,6 +9,7 @@ package peer;/*
 */
 
 import com.sun.media.sound.InvalidFormatException;
+import org.bouncycastle.jcajce.provider.symmetric.AES;
 import org.bouncycastle.util.Arrays;
 import util.CipherUtil;
 
@@ -32,16 +33,19 @@ import java.lang.reflect.Array;
  */
 public class PeerMessage {
 
-    public static final int  TYPE_LENGTH          =      4;
-    public static final int  ID_GROUP_MIN_LENGTH  =      6;
-    public static final int  ID_GROUP_MAX_LENGTH  =     16;
-    public static final int  ID_MIN_LENGTH        =      6;
-    public static final int  ID_MAX_LENGTH        =     16;
-    public static final int  NO_PACKET_DIGITS     =      8;
-    public static final int  BLOCK_SIZE           =   4096;
-    public static final int  FORCE_PADDING        =     16;
-    public static final int  HEADER_SIZE          = TYPE_LENGTH + ID_GROUP_MAX_LENGTH + 2 * ID_MAX_LENGTH + NO_PACKET_DIGITS + 4;
-    public static final int  MESSAGE_CONTENT_SIZE = BLOCK_SIZE - HEADER_SIZE - FORCE_PADDING;
+    public static final int  TYPE_LENGTH           =      4;
+    public static final int  ID_GROUP_MIN_LENGTH   =      6;
+    public static final int  ID_GROUP_MAX_LENGTH   =     16;
+    public static final int  ID_MIN_LENGTH         =      6;
+    public static final int  ID_MAX_LENGTH         =     16;
+    public static final int  NO_PACKET_DIGITS      =      8;
+    public static final int  BLOCK_SIZE            =   4096;
+    public static final int  FORCE_PADDING         =     16;
+    public static final int  AES_PADDING           =     16;
+    public static final int  HMAC_SIZE             =     CipherUtil.HMAC_SIZE;
+    public static final int  HEADER_SIZE           = TYPE_LENGTH + ID_GROUP_MAX_LENGTH + 2 * ID_MAX_LENGTH + NO_PACKET_DIGITS + 4;
+    public static final int  MESSAGE_CONTENT_SIZE  = BLOCK_SIZE - HEADER_SIZE - FORCE_PADDING - HMAC_SIZE  - AES_PADDING;
+    public static final int  MESSAGE_WITH_PAD_SIZE = MESSAGE_CONTENT_SIZE + FORCE_PADDING + HMAC_SIZE + AES_PADDING - 1;
 
 
     public static final char PADDING_START        = '_';
@@ -85,7 +89,7 @@ public class PeerMessage {
         }
 
         if(!isValidMessageContentFormat(messageContent)) {
-            throw new IllegalArgumentException("Invalid message content (size must match block size (" + MESSAGE_CONTENT_SIZE + " bytes))");
+            throw new IllegalArgumentException("Invalid message content (size must match block size (" + (MESSAGE_CONTENT_SIZE + HMAC_SIZE + AES_PADDING) + " bytes))");
         }
 
         this.type           = type;
@@ -155,7 +159,7 @@ public class PeerMessage {
      * @return                  true si le format du contenu du message passé en argument est correct
      */
     public static boolean isValidMessageContentFormat(byte[] messageContent) {
-        return messageContent != null && messageContent.length <= MESSAGE_CONTENT_SIZE;
+        return messageContent != null && messageContent.length <= MESSAGE_CONTENT_SIZE + HMAC_SIZE + AES_PADDING;
     }
 
     /**
@@ -278,7 +282,7 @@ public class PeerMessage {
         message.append(formatInt(noPacket, NO_PACKET_DIGITS)).append(",");
 
         // -1 sinon bug
-        byte[] messageWithPad = addPadding(messageContent, MESSAGE_CONTENT_SIZE-1 + FORCE_PADDING);
+        byte[] messageWithPad = addPadding(messageContent, MESSAGE_WITH_PAD_SIZE);
         byte[] toSend = new byte[message.toString().getBytes().length + messageWithPad.length];
         System.arraycopy(message.toString().getBytes(), 0, toSend, 0, message.toString().getBytes().length);
         System.arraycopy(messageWithPad, 0, toSend, message.toString().getBytes().length, messageWithPad.length);
