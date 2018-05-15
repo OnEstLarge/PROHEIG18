@@ -38,16 +38,13 @@ public class SFILHandler implements MessageHandler {
             Node.filesize = Integer.parseInt(fileInfo[1]);
             Node.filename = fileInfo[0];
             System.out.println("Receiving " + fileInfo[0]);
-            byte[] padding = new byte[]{'\0'};
-            FileOutputStream fos = null;
             try {
-                fos = new FileOutputStream("./shared_files/" + m.getIdGroup() + "/" + Node.filename);
-                for (int i = 0; i < Node.filesize; i++) {
-                    fos.write(padding);
-                }
-                fos.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
+                RandomAccessFile emptyFile = new RandomAccessFile("./shared_files/" + m.getIdGroup() + "/" + Node.filename, "rw");
+                emptyFile.setLength(Node.filesize);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         } else {
             try {
