@@ -50,26 +50,28 @@ public class FileSharingNode extends Node {
         index++;
         byte[] mes = new byte[PeerMessage.MESSAGE_CONTENT_SIZE];
 
-        for (int i = 0; i < (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE) + 1; i++, index++) {
-            System.out.println(1);
+        for (int i = 0; i < (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE); i++, index++) {
             PeerConnection c2 = new PeerConnection(destination);
-            System.out.println("./shared_files/" + groupID + "/" + filename);
             RandomAccessFile raf = new RandomAccessFile("./shared_files/" + groupID + "/" + filename, "rw");
-            System.out.println(3);
             raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * i);
-            System.out.println(4);
-            raf.read(mes, 0, PeerMessage.MESSAGE_CONTENT_SIZE);
-            System.out.println(5);
+            raf.read(mes, 0, mes.length);
             raf.close();
-            System.out.println(6);
             byte[] cipherMes = CipherUtil.AESEncrypt(mes, key);
-            System.out.println(7);
             PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination.getID(), index, cipherMes);
-            System.out.println(8);
             c2.sendMessage(p);
-            System.out.println(9);
             c2.close();
         }
+
+        byte[] lastMes = new byte[(int) (fileSize % PeerMessage.MESSAGE_CONTENT_SIZE)];
+        PeerConnection c2 = new PeerConnection(destination);
+        RandomAccessFile raf = new RandomAccessFile("./shared_files/" + groupID + "/" + filename, "rw");
+        raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * (fileSize/PeerMessage.MESSAGE_CONTENT_SIZE));
+        raf.read(lastMes, 0, lastMes.length);
+        raf.close();
+        byte[] cipherMes = CipherUtil.AESEncrypt(lastMes, key);
+        PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination.getID(), index, cipherMes);
+        c2.sendMessage(p);
+        c2.close();
     }
 
     /**
