@@ -21,7 +21,11 @@ import User.Group;
 
 
 public class Main extends Application {
+    @Override
+    public void start(Stage primaryStage) {
 
+    }
+/*
     private Stage primaryStage;
     private BorderPane rootLayout;
     private List<Group> groups = new ArrayList();
@@ -156,7 +160,7 @@ public class Main extends Application {
      *
      * @return
      */
-    public Stage getPrimaryStage() {
+  /*  public Stage getPrimaryStage() {
         return primaryStage;
     }
 
@@ -171,4 +175,5 @@ public class Main extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+    */
 }

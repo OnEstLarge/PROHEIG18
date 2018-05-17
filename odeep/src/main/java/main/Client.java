@@ -2,23 +2,263 @@ package main;
 
 import Node.FileSharingNode;
 import Node.Node;
-import User.Group;
 import User.Person;
 import handler.*;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
+import java.io.*;
+import java.net.Inet4Address;
+import java.net.NetworkInterface;
+import java.net.Socket;
+import java.net.SocketException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+
 import message.MessageType;
 import peer.PeerConnection;
 import peer.PeerInformations;
 import peer.PeerMessage;
 import util.CipherUtil;
 import util.JSONUtil;
+import views.AcceptInviteDialogController;
+import views.InviteDialogController;
+import views.PseudoDialogController;
+import views.RootLayoutController;
+import User.Group;
 
-import java.io.*;
-import java.net.*;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.util.Enumeration;
 
-public class Client {
+public class Client extends Application {
+
+    private Stage primaryStage;
+    private BorderPane rootLayout;
+    private List<Group> groups = new ArrayList();
+    private Person oli = new Person("Olivier", "file");
+    //private String userPseudo ="123";
+
+    @Override
+    public void start(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+        this.primaryStage.setTitle("ODEEP");
+        initRootLayout();
+    }
+
+
+    /**
+     * Vérifie dans le fichier '.userInfo' si l'utilisateur possède déjà un pseudo.
+     *
+     * @return le pseudo de l'utilisateur.
+     *         null, si l'utilisateur ne possède pas encorede pseudo.
+     */
+    private static String usernameExists() {
+        String username = null;
+        final String userFilename = ".userInfo";
+        File userFile = new File("./" + userFilename);
+
+        if(userFile.exists() && !userFile.isDirectory()) {
+            username = readFromFile(userFile);
+        }
+
+        return username;
+    }
+    private static String readFromFile(File file) {
+        StringBuilder stringBuilder = new StringBuilder();
+        FileInputStream fileInputStream = null;
+        BufferedReader bufferedReader = null;
+        try {
+            fileInputStream = new FileInputStream(file);
+            bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
+            String line;
+
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuilder.append(line).append("\n");
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                bufferedReader.close();
+                fileInputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return stringBuilder.toString();
+    }
+
+    private static void writeToFile(File file, String data) {
+        PrintWriter writer = null;
+        try {
+
+            writer = new PrintWriter(file, "UTF-8");
+            writer.println(data);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } finally {
+            writer.close();
+        }
+    }
+
+    public void initRootLayout() {
+        if ((myUsername = usernameExists()) == null) {
+            boolean ok = showPseudoDialog();
+            while(!ok){ // Ask for a pseudo until a valid one is entered.
+                ok = showPseudoDialog();
+            }
+            //write file .userInfo with the valid username
+            writeToFile(new File("./.userInfo"), myUsername);
+        }
+        try {
+            // Load root layout from fxml file.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Client.class.getResource("/views/RootLayout.fxml"));
+            rootLayout = loader.load();
+
+            // Show the scene containing the root layout.
+            Scene scene = new Scene(rootLayout);
+            primaryStage.setScene(scene);
+
+            // Give the controller access to the main app.
+            RootLayoutController controller = loader.getController();
+            controller.setMainApp(this);
+            controller.fillFileMap(groups);
+
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean showInviteDialog() {
+        try {
+            // Load the FXML filer and create a new stage for the popup dialog.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Client.class.getResource("/views/InviteDialog.fxml"));
+            AnchorPane page = loader.load();
+
+            // Create the dialog Stage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Invite a member");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+
+            // Set the invite controller
+            InviteDialogController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+
+            // Show the dialog and wait  until the user closes it
+            dialogStage.showAndWait();
+
+            return controller.isOkClicked();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean showPseudoDialog(){
+        try{
+            // Load the FXML filer and create a new stage for the popup dialog.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Client.class.getResource("/views/PseudoDialog.fxml"));
+            AnchorPane page = loader.load();
+
+            // Create the dialog Stage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Choose your pseudo");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+
+            // Set the invite controller
+            PseudoDialogController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.setMainApp(this);
+
+            // Show the dialog and wait  until the user closes it
+            dialogStage.showAndWait();
+
+            return controller.isNameOK();
+        }catch(IOException e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean showAcceptInviteDialog(String groupName){
+        try{
+            // Load the FXML filer and create a new stage for the popup dialog.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Client.class.getResource("/views/AcceptInviteDialog.fxml"));
+            AnchorPane page = loader.load();
+
+            // Create the dialog Stage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Group invitation");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+
+            // Set the invite controller
+            AcceptInviteDialogController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.getMessageLabel().setText("Vous avez été invité dans le groupe " + groupName);
+
+            // Show the dialog and wait  until the user closes it
+            dialogStage.showAndWait();
+
+            return controller.isOkClicked();
+        }catch(IOException e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+    /**
+     * Returns the main stage.
+     *
+     * @return
+     */
+    public Stage getPrimaryStage() {
+        return primaryStage;
+    }
+
+    public String getUserPseudo() {
+        return myUsername;
+    }
+
+    public void setUserPseudo(String pseudo) {
+        myUsername = pseudo;
+    }
+
+
+
+
+
+
+
+
+
+
+
     private static final String IP_SERVER = "192.168.0.214";//"206.189.49.105";
     private static final int PORT_SERVER = 8080;
     private static final int LOCAL_PORT = 4444;
@@ -26,23 +266,56 @@ public class Client {
     private static Socket clientSocketToServerPublic;
     private static BufferedInputStream in;
     private static BufferedOutputStream out;
+    private static boolean communicationReady = false;
 
     private static FileSharingNode n;
     private static boolean nodeIsRunning = true;
-    private static String myPseudo;
+    private static String myUsername = null;
     private static String localIP;
 
     private static String response = null;
 
-
     public static void main(String[] args) {
 
-        //Check si première ouverture de l'app
-        //Si première ouverture -> demander pseudo
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("Connecting to server");
+                //initconnection connect to serv, get pseudo, connect with pseudo
+                initConnections(IP_SERVER, PORT_SERVER);
+                getLocalIP();
+                initNode();
+            }
+        }).start();
+
+        launch(args);
+    }
+
+
+    private static void getPseudo() {
 
         //Sinon, on peut le pseudo dans le fichier de config
-        myPseudo = "WESHWESH";
+        while (myUsername == null) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
+    //ask the server if the entered username is available
+    public static boolean usernameValidation() {
+      /*  while(!communicationReady) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }*/
+        return true;
+    }
+    private static void getLocalIP() {
         //Get local IP used
         localIP = null;
         try {
@@ -65,9 +338,9 @@ public class Client {
         }
 
         System.out.println("Your local ip: " + localIP);
-
-
-        PeerInformations myInfos = new PeerInformations(myPseudo, localIP, LOCAL_PORT);
+    }
+    private static void initNode() {
+        PeerInformations myInfos = new PeerInformations(myUsername, localIP, LOCAL_PORT);
         System.out.println("Created myInfos");
         n = new FileSharingNode(myInfos);
         System.out.println("Created the node");
@@ -82,18 +355,15 @@ public class Client {
         System.out.println("Added the handlers");
 
         //connection au server publique
-        Client c = new Client();
-        System.out.println("Connecting to server");
-        c.initConnections(IP_SERVER, PORT_SERVER);
+        //Client c = new Client();
 
         //listening for incoming connections
         System.out.println("Launching node listening");
         n.acceptingConnections();
-
     }
 
     //initialise la connection avec le serveur et de lancer le server d'écoute du client
-    public void initConnections(String ip, int port) {
+    public static void initConnections(String ip, int port) {
         try {
             //clientSocketToServerPublic = new PeerConnection(new Socket(ip,port));
             clientSocketToServerPublic = new Socket(ip, port);
@@ -101,8 +371,12 @@ public class Client {
             in = new BufferedInputStream(clientSocketToServerPublic.getInputStream());
             out = new BufferedOutputStream(clientSocketToServerPublic.getOutputStream());
 
+            communicationReady = true;
+            //we have a pseudo after this
+            getPseudo();
+
             //Greetings to server, receivinig response
-            PeerMessage greetings = new PeerMessage(MessageType.HELO, "XXXXXX", myPseudo, "XXXXXX", 0, localIP.getBytes());
+            PeerMessage greetings = new PeerMessage(MessageType.HELO, "XXXXXX", myUsername, "XXXXXX", 0, localIP.getBytes());
             out.write(greetings.getFormattedMessage());
             out.flush();
 
@@ -112,25 +386,11 @@ public class Client {
             return;
         }
 
-        new Thread(new ConnectionServer()).start();
-    }
-
-    //initialise la connection au serveur avec une thread pour la lecture et l'autre pour l'écriture
-    private class ConnectionServer implements Runnable {
-        public ConnectionServer() {
-        }
-
-        public void run() {
-            System.out.println("Reading from server start");
-            new Thread(new ReadFromServer()).start();
-            System.out.println("writing to server start");
-            new Thread(new WriteToServer()).start();
-        }
-
+        new Thread(new ReadFromServer()).start();
     }
 
     //Classe permettant de threader la lecture des packets server
-    private class ReadFromServer implements Runnable {
+    private static class ReadFromServer implements Runnable {
         public void run() {
             int read;
             byte[] buffer = new byte[4096];
@@ -157,17 +417,7 @@ public class Client {
             } finally {
                 try {
                     clientSocketToServerPublic.close();
-                } catch (IOException e) {
-                    System.out.println(e);
-                }
-
-                try {
                     in.close();
-                } catch (IOException e) {
-                    System.out.println(e);
-                }
-
-                try {
                     out.close();
                 } catch (IOException e) {
                     System.out.println(e);
@@ -176,38 +426,7 @@ public class Client {
         }
     }
 
-    //Classe permettant de threader l'envoie de packet au server
-    public class WriteToServer implements Runnable {
-
-        //TODO faire les trucs de l'inteface graphique ici
-        public void run() {
-
-            /*Scanner scanner = new Scanner(System.in);
-            while(nodeIsRunning) {
-                System.out.println("Scanner read next line");
-                String resp = scanner.nextLine();
-                if(resp.)
-            }*/
-            //PeerMessage p = new PeerMessage(MessageType.INFO, myPseudo, myPseudo, "XXXXXXX", "".getBytes());
-            System.out.println("Asking for info about myself...");
-            String a = askForInfos(myPseudo);
-            System.out.println("Info reveived: " + a);
-
-            System.out.println("SMESIINNGG");
-
-
-            PeerMessage smeshing = new PeerMessage(MessageType.SMES, "XXXXXX", myPseudo, myPseudo, "coucou".getBytes());
-            try {
-                out.write(smeshing.getFormattedMessage());
-                out.flush();
-            } catch (IOException e) {
-
-            }
-
-        }
-    }
-
-    private void redirectToHandler(PeerMessage message, Node node, PeerConnection connection) {
+    private static void redirectToHandler(PeerMessage message, Node node, PeerConnection connection) {
         RSAHandler RSA;
 
         //handle message
@@ -237,15 +456,8 @@ public class Client {
         }
     }
 
-   /* private void sendFileToPeer(dest, file) {
-        sendToserver(send to file dest);
-        recupip();
-        try send to this ip;
-        try catch() {send through server socket}
-    }*/
-
     private static String askForInfos(String pseudo) {
-        PeerMessage askInfo = new PeerMessage(MessageType.INFO, "XXXXXX", myPseudo, myPseudo, "".getBytes());
+        PeerMessage askInfo = new PeerMessage(MessageType.INFO, "XXXXXX", myUsername, myUsername, "".getBytes());
         try {
             out.write(askInfo.getFormattedMessage());
             out.flush();
@@ -315,5 +527,6 @@ public class Client {
 
         return null;
     }
+
 
 }

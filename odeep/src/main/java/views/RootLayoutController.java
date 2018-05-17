@@ -10,14 +10,14 @@ import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import main.Main;
+import main.Client;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import peer.PeerMessage;
 
 public class RootLayoutController implements Initializable {
 
-    private Main mainApp;
+    private Client mainApp;
     private static List<ListView> listView = new ArrayList();
     private Stage dialogStage;
     private boolean okClicked = false;
@@ -37,7 +37,7 @@ public class RootLayoutController implements Initializable {
     @FXML
     private ListView middleList;
 
-    public void setMainApp(Main mainApp) {
+    public void setMainApp(Client mainApp) {
         this.mainApp = mainApp;
     }
 
