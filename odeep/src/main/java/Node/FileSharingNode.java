@@ -1,24 +1,20 @@
 package Node;
 
+import User.Group;
+import User.Person;
 import message.MessageType;
-import org.bouncycastle.crypto.InvalidCipherTextException;
 import peer.PeerConnection;
 import peer.PeerInformations;
 import peer.PeerMessage;
 import util.CipherUtil;
+import util.JSONUtil;
 
 import java.io.*;
-import java.net.Socket;
 
 public class FileSharingNode extends Node {
 
     public FileSharingNode(PeerInformations myInfos) {
         super(myInfos);
-        /*try {
-            test();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
     }
 
     /**
@@ -81,7 +77,32 @@ public class FileSharingNode extends Node {
      * @param groupID  nom du groupe
      * @return liste de peerInformation
      */
-    public PeerInformations[] getFileLocation(String filename, String groupID) {
+    public PeerInformations getFileLocation(String filename, String groupID) {
+        RandomAccessFile f = null;
+        byte[] payload = null;
+        try {
+            f = new RandomAccessFile("./shared_files/" + groupID + "/config.json", "r");
+            payload = new byte[(int)f.length()];
+            f.readFully(payload);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        Group g = JSONUtil.parseJson(new String(payload), Group.class);
+        for (Person p : g.getMembers()){
+            for(String file : p.getFiles()){
+                if (file.equals(filename)){
+                    for(PeerInformations pi : getKnownPeers()){
+                        if(pi.getID().equals(p.getID())){
+                            return pi;
+                        }
+                    }
+                    return null;
+                }
+            }
+        }
         return null;
     }
 
@@ -98,12 +119,9 @@ public class FileSharingNode extends Node {
         if (filename == null || groupID == null || destination == null) {
             throw new NullPointerException();
         }
-        byte buffer[] = new byte[4032];
-        buffer = filename.getBytes();
-        PeerInformations[] peerHavingFile = getFileLocation(filename, groupID);
-        for (PeerInformations peer : peerHavingFile) {
-            sendToPeer(new PeerMessage(MessageType.RFIL.toString(), groupID, this.getNodePeer().getID(), peer.getID(), buffer), destination);
-        }
+        byte[] buffer = filename.getBytes();
+        PeerInformations peerHavingFile = getFileLocation(filename, groupID);
+        sendToPeer(new PeerMessage(MessageType.RFIL.toString(), groupID, this.getNodePeer().getID(), peerHavingFile.getID(), buffer), destination);
     }
 
     /**
@@ -117,8 +135,7 @@ public class FileSharingNode extends Node {
         if (filename == null || groupID == null || destination == null) {
             throw new NullPointerException();
         }
-        byte buffer[] = new byte[4032];
-        buffer = filename.getBytes();
+        byte[] buffer = filename.getBytes();
         sendToPeer(new PeerMessage(MessageType.FGET.toString(), groupID, this.getNodePeer().getID(), destination.getID(), buffer), destination);
     }
 
