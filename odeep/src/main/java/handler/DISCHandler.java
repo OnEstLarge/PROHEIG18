@@ -1,19 +1,18 @@
 package handler;
 
 import User.Group;
-import User.Person;
 import message.MessageHandler;
 import peer.PeerConnection;
 import peer.PeerMessage;
 import main.Client;
 import util.JSONUtil;
-import Node.FileSharingNode;
+import Node.Node;
 
 import java.io.File;
 
 public class DISCHandler implements MessageHandler{
     @Override
-    public void handleMessage(FileSharingNode n, PeerConnection c, PeerMessage m) {
+    public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
         String group = m.getIdGroup();
         File config = new File("./" + group);
         Group g = JSONUtil.parseJson(config.toString(), Group.class);

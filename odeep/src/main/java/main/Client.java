@@ -1,6 +1,5 @@
 package main;
 
-import Node.FileSharingNode;
 import Node.Node;
 import User.Person;
 import handler.*;
@@ -17,8 +16,6 @@ import java.net.Inet4Address;
 import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -270,7 +267,7 @@ public class Client extends Application {
     private static boolean communicationReady = false;
     private static int isUsernameAvailaible = -1;
 
-    private static FileSharingNode n;
+    private static Node n;
     private static boolean nodeIsRunning = true;
     private static String myUsername = null;
     private static String localIP;
@@ -406,7 +403,7 @@ public class Client extends Application {
     private static void initNode() {
         PeerInformations myInfos = new PeerInformations(myUsername, localIP, LOCAL_PORT);
         System.out.println("Created myInfos");
-        n = new FileSharingNode(myInfos);
+        n = new Node(myInfos);
         System.out.println("Created the node");
         //Ajouter tous les handlers
         n.addMessageHandler(MessageType.INVI, new INVIHandler());
