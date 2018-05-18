@@ -243,6 +243,9 @@ public class Node {
     //permet de conserver temporairement la pair de clé RSA utilisé lors d'un protocole Diffie Hellman
     private RSAHandler tempRsaInfo = null;
 
-    public static String filename = null;
-    public static int filesize = 0;
+    public static String filenameUploaded = null;
+    public static int filesizeUploaded = 0;
+
+    public static String filenameDownloaded = null;
+    public static int filesizeDownloaded = 0;
 }

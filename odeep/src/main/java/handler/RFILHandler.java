@@ -6,7 +6,7 @@ import org.bouncycastle.crypto.InvalidCipherTextException;
 import peer.PeerConnection;
 import peer.PeerMessage;
 import util.CipherUtil;
-import Node.*;
+import Node.FileSharingNode;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,7 +16,7 @@ import java.io.RandomAccessFile;
 public class RFILHandler implements MessageHandler{
 
     @Override
-    public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
+    public void handleMessage(FileSharingNode n, PeerConnection c, PeerMessage m) {
         RandomAccessFile f = null;
         byte[] key = null;
         try {
@@ -36,7 +36,10 @@ public class RFILHandler implements MessageHandler{
             e.printStackTrace();
         }
         if(fileAsked.exists() && !fileAsked.isDirectory()) {
+            n.filenameUploaded = fileAsked.getName();
+            n.sendFileToPeer(fileAsked, m.getIdGroup(), m.getIdFrom());
             //SEND FILE
+
         }
         else{
             c.sendMessage(new PeerMessage(MessageType.NFIL, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getMessageContent()));

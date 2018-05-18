@@ -1,14 +1,12 @@
 package handler;
 
-import Node.Node;
+import Node.FileSharingNode;
 import message.MessageHandler;
 import message.MessageType;
 import peer.PeerConnection;
-import peer.PeerInformations;
 import peer.PeerMessage;
 import util.CipherUtil;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -16,7 +14,7 @@ import java.io.RandomAccessFile;
 public class PGETHandler implements MessageHandler{
 
     @Override
-    public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
+    public void handleMessage(FileSharingNode n, PeerConnection c, PeerMessage m) {
         RandomAccessFile f = null;
         byte[] key = null;
         try {
@@ -33,7 +31,7 @@ public class PGETHandler implements MessageHandler{
 
         RandomAccessFile raf = null;
         try {
-            raf = new RandomAccessFile("./shared_files/" + m.getIdGroup() + "/" + Node.filename, "rw");
+            raf = new RandomAccessFile("./shared_files/" + m.getIdGroup() + "/" + n.filenameUploaded, "rw");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

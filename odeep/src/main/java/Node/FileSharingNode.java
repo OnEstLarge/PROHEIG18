@@ -25,49 +25,61 @@ public class FileSharingNode extends Node {
      * @param destination
      * @throws IOException
      */
-    public void sendFileToPeer(File file, String groupID, PeerInformations destination) throws IOException {
+    public void sendFileToPeer(File file, String groupID, String destination) throws IOException {
         byte[] key = this.getKey(groupID);
         int index = 0;
-        PeerConnection c = new PeerConnection(destination);
-        String filename = file.getName();
-        long fileSize = file.length();
-        String fileInfo = filename + ":" + Long.toString(fileSize);
-        byte[] cipherFileInfo = CipherUtil.AESEncrypt(fileInfo.getBytes(), key);
 
-
-        c.sendMessage(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination.getID(), index, cipherFileInfo));
-        c.close();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        PeerInformations pi = null;
+        for (PeerInformations p : this.getKnownPeers()) {
+            if (p.getID().equals(destination)) {
+                pi = p;
+                break;
+            }
         }
+        if (pi == null) {
+            throw new NullPointerException();
+        } else {
+            PeerConnection c = new PeerConnection(pi);
+            String filename = file.getName();
+            long fileSize = file.length();
+            String fileInfo = filename + ":" + Long.toString(fileSize);
+            byte[] cipherFileInfo = CipherUtil.AESEncrypt(fileInfo.getBytes(), key);
 
-        index++;
-        byte[] mes = new byte[PeerMessage.MESSAGE_CONTENT_SIZE];
 
-        for (int i = 0; i < (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE); i++, index++) {
-            PeerConnection c2 = new PeerConnection(destination);
+            c.sendMessage(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherFileInfo));
+            c.close();
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            index++;
+            byte[] mes = new byte[PeerMessage.MESSAGE_CONTENT_SIZE];
+
+            for (int i = 0; i < (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE); i++, index++) {
+                PeerConnection c2 = new PeerConnection(pi);
+                RandomAccessFile raf = new RandomAccessFile("./shared_files/" + groupID + "/" + filename, "rw");
+                raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * i);
+                raf.read(mes, 0, mes.length);
+                raf.close();
+                byte[] cipherMes = CipherUtil.AESEncrypt(mes, key);
+                PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
+                c2.sendMessage(p);
+                c2.close();
+            }
+
+            byte[] lastMes = new byte[(int) (fileSize % PeerMessage.MESSAGE_CONTENT_SIZE)];
+            PeerConnection c2 = new PeerConnection(pi);
             RandomAccessFile raf = new RandomAccessFile("./shared_files/" + groupID + "/" + filename, "rw");
-            raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * i);
-            raf.read(mes, 0, mes.length);
+            raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE));
+            raf.read(lastMes, 0, lastMes.length);
             raf.close();
-            byte[] cipherMes = CipherUtil.AESEncrypt(mes, key);
-            PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination.getID(), index, cipherMes);
+            byte[] cipherMes = CipherUtil.AESEncrypt(lastMes, key);
+            PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
             c2.sendMessage(p);
             c2.close();
         }
-
-        byte[] lastMes = new byte[(int) (fileSize % PeerMessage.MESSAGE_CONTENT_SIZE)];
-        PeerConnection c2 = new PeerConnection(destination);
-        RandomAccessFile raf = new RandomAccessFile("./shared_files/" + groupID + "/" + filename, "rw");
-        raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * (fileSize/PeerMessage.MESSAGE_CONTENT_SIZE));
-        raf.read(lastMes, 0, lastMes.length);
-        raf.close();
-        byte[] cipherMes = CipherUtil.AESEncrypt(lastMes, key);
-        PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination.getID(), index, cipherMes);
-        c2.sendMessage(p);
-        c2.close();
     }
 
     /**
@@ -137,17 +149,6 @@ public class FileSharingNode extends Node {
         }
         byte[] buffer = filename.getBytes();
         sendToPeer(new PeerMessage(MessageType.FGET.toString(), groupID, this.getNodePeer().getID(), destination.getID(), buffer), destination);
-    }
-
-    public void test() throws IOException {
-        File[] filesList = new File(".").listFiles();
-        for (File f : filesList) {
-            if (f.isFile()) {
-                System.out.println(f.getName());
-            }
-        }
-        sendFileToPeer(new File("./testfile"), "0", new PeerInformations("test", "127.0.0.1", 80));
-
     }
 
 

@@ -1,6 +1,6 @@
 package handler;
 
-import Node.Node;
+import Node.FileSharingNode;
 import message.MessageHandler;
 import message.MessageType;
 import org.bouncycastle.crypto.InvalidCipherTextException;
@@ -8,12 +8,11 @@ import peer.PeerConnection;
 import peer.PeerMessage;
 import util.CipherUtil;
 
-import javax.crypto.Cipher;
 import java.io.*;
 
 public class SFILHandler implements MessageHandler {
 
-    public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
+    public void handleMessage(FileSharingNode n, PeerConnection c, PeerMessage m) {
         RandomAccessFile f = null;
         byte[] key = null;
         try {
@@ -35,12 +34,12 @@ public class SFILHandler implements MessageHandler {
         }
         if (m.getNoPacket() == 0) {
             String[] fileInfo = new String(rcv).split(":");
-            Node.filesize = Integer.parseInt(fileInfo[1]);
-            Node.filename = fileInfo[0];
+            n.filesizeDownloaded = Integer.parseInt(fileInfo[1]);
+            n.filenameDownloaded = fileInfo[0];
             System.out.println("Receiving " + fileInfo[0]);
             try {
-                RandomAccessFile emptyFile = new RandomAccessFile("./shared_files/" + m.getIdGroup() + "/" + Node.filename, "rw");
-                emptyFile.setLength(Node.filesize);
+                RandomAccessFile emptyFile = new RandomAccessFile("./shared_files/" + m.getIdGroup() + "/" + n.filenameDownloaded, "rw");
+                emptyFile.setLength(n.filesizeDownloaded);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -48,7 +47,7 @@ public class SFILHandler implements MessageHandler {
             }
         } else {
             try {
-                RandomAccessFile raf = new RandomAccessFile("./shared_files/" + m.getIdGroup() + "/" + Node.filename, "rw");
+                RandomAccessFile raf = new RandomAccessFile("./shared_files/" + m.getIdGroup() + "/" + n.filenameDownloaded, "rw");
                 raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * (m.getNoPacket() - 1));
                 raf.write(rcv);
                 raf.close();
