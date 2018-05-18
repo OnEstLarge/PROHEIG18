@@ -1,9 +1,8 @@
 package peer;
-import Node.*;
 import com.sun.media.sound.InvalidFormatException;
 import handler.RSAHandler;
-import org.bouncycastle.crypto.InvalidCipherTextException;
-import message.*;/*
+import Node.Node;
+/*
  -----------------------------------------------------------------------------------
  Odeep
  Fichier     : peer.PeerHandler.java
@@ -12,18 +11,8 @@ import message.*;/*
  Compilateur : jdk 1.8.0_144
  -----------------------------------------------------------------------------------
 */
-import util.CipherUtil;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import java.io.IOException;
 import java.net.Socket;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.spec.InvalidKeySpecException;
 
 public class PeerHandler implements Runnable {
 

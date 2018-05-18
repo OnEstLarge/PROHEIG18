@@ -1,11 +1,11 @@
 package handler;
 
-import Node.FileSharingNode;
 import message.MessageHandler;
 import message.MessageType;
 import peer.PeerConnection;
 import peer.PeerInformations;
 import peer.PeerMessage;
+import Node.Node;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -13,7 +13,7 @@ import java.security.NoSuchProviderException;
 
 public class DHS1Handler implements MessageHandler {
     @Override
-    public void handleMessage(FileSharingNode n, PeerConnection c, PeerMessage m) {
+    public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
         try {
             RSAHandler RSA = new RSAHandler();
             RSA.setKeys();

@@ -5,19 +5,14 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
-import Node.FileSharingNode;
 import User.Group;
 import User.Person;
-import com.google.gson.JsonObject;
-import config.GenerateConfigFile;
 
-import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import Node.FileSharingNode;
 import handler.*;
 
 import message.MessageHandler;
@@ -30,6 +25,7 @@ import util.InterfaceUtil;
 import util.JSONUtil;
 
 import util.CipherUtil;
+import Node.Node;
 
 
 public class Test {
@@ -55,7 +51,7 @@ public class Test {
         users.put("olivier", olivier);
         users.put("mathieu", mathieu);
 
-        final FileSharingNode n = new FileSharingNode(myInfo);
+        final Node n = new Node(myInfo);
 
         MessageHandler sendMessageHandler = new SMESHandler();
         MessageHandler sendFileHandler = new SFILHandler();
@@ -139,7 +135,7 @@ public class Test {
                     } else if (type.equals(MessageType.SFIL)) {
                         File file = new File(content);
                         try {
-                            n.sendFileToPeer(file, idGroup, users.get(pseudo));
+                            n.sendFileToPeer(file, idGroup, users.get(pseudo).getID());
                         } catch (IOException e) {
                         }
                     } else if (type.equals(MessageType.DHS1)) {

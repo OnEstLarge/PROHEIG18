@@ -6,7 +6,7 @@ import org.bouncycastle.crypto.InvalidCipherTextException;
 import peer.PeerConnection;
 import peer.PeerMessage;
 import util.CipherUtil;
-import Node.FileSharingNode;
+import Node.Node;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,7 +16,7 @@ import java.io.RandomAccessFile;
 public class RFILHandler implements MessageHandler{
 
     @Override
-    public void handleMessage(FileSharingNode n, PeerConnection c, PeerMessage m) {
+    public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
         RandomAccessFile f = null;
         byte[] key = null;
         try {

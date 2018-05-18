@@ -1,18 +1,18 @@
 package handler;
 
-import Node.FileSharingNode;
 import message.MessageHandler;
 import message.MessageType;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import peer.PeerConnection;
 import peer.PeerMessage;
 import util.CipherUtil;
+import Node.Node;
 
 import java.io.*;
 
 public class SFILHandler implements MessageHandler {
 
-    public void handleMessage(FileSharingNode n, PeerConnection c, PeerMessage m) {
+    public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
         RandomAccessFile f = null;
         byte[] key = null;
         try {

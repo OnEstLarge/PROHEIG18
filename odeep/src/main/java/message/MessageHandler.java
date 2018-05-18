@@ -12,5 +12,5 @@ import Node.*;/*
 
 public interface MessageHandler {
 
-    public abstract void handleMessage(FileSharingNode n, PeerConnection c, PeerMessage m);
+    public abstract void handleMessage(Node n, PeerConnection c, PeerMessage m);
 }

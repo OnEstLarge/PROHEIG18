@@ -9,11 +9,17 @@ package Node;/*
 */
 
 
+import User.Group;
+import User.Person;
 import handler.RSAHandler;
 import message.MessageHandler;
+import message.MessageType;
+import peer.PeerConnection;
 import peer.PeerHandler;
 import peer.PeerInformations;
 import peer.PeerMessage;
+import util.CipherUtil;
+import util.JSONUtil;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -152,6 +158,125 @@ public class Node {
             // close clientSocket
             cleanup(null, null, clientSocket, serverSocket);
         }
+    }
+
+    /**
+     * methode permettant l'envoie d'un fichier entre membre d'un meme groupe
+     *
+     * @param file        fichier a envoyer
+     * @param groupID
+     * @param destination
+     * @throws IOException
+     */
+    public void sendFileToPeer(File file, String groupID, String destination) throws IOException {
+        byte[] key = this.getKey(groupID);
+        int index = 0;
+
+        PeerInformations pi = null;
+        for (PeerInformations p : this.getKnownPeers()) {
+            if (p.getID().equals(destination)) {
+                pi = p;
+                break;
+            }
+        }
+        if (pi == null) {
+            throw new NullPointerException();
+        } else {
+            PeerConnection c = new PeerConnection(pi);
+            String filename = file.getName();
+            long fileSize = file.length();
+            String fileInfo = filename + ":" + Long.toString(fileSize);
+            byte[] cipherFileInfo = CipherUtil.AESEncrypt(fileInfo.getBytes(), key);
+
+
+            c.sendMessage(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherFileInfo));
+            c.close();
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            index++;
+            byte[] mes = new byte[PeerMessage.MESSAGE_CONTENT_SIZE];
+
+            for (int i = 0; i < (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE); i++, index++) {
+                PeerConnection c2 = new PeerConnection(pi);
+                RandomAccessFile raf = new RandomAccessFile("./shared_files/" + groupID + "/" + filename, "rw");
+                raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * i);
+                raf.read(mes, 0, mes.length);
+                raf.close();
+                byte[] cipherMes = CipherUtil.AESEncrypt(mes, key);
+                PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
+                c2.sendMessage(p);
+                c2.close();
+            }
+
+            byte[] lastMes = new byte[(int) (fileSize % PeerMessage.MESSAGE_CONTENT_SIZE)];
+            PeerConnection c2 = new PeerConnection(pi);
+            RandomAccessFile raf = new RandomAccessFile("./shared_files/" + groupID + "/" + filename, "rw");
+            raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE));
+            raf.read(lastMes, 0, lastMes.length);
+            raf.close();
+            byte[] cipherMes = CipherUtil.AESEncrypt(lastMes, key);
+            PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
+            c2.sendMessage(p);
+            c2.close();
+        }
+    }
+
+    /**
+     * cette fonction retourne la liste des personne presentes dans un groupe possedant un certain fichier
+     *
+     * @param filename fichier recherché
+     * @param groupID  nom du groupe
+     * @return liste de peerInformation
+     */
+    public PeerInformations getFileLocation(String filename, String groupID) {
+        RandomAccessFile f = null;
+        byte[] payload = null;
+        try {
+            f = new RandomAccessFile("./shared_files/" + groupID + "/config.json", "r");
+            payload = new byte[(int)f.length()];
+            f.readFully(payload);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        Group g = JSONUtil.parseJson(new String(payload), Group.class);
+        for (Person p : g.getMembers()){
+            for(String file : p.getFiles()){
+                if (file.equals(filename)){
+                    for(PeerInformations pi : getKnownPeers()){
+                        if(pi.getID().equals(p.getID())){
+                            return pi;
+                        }
+                    }
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * cette fonction envoie une requete afin de determiner si un pair possède effectivement un fichier
+     *
+     * @param filename    nom du fichier
+     * @param groupID     groupe dans lequel la requete est effectuée
+     * @param destination pair vers lequel la requete est envoyée
+     *                    remarque : le pair qui recoit cette requete cherchera le fichier uniquement dans le dossier du groupe passé en paramètre
+     */
+    public void requestFile(String filename, String groupID, PeerInformations destination) {
+        if (filename == null || groupID == null || destination == null) {
+            throw new NullPointerException();
+        }
+        byte[] buffer = filename.getBytes();
+        PeerInformations peerHavingFile = getFileLocation(filename, groupID);
+        sendToPeer(new PeerMessage(MessageType.RFIL.toString(), groupID, this.getNodePeer().getID(), peerHavingFile.getID(), buffer), destination);
     }
 
     /**
