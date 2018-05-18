@@ -6,14 +6,16 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import main.Main;
+import main.Client;
 import peer.PeerMessage;
+
+import java.io.File;
 
 public class PseudoDialogController {
 
     private Stage dialogStage;
     private boolean nameOK = false;
-    private Main mainApp;
+    private Client mainApp;
 
     @FXML
     private TextField userPseudoField;
@@ -38,7 +40,7 @@ public class PseudoDialogController {
         });
     }
 
-    public void setMainApp(Main mainApp) {
+    public void setMainApp(Client mainApp) {
         this.mainApp = mainApp;
     }
 
@@ -65,16 +67,21 @@ public class PseudoDialogController {
         dialogStage.close();
 
         // TODO: créer les dossiers nécessaire
+        String dir = "./shared_files";
+        File file = new File(dir);
+
+        if (!file.exists() || !file.isDirectory()) {
+            file.mkdir();
+        }
     }
 
     private boolean isInputValid(){
         String errorMessage = "";
         String pseudo = userPseudoField.getText();
 
-        if(!PeerMessage.isValidIdFormat(pseudo, PeerMessage.ID_MIN_LENGTH, PeerMessage.ID_MAX_LENGTH)){
+        if(!PeerMessage.isValidIdFormat(pseudo, PeerMessage.ID_MIN_LENGTH, PeerMessage.ID_MAX_LENGTH) || !Client.usernameValidation(pseudo)){
             errorMessage += "Pseudo format invalid. It must be between " + PeerMessage.ID_MIN_LENGTH + " and " + PeerMessage.ID_MAX_LENGTH + " characters long.\n";
         }
-        // TODO: verifier si jamais le pseudo est deja pris
 
         if (errorMessage.length() == 0) {
             return true;
