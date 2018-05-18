@@ -267,6 +267,7 @@ public class Client extends Application {
     private static BufferedInputStream in;
     private static BufferedOutputStream out;
     private static boolean communicationReady = false;
+    private static int isUsernameAvailaible = -1;
 
     private static FileSharingNode n;
     private static boolean nodeIsRunning = true;
@@ -305,15 +306,38 @@ public class Client extends Application {
     }
 
     //ask the server if the entered username is available
-    public static boolean usernameValidation() {
-      /*  while(!communicationReady) {
+    public static boolean usernameValidation(String username) {
+
+        isUsernameAvailaible = -1;
+
+        while(!communicationReady) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }*/
-        return true;
+        }
+        //une fois que la connection avec le serveur est établit, il faut demander si le pseudo entré est déjà utilisé
+        //retourne true si le pseudo est libre, false si il est déjà utilisé
+
+        PeerMessage availaibleUsername = new PeerMessage(MessageType.USRV, "XXXXXX", myUsername, "XXXXXX", 0, username.getBytes());
+
+        try {
+            out.write(availaibleUsername.getFormattedMessage());
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        while(isUsernameAvailaible == -1) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return isUsernameAvailaible == 1;
     }
     private static void getLocalIP() {
         //Get local IP used
@@ -405,6 +429,9 @@ public class Client extends Application {
                     if (pm.getType().equals(MessageType.INFO)) {
                         System.out.println("Received info, writing in response static");
                         response = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
+                    } if(pm.getType().equals(MessageType.USRV)) {
+                        System.out.println("Received response for username validation");
+                        isUsernameAvailaible = Integer.parseInt(new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START)));
                     } else {
                         redirectToHandler(pm, n, new PeerConnection(clientSocketToServerPublic));
                     }

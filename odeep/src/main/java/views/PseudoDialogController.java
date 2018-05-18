@@ -79,7 +79,7 @@ public class PseudoDialogController {
         String errorMessage = "";
         String pseudo = userPseudoField.getText();
 
-        if(!PeerMessage.isValidIdFormat(pseudo, PeerMessage.ID_MIN_LENGTH, PeerMessage.ID_MAX_LENGTH) || !Client.usernameValidation()){
+        if(!PeerMessage.isValidIdFormat(pseudo, PeerMessage.ID_MIN_LENGTH, PeerMessage.ID_MAX_LENGTH) || !Client.usernameValidation(pseudo)){
             errorMessage += "Pseudo format invalid. It must be between " + PeerMessage.ID_MIN_LENGTH + " and " + PeerMessage.ID_MAX_LENGTH + " characters long.\n";
         }
 
