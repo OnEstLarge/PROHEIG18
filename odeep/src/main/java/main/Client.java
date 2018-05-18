@@ -281,10 +281,10 @@ public class Client extends Application {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                getLocalIP();
                 System.out.println("Connecting to server");
                 //initconnection connect to serv, get pseudo, connect with pseudo
                 initConnections(IP_SERVER, PORT_SERVER);
-                getLocalIP();
                 initNode();
             }
         }).start();
@@ -312,6 +312,7 @@ public class Client extends Application {
 
         while(!communicationReady) {
             try {
+                System.out.println("waiting comm ready");
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -331,9 +332,23 @@ public class Client extends Application {
 
         while(isUsernameAvailaible == -1) {
             try {
-                Thread.sleep(100);
+
+                int read;
+                byte[] buffer = new byte[4096];
+                read = in.read(buffer);
+                PeerMessage pm = new PeerMessage(buffer);
+                System.out.println("Received response for username validation");
+                String resp = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
+                isUsernameAvailaible = resp.equals("true") ? 1 : 0;
+                if (isUsernameAvailaible != 1) {
+                    Thread.sleep(1000);
+                    System.out.println("isUsernameAvailaible " + isUsernameAvailaible);
+                }
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
         }
 
@@ -397,9 +412,12 @@ public class Client extends Application {
 
             communicationReady = true;
             //we have a pseudo after this
+            System.out.println("get pseudo");
             getPseudo();
+            System.out.println("we got the pseudo");
 
             //Greetings to server, receivinig response
+            System.out.println("aaaa" +localIP);
             PeerMessage greetings = new PeerMessage(MessageType.HELO, "XXXXXX", myUsername, "XXXXXX", 0, localIP.getBytes());
             out.write(greetings.getFormattedMessage());
             out.flush();
@@ -429,10 +447,6 @@ public class Client extends Application {
                     if (pm.getType().equals(MessageType.INFO)) {
                         System.out.println("Received info, writing in response static");
                         response = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
-                    } if(pm.getType().equals(MessageType.USRV)) {
-                        System.out.println("Received response for username validation");
-                        String resp = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
-                        isUsernameAvailaible = resp.equals("true") ? 1 : 0;
                     } else {
                         redirectToHandler(pm, n, new PeerConnection(clientSocketToServerPublic));
                     }
