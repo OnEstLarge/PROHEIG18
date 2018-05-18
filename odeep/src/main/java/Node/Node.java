@@ -267,16 +267,23 @@ public class Node {
      *
      * @param filename    nom du fichier
      * @param groupID     groupe dans lequel la requete est effectuée
-     * @param destination pair vers lequel la requete est envoyée
      *                    remarque : le pair qui recoit cette requete cherchera le fichier uniquement dans le dossier du groupe passé en paramètre
      */
-    public void requestFile(String filename, String groupID, PeerInformations destination) {
-        if (filename == null || groupID == null || destination == null) {
+    public void requestFile(String filename, String groupID) {
+        if (filename == null || groupID == null) {
             throw new NullPointerException();
         }
         byte[] buffer = filename.getBytes();
         PeerInformations peerHavingFile = getFileLocation(filename, groupID);
-        sendToPeer(new PeerMessage(MessageType.RFIL.toString(), groupID, this.getNodePeer().getID(), peerHavingFile.getID(), buffer), destination);
+
+        PeerConnection p = null;
+        try {
+            p = new PeerConnection(peerHavingFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        p.sendMessage(new PeerMessage(MessageType.RFIL.toString(), groupID, this.getNodePeer().getID(), peerHavingFile.getID(), buffer));
+
     }
 
     /**
