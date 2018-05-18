@@ -103,6 +103,9 @@ public class ServerPeerToPeer {
                         case MessageType.BYE:
                             bye(pm);
                             break;
+                        case MessageType.USRV:
+                            validationUsername(pm);
+                            break;
                         case MessageType.INFO:
                             giveInfoToSender(pm);
                             break;
@@ -138,6 +141,7 @@ public class ServerPeerToPeer {
                             int byteLu;
                             while((byteLu = in.read(bufferIn)) != -1){
                                 fout.write(bufferIn,0,read);
+                                fout.flush();
                             }
 
                             break;
@@ -148,6 +152,7 @@ public class ServerPeerToPeer {
                             int byteLus = 0 ;
                             while ((byteLus = fin.read(bufferIn)) != -1){
                                 out.write(bufferIn,0,byteLus);
+                                out.flush();
                             }
                             break;
 
@@ -160,6 +165,20 @@ public class ServerPeerToPeer {
             }
         }
 
+
+        private void validationUsername(PeerMessage pm){
+            int validation = DatabaseUtil.addUserIfNotExists(pm.getIdFrom());
+            try {
+                if(validation == 1) {
+                    out.write(new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "true".getBytes()).getFormattedMessage());
+                } else {
+                    out.write(new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "false".getBytes()).getFormattedMessage());
+                }
+                out.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         private void greetings(PeerMessage pm) {
            byte[] b = CipherUtil.erasePadding(pm.getMessageContent(),PeerMessage.PADDING_START);

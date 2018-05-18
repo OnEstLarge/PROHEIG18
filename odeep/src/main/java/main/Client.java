@@ -320,7 +320,7 @@ public class Client extends Application {
         //une fois que la connection avec le serveur est établit, il faut demander si le pseudo entré est déjà utilisé
         //retourne true si le pseudo est libre, false si il est déjà utilisé
 
-        PeerMessage availaibleUsername = new PeerMessage(MessageType.USRV, "XXXXXX", myUsername, "XXXXXX", 0, username.getBytes());
+        PeerMessage availaibleUsername = new PeerMessage(MessageType.USRV, "XXXXXX", username, "XXXXXX", 0, "".getBytes());
 
         try {
             out.write(availaibleUsername.getFormattedMessage());
@@ -431,7 +431,8 @@ public class Client extends Application {
                         response = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
                     } if(pm.getType().equals(MessageType.USRV)) {
                         System.out.println("Received response for username validation");
-                        isUsernameAvailaible = Integer.parseInt(new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START)));
+                        String resp = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
+                        isUsernameAvailaible = resp.equals("true") ? 1 : 0;
                     } else {
                         redirectToHandler(pm, n, new PeerConnection(clientSocketToServerPublic));
                     }
