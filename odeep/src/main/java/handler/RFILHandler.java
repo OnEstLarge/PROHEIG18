@@ -36,6 +36,7 @@ public class RFILHandler implements MessageHandler{
             e.printStackTrace();
         }
         if(fileAsked.exists() && !fileAsked.isDirectory()) {
+            c.close();
             n.filenameUploaded = fileAsked.getName();
             try {
                 n.sendFileToPeer(fileAsked, m.getIdGroup(), m.getIdFrom());
@@ -48,6 +49,7 @@ public class RFILHandler implements MessageHandler{
         }
         else{
             c.sendMessage(new PeerMessage(MessageType.NFIL, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getMessageContent()));
+            c.close();
         }
     }
 }
