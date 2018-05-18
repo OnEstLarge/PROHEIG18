@@ -91,7 +91,26 @@ class CipherUtilTest {
 
     @Test
     void splitKey() throws InvalidFormatException {
+
+        byte[] key = CipherUtil.generateKey();
+        String keyString = new String(key);
+        byte[][] keySplit = CipherUtil.splitKey(key);
+
+        byte[] newKey = new byte[key.length];
+
+        int length = key.length/2;
+
+        for (int i = 0; i < length ; i++) {
+
+            newKey[i] = keySplit[0][i];
+            newKey[i+length] = keySplit[1][i];
+        }
+
+        String newKeyString = new String(newKey);
+
+        assertTrue(keyString.equals(newKeyString));
     }
+
 
     @Test
     void RSAEncryptAndDecrypt(){
