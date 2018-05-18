@@ -282,7 +282,7 @@ public class Node {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        p.sendMessage(new PeerMessage(MessageType.RFIL.toString(), groupID, this.getNodePeer().getID(), peerHavingFile.getID(), buffer));
+        p.sendMessage(new PeerMessage(MessageType.RFIL.toString(), groupID, this.getNodePeer().getID(), peerHavingFile.getID(), CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));
 
     }
 
