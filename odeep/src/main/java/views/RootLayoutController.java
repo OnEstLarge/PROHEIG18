@@ -1,6 +1,7 @@
 package views;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
@@ -9,6 +10,7 @@ import User.Group;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import main.Client;
 import javafx.fxml.FXML;
@@ -116,22 +118,66 @@ public class RootLayoutController implements Initializable {
         mainApp.showInviteDialog();
     }
 
+
+    @FXML
+    private void handleAdd() {
+       FileChooser fileChooser = new FileChooser();
+
+       // Set the name of the window
+        fileChooser.setTitle("Choose file to add");
+
+        // Set extension filter
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("All", "*.*");
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        // Show open file dialog
+        File file = fileChooser.showOpenDialog(mainApp.getPrimaryStage());
+
+        if (file != null) {
+            // TODO: la faking function
+            System.out.println(file.getName());
+            //mainApp.loadPersonDataFromFile(file);
+        }
+    }
+
+    @FXML
+    private void handleRemove() {
+        FileChooser fileChooser = new FileChooser();
+
+        // Set the name of the window
+        fileChooser.setTitle("Choose file to remove");
+
+        // Set extension filter
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("All", "*.*");
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        // Set the root directory
+        //fileChooser.setInitialDirectory(".userInfo");
+
+        // Show open file dialog
+        File file = null;
+            file = fileChooser.showOpenDialog(mainApp.getPrimaryStage());
+
+
+        if (file != null) {
+            // TODO: la faking function
+            try {
+                System.out.println(file.getCanonicalFile());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            //mainApp.loadPersonDataFromFile(file);
+        }
+    }
+
     @FXML
     private void handleQuit() {
-        System.exit(0);
+        System.exit(1);
     }
 
-    @FXML
-    private void handleOk() {
-
-    }
 
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
-    }
-
-    public boolean isOkClicked() {
-        return okClicked;
     }
 
     public void initialize(URL url, ResourceBundle rb) {
