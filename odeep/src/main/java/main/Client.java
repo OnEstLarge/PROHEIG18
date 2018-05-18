@@ -455,10 +455,8 @@ public class Client extends Application {
     }
 
     private static void redirectToHandler(PeerMessage message, Node node, PeerConnection connection) {
-        RSAHandler RSA;
-
         //handle message
-        node.getMapMessage().get(message.getType()).handleMessage(connection, message); //gerer erreur possible
+        node.getMapMessage().get(message.getType()).handleMessage(node, connection, message); //gerer erreur possible
     }
 
     private static String askForInfos(String pseudo) {

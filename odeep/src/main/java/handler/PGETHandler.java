@@ -16,7 +16,7 @@ import java.io.RandomAccessFile;
 public class PGETHandler implements MessageHandler{
 
     @Override
-    public void handleMessage(PeerConnection c, PeerMessage m) {
+    public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
         RandomAccessFile f = null;
         byte[] key = null;
         try {

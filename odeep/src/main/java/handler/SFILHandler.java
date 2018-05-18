@@ -13,7 +13,7 @@ import java.io.*;
 
 public class SFILHandler implements MessageHandler {
 
-    public void handleMessage(PeerConnection c, PeerMessage m) {
+    public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
         RandomAccessFile f = null;
         byte[] key = null;
         try {
