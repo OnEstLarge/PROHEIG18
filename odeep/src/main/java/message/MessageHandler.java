@@ -1,5 +1,6 @@
 package message;
-import peer.*;/*
+import peer.*;
+import Node.*;/*
  -----------------------------------------------------------------------------------
  Odeep
  Fichier     : message.MessageHandler.java
@@ -11,5 +12,5 @@ import peer.*;/*
 
 public interface MessageHandler {
 
-    public abstract void handleMessage(PeerConnection c, PeerMessage m);
+    public abstract void handleMessage(Node n, PeerConnection c, PeerMessage m);
 }

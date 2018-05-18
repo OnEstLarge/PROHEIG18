@@ -27,54 +27,26 @@ public class RSAHandler {
         publicKey = CipherUtil.publicKeyToByte(kp.getPublic());
     }
 
-    public void sendRSAPublicKey(Node n, byte[] b, PeerMessage message) {
+    public void sendRSAPublicKey(byte[] data, PeerMessage message, PeerConnection pc) {
         String sender = CipherUtil.erasePadding(message.getIdFrom(), PeerMessage.PADDING_START);
         String receiver = CipherUtil.erasePadding(message.getIdTo(), PeerMessage.PADDING_START);
         String group = CipherUtil.erasePadding(message.getIdGroup(), PeerMessage.PADDING_START);
 
-        PeerMessage response = new PeerMessage(MessageType.DHR1, group, receiver, sender, b);
-        PeerInformations pi = null;
-        for (PeerInformations p : n.getKnownPeers()) {
-            if (p.getID().equals(sender)) {
-                pi = p;
-                break;
-            }
-        }
-        if (pi == null) {
-            throw new NullPointerException();
-        } else {
-            try {
-                PeerConnection p = new PeerConnection(pi);
-                p.sendMessage(response);
-                p.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        PeerMessage response = new PeerMessage(MessageType.DHR1, group, receiver, sender, data);
+        pc.sendMessage(response);
+        pc.close();
     }
 
-    public void sendEncryptedKey(Node n, PeerMessage messageReceved, String group) {
+    public void sendEncryptedKey(Node n, PeerMessage messageReceved, PeerConnection pc) {
         String sender = CipherUtil.erasePadding(messageReceved.getIdFrom(), PeerMessage.PADDING_START);
         byte[] foreignKey = CipherUtil.erasePadding(messageReceved.getMessageContent(), PeerMessage.PADDING_START);
 
         byte[] encryptedKey = new byte[0];
-        encryptedKey = CipherUtil.RSAEncrypt(CipherUtil.byteToPublicKey(foreignKey), n.getKey(group));
+        encryptedKey = CipherUtil.RSAEncrypt(CipherUtil.byteToPublicKey(foreignKey), n.getKey(messageReceved.getIdGroup()));
         PeerMessage message = new PeerMessage(MessageType.DHS2, messageReceved.getIdGroup(), messageReceved.getIdTo(), messageReceved.getIdFrom(), encryptedKey);
 
-        PeerInformations pi = null;
-        for (PeerInformations p : n.getKnownPeers()) {
-            if (p.getID().equals(sender)) {
-                pi = p;
-                break;
-            }
-        }
-        try {
-            PeerConnection pc = new PeerConnection(pi);
-            pc.sendMessage(message);
-            pc.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        pc.sendMessage(message);
+        pc.close();
     }
 
     public byte[] getFinalKey(PeerMessage m) {
