@@ -3,6 +3,7 @@ package handler;
 import message.MessageHandler;
 import message.MessageType;
 import peer.PeerConnection;
+import peer.PeerInformations;
 import peer.PeerMessage;
 import util.CipherUtil;
 import Node.Node;
@@ -11,7 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-public class PGETHandler implements MessageHandler{
+public class PGETHandler implements MessageHandler {
 
     @Override
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
@@ -19,12 +20,11 @@ public class PGETHandler implements MessageHandler{
         byte[] key = null;
         try {
             f = new RandomAccessFile("./shared_files/" + m.getIdGroup() + "/key", "r");
-            key = new byte[(int)f.length()];
+            key = new byte[(int) f.length()];
             f.readFully(key);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         byte[] mes = new byte[PeerMessage.MESSAGE_CONTENT_SIZE];
@@ -36,16 +36,31 @@ public class PGETHandler implements MessageHandler{
             e.printStackTrace();
         }
         try {
-            raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * (m.getNoPacket()-1));
+            raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * (m.getNoPacket() - 1));
             raf.read(mes, 0, PeerMessage.MESSAGE_CONTENT_SIZE);
             raf.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-            byte[] cipherMes = CipherUtil.AESEncrypt(mes, key);
-            PeerMessage p = new PeerMessage(MessageType.SFIL, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getNoPacket(), cipherMes);
-            c.sendMessage(p);
-            c.close();
-
+        byte[] cipherMes = CipherUtil.AESEncrypt(mes, key);
+        PeerMessage response = new PeerMessage(MessageType.SFIL, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getNoPacket(), cipherMes);
+        PeerInformations pi = null;
+        for (PeerInformations p : n.getKnownPeers()) {
+            if (p.getID().equals(m.getIdFrom())) {
+                pi = p;
+                break;
+            }
+        }
+        if (pi == null) {
+            throw new NullPointerException();
+        } else {
+            try {
+                PeerConnection p = new PeerConnection(pi);
+                p.sendMessage(response);
+                p.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
