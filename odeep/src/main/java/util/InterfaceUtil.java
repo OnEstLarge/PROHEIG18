@@ -36,6 +36,7 @@ public class InterfaceUtil {
         // Check la validité du string groupID
         if (PeerMessage.isValidIdFormat(groupID, PeerMessage.ID_GROUP_MIN_LENGTH, PeerMessage.ID_GROUP_MAX_LENGTH)) {
 
+            FileOutputStream out = null;
             try {
                 // Demande au serveur si le groupe existe déjà
                 if(Client.groupValidation(groupID)) {
@@ -51,7 +52,6 @@ public class InterfaceUtil {
                     f.readFully(key);
                     byte[] cipherConfig = CipherUtil.AESEncrypt(jsonConfig.getBytes(), key);
 
-                    //TODO : PAS FINI
                     // Crée le groupe localement
                     String dir = "./shared_files/" + groupID;
                     File file = new File(dir);
@@ -59,6 +59,16 @@ public class InterfaceUtil {
                     if (!file.exists() || !file.isDirectory()) {
                         file.mkdirs();
                     }
+
+                    // Ajoute le fichier 'config.json' chiffré localement dans le répertoire du groupe
+                    out = new FileOutputStream(new File(dir + "/config.json"));
+                    //out.write(cipherConfig);
+                    out.write(jsonConfig.getBytes());
+                    out.flush();
+
+                    // Envoie le fichier 'config.json' chiffré au serveur
+                    Client.uploadJSON(dir + "/config.json", groupID, idFrom);
+
                 }
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -66,6 +76,12 @@ public class InterfaceUtil {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return false;
