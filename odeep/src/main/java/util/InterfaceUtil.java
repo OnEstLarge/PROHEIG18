@@ -72,7 +72,13 @@ public class InterfaceUtil {
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
-
+                try {
+                    if(out != null) {
+                        out.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return group;
