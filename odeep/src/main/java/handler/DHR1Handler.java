@@ -1,6 +1,6 @@
 package handler;
 
-import Node.Node;
+import Node.FileSharingNode;
 import message.MessageHandler;
 import message.MessageType;
 import peer.PeerConnection;
@@ -9,12 +9,10 @@ import peer.PeerMessage;
 import util.CipherUtil;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 
 public class DHR1Handler implements MessageHandler{
     @Override
-    public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
+    public void handleMessage(FileSharingNode n, PeerConnection c, PeerMessage m) {
         RSAHandler RSA = n.getTempRSAInfo();
         if (RSA != null) {
             byte[] foreignKey = CipherUtil.erasePadding(m.getMessageContent(), PeerMessage.PADDING_START);
