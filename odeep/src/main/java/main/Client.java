@@ -159,6 +159,11 @@ public class Client extends Application {
             InviteDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage);
 
+            // Clear comboBox and put groups name
+            controller.clearCombo();
+            for(Group g : groups) {
+                controller.addGroupNameToCombo(g.getID());
+            }
             // Show the dialog and wait  until the user closes it
             dialogStage.showAndWait();
 
@@ -243,6 +248,10 @@ public class Client extends Application {
 
     public void setUserPseudo(String pseudo) {
         myUsername = pseudo;
+    }
+
+    public List<Group> getGroups(){
+        return groups;
     }
 
 
