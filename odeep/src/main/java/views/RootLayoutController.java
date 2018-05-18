@@ -75,9 +75,9 @@ public class RootLayoutController implements Initializable {
                 @Override
                 public void handle(MouseEvent event) {
                     middleList.getItems().clear();
+                    System.out.println(middleList.getItems());
                     System.out.println(mapFile.toString());
-                    System.out.println(groupName);
-                    if (mapFile.containsKey(groupName)) {
+                    if (mapFile.containsKey(groupName) && mapFile.get(groupName) != null) {
                         List<String> files = mapFile.get(groupName);
                         for (String s : files) {
                             middleList.getItems().add(s);
@@ -121,9 +121,9 @@ public class RootLayoutController implements Initializable {
 
     @FXML
     private void handleAdd() {
-       FileChooser fileChooser = new FileChooser();
+        FileChooser fileChooser = new FileChooser();
 
-       // Set the name of the window
+        // Set the name of the window
         fileChooser.setTitle("Choose file to add");
 
         // Set extension filter
@@ -156,7 +156,7 @@ public class RootLayoutController implements Initializable {
 
         // Show open file dialog
         File file = null;
-            file = fileChooser.showOpenDialog(mainApp.getPrimaryStage());
+        file = fileChooser.showOpenDialog(mainApp.getPrimaryStage());
 
 
         if (file != null) {
