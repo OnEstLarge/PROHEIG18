@@ -355,6 +355,30 @@ public class Client extends Application {
 
         return isUsernameAvailaible == 1;
     }
+
+    public static boolean groupValidation(String groupID) {
+        PeerMessage availaibleGroupID = new PeerMessage(MessageType.USRV, groupID, myUsername, "XXXXXX", 0, "".getBytes());
+
+        try {
+            out.write(availaibleGroupID.getFormattedMessage());
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        boolean validation = false;
+        try {
+            byte[] buffer = new byte[4096];
+            in.read(buffer);
+            PeerMessage pm = new PeerMessage(buffer);
+            System.out.println("Received response for group validation");
+            String resp = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
+            validation = resp.equals("true") ? true : false;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return validation;
+    }
+
     private static void getLocalIP() {
         //Get local IP used
         localIP = null;

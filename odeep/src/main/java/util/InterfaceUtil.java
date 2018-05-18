@@ -12,6 +12,8 @@ package util;
 
 import User.Group;
 import User.Person;
+import main.Client;
+import message.MessageType;
 import peer.PeerMessage;
 
 import java.io.*;
@@ -29,14 +31,14 @@ public class InterfaceUtil {
      * @return true,    groupe créé
      * false,   groupe déjà existant ou erreur
      */
-    public static boolean createGroup(String groupID, String idFrom, String idTo) {
+    public static boolean createGroup(String groupID, String idFrom) {
 
         // Check la validité du string groupID
         if (PeerMessage.isValidIdFormat(groupID, PeerMessage.ID_GROUP_MIN_LENGTH, PeerMessage.ID_GROUP_MAX_LENGTH)) {
 
             try {
                 // Demande au serveur si le groupe existe déjà
-                if() {
+                if(Client.groupValidation(groupID)) {
 
                     // Génération du fichier config.json
                     Group group = new Group(groupID, new Person(idFrom));
@@ -47,7 +49,7 @@ public class InterfaceUtil {
                     RandomAccessFile f = new RandomAccessFile("./shared_files/" + groupID + "/key", "r");
                     byte[] key = new byte[(int) f.length()];
                     f.readFully(key);
-                    byte[] cipherConfig = CipherUtil.AESEncrypt(JSONUtil.toJson(jsonConfig).getBytes(), key);
+                    byte[] cipherConfig = CipherUtil.AESEncrypt(jsonConfig.getBytes(), key);
 
                     //TODO : PAS FINI
                     // Crée le groupe localement
