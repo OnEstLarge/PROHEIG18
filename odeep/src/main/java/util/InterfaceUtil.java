@@ -38,29 +38,28 @@ public class InterfaceUtil {
 
             try {
                 // Demande au serveur si le groupe existe déjà
-                String serverIP = loadProperties("server.properties", "ip");
-                PeerMessage message = new PeerMessage(MessageType.NEWG, groupID, idFrom, idTo, groupID.getBytes());
+                if() {
 
-                // Génération du fichier config.json
-                Group group = new Group(groupID, new Person(idFrom));
-                String jsonConfig = JSONUtil.toJson(group);
-                JSONUtil.updateConfig(group.getID(), jsonConfig);
+                    // Génération du fichier config.json
+                    Group group = new Group(groupID, new Person(idFrom));
+                    String jsonConfig = JSONUtil.toJson(group);
+                    JSONUtil.updateConfig(group.getID(), jsonConfig);
 
-                // Chiffrement du config.json
-                RandomAccessFile f = new RandomAccessFile("./shared_files/" + groupID + "/key", "r");
-                byte[] key = new byte[(int) f.length()];
-                f.readFully(key);
-                byte[] cipherConfig = CipherUtil.AESEncrypt(JSONUtil.toJson(jsonConfig).getBytes(), key);
+                    // Chiffrement du config.json
+                    RandomAccessFile f = new RandomAccessFile("./shared_files/" + groupID + "/key", "r");
+                    byte[] key = new byte[(int) f.length()];
+                    f.readFully(key);
+                    byte[] cipherConfig = CipherUtil.AESEncrypt(JSONUtil.toJson(jsonConfig).getBytes(), key);
 
-                //TODO : PAS FINI
-                // Crée le groupe localement
-                String dir = "./shared_files/" + groupID;
-                File file = new File(dir);
+                    //TODO : PAS FINI
+                    // Crée le groupe localement
+                    String dir = "./shared_files/" + groupID;
+                    File file = new File(dir);
 
-                if (!file.exists() || !file.isDirectory()) {
-                    file.mkdirs();
+                    if (!file.exists() || !file.isDirectory()) {
+                        file.mkdirs();
+                    }
                 }
-
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             } catch (FileNotFoundException e) {

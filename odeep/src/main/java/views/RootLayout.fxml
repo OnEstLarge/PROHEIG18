@@ -46,9 +46,10 @@
             <children>
                 <Button fx:id="downloadButton" defaultButton="true" layoutX="65.0" layoutY="60.0" mnemonicParsing="false" text="Download" AnchorPane.rightAnchor="64.0" AnchorPane.topAnchor="60.0" />
                 <Button fx:id="inviteButton" layoutX="78.0" layoutY="121.0" mnemonicParsing="false" onAction="#handleInvite" text="Invite" AnchorPane.rightAnchor="77.0" AnchorPane.topAnchor="121.0" />
-                <Button fx:id="quitButton" cancelButton="true" layoutX="81.0" layoutY="326.0" mnemonicParsing="false" onAction="#handleQuit" text="Quit" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="326.0" />
-                <Button fx:id="createButton" layoutX="75.0" layoutY="220.0" mnemonicParsing="false" onAction="#handleCreateButtonAction" text="Create" AnchorPane.rightAnchor="74.0" AnchorPane.topAnchor="220.0" />
+                <Button fx:id="addButton" cancelButton="true" layoutX="46.0" layoutY="278.0" mnemonicParsing="false" onAction="#handleAdd" text="Add file" AnchorPane.rightAnchor="115.0" AnchorPane.topAnchor="278.0" />
+                <Button fx:id="createButton" layoutX="75.0" layoutY="221.0" mnemonicParsing="false" onAction="#handleCreateButtonAction" text="Create" AnchorPane.rightAnchor="74.0" AnchorPane.topAnchor="221.0" />
             <TextField fx:id="groupNameField" layoutX="26.0" layoutY="188.0" promptText="Group name &gt; 6" />
+            <Button fx:id="removeButton" cancelButton="true" layoutX="94.0" layoutY="278.0" mnemonicParsing="false" onAction="#handleRemove" text="Remove file" />
             </children>
         </AnchorPane>
     </right>
