@@ -13,6 +13,7 @@ package util;
 import User.Group;
 import User.Person;
 import main.Client;
+import Node.Node;
 import message.MessageType;
 import peer.PeerMessage;
 
@@ -31,42 +32,35 @@ public class InterfaceUtil {
      * @return true,    groupe créé
      * false,   groupe déjà existant ou erreur
      */
-    public static Group createGroup(String groupID, String idFrom) {
+    public static Group createGroup(String groupID, String idFrom, Node node) {
         Group group = null;
-
         // Check la validité du string groupID
         if (PeerMessage.isValidIdFormat(groupID, PeerMessage.ID_GROUP_MIN_LENGTH, PeerMessage.ID_GROUP_MAX_LENGTH)) {
-
             FileOutputStream out = null;
             try {
                 // Demande au serveur si le groupe existe déjà
                 if(Client.groupValidation(groupID)) {
-
+                    // Crée le groupe localement
+                    String dir = "./shared_files/" + groupID;
+                    File file = new File(dir);
+                    if (!file.exists() || !file.isDirectory()) {
+                        file.mkdirs();
+                    }
                     // Génération du fichier config.json
                     group = new Group(groupID, new Person(idFrom));
                     String jsonConfig = JSONUtil.toJson(group);
-                    JSONUtil.updateConfig(group.getID(), jsonConfig);
 
                     // Chiffrement du config.json
+
+                    node.setKey(CipherUtil.generateKey(), groupID);
                     RandomAccessFile f = new RandomAccessFile("./shared_files/" + groupID + "/key", "r");
                     byte[] key = new byte[(int) f.length()];
                     f.readFully(key);
                     byte[] cipherConfig = CipherUtil.AESEncrypt(jsonConfig.getBytes(), key);
 
-                    // Crée le groupe localement
-                    String dir = "./shared_files/" + groupID;
-                    File file = new File(dir);
-
-                    if (!file.exists() || !file.isDirectory()) {
-                        file.mkdirs();
-                    }
-
                     // Ajoute le fichier 'config.json' chiffré localement dans le répertoire du groupe
-                    out = new FileOutputStream(new File(dir + "/config.json"));
-                    //out.write(cipherConfig);
-                    out.write(jsonConfig.getBytes());
-                    out.flush();
-
+                    JSONUtil.updateConfig(group.getID(), jsonConfig);
+                    //TODO: stocker cipher config
                     // Envoie le fichier 'config.json' chiffré au serveur
                     Client.uploadJSON(dir + "/config.json", groupID, idFrom);
 
@@ -78,11 +72,7 @@ public class InterfaceUtil {
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
-                try {
-                    out.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
             }
         }
         return group;
