@@ -4,6 +4,8 @@ import Node.Node;
 import User.Person;
 import handler.*;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
@@ -20,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import javafx.stage.WindowEvent;
 import message.MessageType;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import peer.PeerConnection;
@@ -44,6 +47,20 @@ public class Client extends Application {
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("ODEEP");
+        this.primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+
+            @Override
+            public void handle(WindowEvent event) {
+                Platform.runLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        System.out.println("Application Closed by click to Close Button(X)");
+                        System.exit(0);
+                    }
+                });
+            }
+        });
         initRootLayout();
     }
 
@@ -273,6 +290,8 @@ public class Client extends Application {
     private static BufferedOutputStream out;
     private static boolean communicationReady = false;
     private static int isUsernameAvailaible = -1;
+    private static boolean waitingForGroupValidation = false;
+    private static boolean validationGroup = false;
 
     private static Node n;
     private static boolean nodeIsRunning = true;
@@ -376,18 +395,14 @@ public class Client extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        boolean validation = false;
-        try {
-            byte[] buffer = new byte[4096];
-            in.read(buffer);
-            PeerMessage pm = new PeerMessage(buffer);
-            System.out.println("Received response for group validation");
-            String resp = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
-            validation = resp.equals("true") ? true : false;
-        } catch (IOException e) {
-            e.printStackTrace();
+        while(waitingForGroupValidation) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
-        return validation;
+        return validationGroup;
     }
 
     private static void getLocalIP() {
@@ -483,6 +498,10 @@ public class Client extends Application {
                     if (pm.getType().equals(MessageType.INFO)) {
                         System.out.println("Received info, writing in response static");
                         response = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
+                    } else if(pm.getType().equals(MessageType.NEWG)) {
+                        String resp = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
+                        validationGroup = resp.equals("true") ? true: false;
+                        waitingForGroupValidation = false;
                     } else {
                         redirectToHandler(pm, n, new PeerConnection(clientSocketToServerPublic));
                     }
@@ -534,7 +553,8 @@ public class Client extends Application {
     }
 
     public static boolean createGroup(String groupID) {
-        Group group = InterfaceUtil.createGroup(groupID, Client.getUsername());
+        waitingForGroupValidation = true;
+        Group group = InterfaceUtil.createGroup(groupID, Client.getUsername(), n);
         if(group != null) {
             group.addMember(myself);
             groups.add(group);
@@ -568,19 +588,10 @@ public class Client extends Application {
             for (Person person : group.getMembers()) {
                 PeerMessage pm = new PeerMessage(MessageType.UPDT, groupID, idFrom, person.getID(), "".getBytes());
                 try {
-                    Socket localConnection = new Socket(askForInfos(person.getID()), 4444);
-                    BufferedOutputStream o = new BufferedOutputStream(localConnection.getOutputStream());
-                    o.write(pm.getFormattedMessage());
-                    o.flush();
-                    o.close();
-                    localConnection.close();
+                    out.write(pm.getFormattedMessage());
+                    out.flush();
                 } catch (IOException e) {
                     System.out.println(e.getMessage());
-                    if (e.getMessage().equals("Connection refused")) {
-                        //Si la connexion en locale échoue, on utilise le server relais
-                        out.write(pm.getFormattedMessage());
-                        out.flush();
-                    }
                 }
 
             }
