@@ -16,6 +16,7 @@ import main.Client;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import peer.PeerMessage;
+import util.InterfaceUtil;
 
 public class RootLayoutController implements Initializable {
 
@@ -55,7 +56,8 @@ public class RootLayoutController implements Initializable {
     @FXML
     private void handleCreateButtonAction() {
         String errorMsg = "";
-        if (!PeerMessage.isValidIdFormat(groupNameField.getText(), PeerMessage.ID_GROUP_MIN_LENGTH, PeerMessage.ID_GROUP_MAX_LENGTH)) {
+        if (!PeerMessage.isValidIdFormat(groupNameField.getText(), PeerMessage.ID_GROUP_MIN_LENGTH, PeerMessage.ID_GROUP_MAX_LENGTH)
+                && !Client.createGroup(groupNameField.getText()) ) {
             errorMsg += "Group name must be between " + PeerMessage.ID_GROUP_MIN_LENGTH + " and " + PeerMessage.ID_GROUP_MAX_LENGTH + " characters long.\n";
         } else {
             TitledPane pane = new TitledPane();
