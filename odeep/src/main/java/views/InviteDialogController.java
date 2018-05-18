@@ -2,12 +2,9 @@ package views;
 
 import User.Person;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
-import javafx.scene.control.TextField;
 import peer.PeerMessage;
 import sun.dc.path.PathError;
 
@@ -17,7 +14,7 @@ public class InviteDialogController {
     private boolean okClicked = false;
 
     @FXML
-    private TextField groupeIDField;
+    private ComboBox<String> comboBox;
 
     @FXML
     private TextField newUserPseudoField;
@@ -52,6 +49,16 @@ public class InviteDialogController {
         dialogStage.close();
     }
 
+    @FXML
+    public void addGroupNameToCombo(String name) {
+        comboBox.getItems().add(name);
+    }
+
+    @FXML
+    public void clearCombo() {
+        comboBox.getItems().clear();
+    }
+
     /**
      * Called when the user clicks ok.
      */
@@ -59,9 +66,9 @@ public class InviteDialogController {
     private void handleOk() {
         if (isInputValid()) {
             Label newPseudo = new Label();
-            newPseudo.setText(newUserPseudoField.getText());
+            newPseudo.setText(comboBox.getValue());
             for (int i = 0; i < RootLayoutController.getListView().size(); ++i) {
-                if (groupeIDField.getText().equals(RootLayoutController.getListView().get(i).getId())) {
+                if (comboBox.getValue().equals(RootLayoutController.getListView().get(i).getId())) {
                     RootLayoutController.getListView().get(i).getItems().add(newPseudo);
                     break;
                 }
@@ -73,27 +80,9 @@ public class InviteDialogController {
     }
 
     private boolean isInputValid() {
-        String errorMessage = "";
-        String pseudo = groupeIDField.getText();
-        boolean found = false;
-        for (ListView view : RootLayoutController.getListView()) {
-            if (pseudo.equals(view.getId())) {
-                found = true;
-                break;
-            }
-        }
-
-        if (found != true) {
-            errorMessage += "Group ID invalid. No group with this id.\n";
-        }
-
         if (!PeerMessage.isValidIdFormat(newUserPseudoField.getText(), PeerMessage.ID_MIN_LENGTH, PeerMessage.ID_MAX_LENGTH)) {
-            errorMessage += "Pseudo invalid format. Pseudo must be between " + PeerMessage.ID_MIN_LENGTH + " and " + PeerMessage.ID_MAX_LENGTH + "characters long.\n";
-        }
+            String errorMessage = "Pseudo invalid format. Pseudo must be between " + PeerMessage.ID_MIN_LENGTH + " and " + PeerMessage.ID_MAX_LENGTH + "characters long.\n";
 
-        if (errorMessage.length() == 0) {
-            return true;
-        } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.initOwner(dialogStage);
             alert.setTitle("Invalid Fields");
@@ -104,5 +93,7 @@ public class InviteDialogController {
 
             return false;
         }
+
+        return true;
     }
 }
