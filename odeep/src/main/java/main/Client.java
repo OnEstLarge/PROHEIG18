@@ -359,7 +359,7 @@ public class Client extends Application {
     }
 
     public static boolean groupValidation(String groupID) {
-        PeerMessage availaibleGroupID = new PeerMessage(MessageType.USRV, groupID, myUsername, "XXXXXX", 0, "".getBytes());
+        PeerMessage availaibleGroupID = new PeerMessage(MessageType.NEWG, groupID, myUsername, "XXXXXX", 0, "".getBytes());
 
         try {
             out.write(availaibleGroupID.getFormattedMessage());
