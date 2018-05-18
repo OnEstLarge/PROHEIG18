@@ -12,8 +12,6 @@ package util;
 
 import User.Group;
 import User.Person;
-import com.google.gson.Gson;
-import message.MessageType;
 import peer.PeerMessage;
 
 import java.io.*;

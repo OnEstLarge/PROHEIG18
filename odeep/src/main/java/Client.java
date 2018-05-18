@@ -4,6 +4,7 @@ import User.Group;
 import User.Person;
 import handler.*;
 import message.MessageType;
+import org.bouncycastle.crypto.InvalidCipherTextException;
 import peer.PeerConnection;
 import peer.PeerInformations;
 import peer.PeerMessage;
@@ -309,9 +310,55 @@ public class Client {
         }
     }
 
-    public static String downloadJSON(String group) {
+    public static String downloadJSON(String groupID) {
+        byte[] buffer;
+        byte[] configFile = null;
 
-        return null;
+        PeerMessage downloadMessage = new PeerMessage(MessageType.DOWN, groupID, myPseudo, myPseudo, groupID.getBytes());
+
+        try {
+            // Averti le serveur que le client désire avoir le fichier 'config.json'
+            out.write(downloadMessage.getFormattedMessage());
+            out.flush();
+
+            // Récupère le fichier 'config.json'
+            buffer = new byte[4096];
+            StringBuilder cipherConfig = new StringBuilder();
+
+            int c;
+            while((c = in.read(buffer)) != -1) {
+                cipherConfig.append(new String(buffer, 0, c));
+            }
+
+            // Déchiffre le fichier 'config.json'
+            configFile = CipherUtil.AESDecrypt(cipherConfig.toString().getBytes(), n.getKey(groupID));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InvalidCipherTextException e) {
+            e.printStackTrace();
+        }
+
+        return JSONUtil.toJson(configFile);
+    }
+
+    public static boolean askPermissionToCreateGroup(String groupID, String idFrom) {
+
+        PeerMessage message = new PeerMessage(MessageType.NEWG, groupID, idFrom, idFrom, groupID.getBytes());
+
+        try {
+            out.write(message.getFormattedMessage());
+            int response = in.read();
+
+            if(response == 1) {
+                return true;
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
 }
