@@ -67,11 +67,18 @@ public class Test {
         n.addMessageHandler(MessageType.DHS1, new DHS1Handler());
         n.addMessageHandler(MessageType.DHS2, new DHS2Handler());
         n.addMessageHandler(MessageType.DHR1, new DHR1Handler());
+        n.addMessageHandler(MessageType.RFIL, new RFILHandler());
+        n.addMessageHandler(MessageType.SFIL, new SFILHandler());
+        n.addMessageHandler(MessageType.NFIL, new NFILHandler());
+        n.addMessageHandler(MessageType.PGET, new PGETHandler());
 
 
         ////////////////////GENERATE CONFIG FILE////////////
         Group group1 = new Group("group1", new Person(mathieu.getID()), new Person("FrouzDu78"), new Person("PussySlayer69"), new Person("Pierre-André"));
         Group group2 = new Group("group2", new Person(mathieu.getID()), new Person("LionelSuceur44"));
+        Person temp = new Person("florent");
+        temp.addFile("JEE.pdf");
+        group1.addMember(temp);
 
         List<Group> groups = new ArrayList<Group>();
         groups.add(group1);
@@ -159,6 +166,8 @@ public class Test {
                         } catch (NoSuchProviderException e) {
                             e.printStackTrace();
                         }
+                    }else if (type.equals(MessageType.RFIL)) {
+                        n.requestFile(content, group);
                     }
                 }
             }

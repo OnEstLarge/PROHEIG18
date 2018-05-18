@@ -20,7 +20,7 @@ public class RFILHandler implements MessageHandler{
         RandomAccessFile f = null;
         byte[] key = null;
         try {
-            f = new RandomAccessFile("./" + m.getIdGroup() + "/key", "r");
+            f = new RandomAccessFile("./shared_files/" + m.getIdGroup() + "/key", "r");
             key = new byte[(int)f.length()];
             f.readFully(key);
         } catch (FileNotFoundException e) {
