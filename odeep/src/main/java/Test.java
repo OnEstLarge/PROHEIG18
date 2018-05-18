@@ -18,10 +18,8 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 import Node.FileSharingNode;
-import handler.RSAHandler;
+import handler.*;
 
-import handler.SFILHandler;
-import handler.SMESHandler;
 import message.MessageHandler;
 import message.MessageType;
 import peer.PeerConnection;
@@ -42,12 +40,12 @@ public class Test {
 
         final PeerInformations schurch = new PeerInformations("schurch", "192.168.1.110", 4444);
         final PeerInformations lionel = new PeerInformations("lionel", "192.168.1.119", 4444);
-        final PeerInformations florent = new PeerInformations("florent", "10.192.92.92", 4444);
+        final PeerInformations florent = new PeerInformations("florent", "192.168.0.214", 4444);
         final PeerInformations romain = new PeerInformations("romain", "10.192.93.186", 4444);
-        final PeerInformations olivier = new PeerInformations("olivier", "10.192.93.97", 4444);
+        final PeerInformations olivier = new PeerInformations("olivier", "192.168.0.249", 4444);
         final PeerInformations mathieu = new PeerInformations("mathieu", "10.192.91.89", 4444);
 
-        final PeerInformations myInfo = schurch;
+        final PeerInformations myInfo = olivier;
 
         final HashMap<String, PeerInformations> users = new HashMap<String, PeerInformations>();
         users.put("schurch", schurch);
@@ -70,6 +68,9 @@ public class Test {
         n.addPeer(mathieu);
         n.addMessageHandler(MessageType.SMES, sendMessageHandler);
         n.addMessageHandler(MessageType.SFIL, sendFileHandler);
+        n.addMessageHandler(MessageType.DHS1, new DHS1Handler());
+        n.addMessageHandler(MessageType.DHS2, new DHS2Handler());
+        n.addMessageHandler(MessageType.DHR1, new DHR1Handler());
 
 
         ////////////////////GENERATE CONFIG FILE////////////

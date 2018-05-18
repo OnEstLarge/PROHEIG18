@@ -40,6 +40,7 @@ public class PeerHandler implements Runnable {
     }
 
     public void run() {
+
         PeerConnection connection = new PeerConnection(clientSocket);
 
         PeerMessage message = null;
@@ -48,33 +49,9 @@ public class PeerHandler implements Runnable {
         } catch(InvalidFormatException e) {}
 
         //handle message
-        if(message.getType().equals(MessageType.DHR1)){
-            RSA = node.getTempRSAInfo();
-            if(RSA != null) {
-                RSA.sendEncryptedKey(node, message, message.getIdGroup());
-                node.setTempRSAInfo(null);
-            }
-        }
-        else if (message.getType().equals(MessageType.DHS1)){
-            try {
-                RSA = new RSAHandler();
-                RSA.setKeys();
-                RSA.sendRSAPublicKey(node, RSA.getPublicKey(), message);
-                node.setTempRSAInfo(RSA);
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (NoSuchProviderException e) {
-                e.printStackTrace();
-            }
-        }
-        else if(message.getType().equals(MessageType.DHS2)){
-            node.setKey(node.getTempRSAInfo().getFinalKey(message), message.getIdGroup());
-            node.setTempRSAInfo(null);
-            System.out.println("final key is : " + new String(node.getKey(message.getIdGroup())));
-        }
-        else {
-            node.getMapMessage().get(message.getType()).handleMessage(connection, message); //gerer erreur possible
-        }
+
+        node.getMapMessage().get(message.getType()).handleMessage(node,connection, message); //gerer erreur possible
+
 
         //close connection
         connection.close();
