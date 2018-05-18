@@ -26,6 +26,7 @@ import peer.PeerConnection;
 import peer.PeerInformations;
 import peer.PeerMessage;
 import util.CipherUtil;
+import util.InterfaceUtil;
 import util.JSONUtil;
 import views.AcceptInviteDialogController;
 import views.InviteDialogController;
@@ -38,9 +39,6 @@ public class Client extends Application {
 
     private Stage primaryStage;
     private BorderPane rootLayout;
-    private List<Group> groups = new ArrayList();
-    private Person oli = new Person("Olivier", "file");
-    //private String userPseudo ="123";
 
     @Override
     public void start(Stage primaryStage) {
@@ -274,6 +272,12 @@ public class Client extends Application {
 
     private static String response = null;
 
+    private static List<Group> groups = new ArrayList();
+    private static Person myself;//set in getPseudo
+
+
+
+
     public static void main(String[] args) {
 
         new Thread(new Runnable() {
@@ -301,6 +305,7 @@ public class Client extends Application {
                 e.printStackTrace();
             }
         }
+        myself = new Person(myUsername);
     }
 
     //ask the server if the entered username is available
@@ -515,6 +520,20 @@ public class Client extends Application {
         }
     }
 
+    public static String getUsername() {
+        return myUsername;
+    }
+
+    public static boolean createGroup(String groupID) {
+        Group group = InterfaceUtil.createGroup(groupID, Client.getUsername());
+        if(group != null) {
+            group.addMember(myself);
+            groups.add(group);
+        }
+        return group != null;
+    }
+
+
     public static void uploadJSON(String filenameJSON, String groupID, String idFrom) {
         //TODO tester validité des paramètres
 
@@ -565,7 +584,6 @@ public class Client extends Application {
     public static String downloadJSON(String groupID) {
         byte[] buffer;
         byte[] configFile = null;
-
 
         PeerMessage downloadMessage = new PeerMessage(MessageType.DOWN, groupID, myUsername, myUsername, groupID.getBytes());
 

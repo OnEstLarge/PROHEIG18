@@ -31,7 +31,8 @@ public class InterfaceUtil {
      * @return true,    groupe créé
      * false,   groupe déjà existant ou erreur
      */
-    public static boolean createGroup(String groupID, String idFrom) {
+    public static Group createGroup(String groupID, String idFrom) {
+        Group group = null;
 
         // Check la validité du string groupID
         if (PeerMessage.isValidIdFormat(groupID, PeerMessage.ID_GROUP_MIN_LENGTH, PeerMessage.ID_GROUP_MAX_LENGTH)) {
@@ -42,7 +43,7 @@ public class InterfaceUtil {
                 if(Client.groupValidation(groupID)) {
 
                     // Génération du fichier config.json
-                    Group group = new Group(groupID, new Person(idFrom));
+                    group = new Group(groupID, new Person(idFrom));
                     String jsonConfig = JSONUtil.toJson(group);
                     JSONUtil.updateConfig(group.getID(), jsonConfig);
 
@@ -84,7 +85,7 @@ public class InterfaceUtil {
                 }
             }
         }
-        return false;
+        return group;
     }
 
     /**
