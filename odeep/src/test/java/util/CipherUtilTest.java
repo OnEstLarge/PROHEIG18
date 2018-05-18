@@ -63,7 +63,13 @@ class CipherUtilTest {
     }
 
     @Test
-    void generateKey() {
+    void generateKeyAlwaysDifferent() {
+
+        byte[] k1 = CipherUtil.generateKey();
+        byte[] k2 = CipherUtil.generateKey();
+
+        assertEquals(k1.length, k2.length);
+        assertFalse(Arrays.equals(k1, k2));
     }
 
     @Test
@@ -85,6 +91,20 @@ class CipherUtilTest {
 
     @Test
     void splitKey() throws InvalidFormatException {
+    }
+
+    @Test
+    void RSAEncryptAndDecrypt(){
+
+        String m = "Hello tout le monde";
+        byte[] mToByte = m.getBytes();
+        KeyPair k = CipherUtil.GenerateRSAKey();
+
+        byte[] cipherText = CipherUtil.RSAEncrypt(k.getPublic(), mToByte );
+        byte[] plainText = CipherUtil.RSADecrypt(k.getPrivate(), cipherText);
+
+        String plainTextString = new String(plainText);
+        assertTrue(m.equals(plainTextString));
     }
 
 }
