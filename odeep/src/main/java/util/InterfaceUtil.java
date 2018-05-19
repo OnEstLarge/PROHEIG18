@@ -51,7 +51,6 @@ public class InterfaceUtil {
                     String jsonConfig = JSONUtil.toJson(group);
 
                     // Chiffrement du config.json
-
                     node.setKey(CipherUtil.generateKey(), groupID);
                     RandomAccessFile f = new RandomAccessFile("./shared_files/" + groupID + "/key", "r");
                     byte[] key = new byte[(int) f.length()];
@@ -59,8 +58,8 @@ public class InterfaceUtil {
                     byte[] cipherConfig = CipherUtil.AESEncrypt(jsonConfig.getBytes(), key);
 
                     // Ajoute le fichier 'config.json' chiffré localement dans le répertoire du groupe
-                    JSONUtil.updateConfig(group.getID(), jsonConfig);
-                    //TODO: stocker cipher config
+                    JSONUtil.updateConfig(group.getID(), cipherConfig);
+
                     // Envoie le fichier 'config.json' chiffré au serveur
                     Client.uploadJSON(dir + "/config.json", groupID, idFrom);
 
@@ -106,7 +105,7 @@ public class InterfaceUtil {
                 group.addFile(filename, userID);
 
                 // Affecte la modification au fichier config.json
-                JSONUtil.updateConfig(groupID, JSONUtil.toJson(group));
+                //JSONUtil.updateConfig(groupID, JSONUtil.toJson(group));
 
             }
         } catch (FileNotFoundException e) {

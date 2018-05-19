@@ -12,10 +12,7 @@ package util;
 
 import com.google.gson.*;
 
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -35,10 +32,23 @@ public class JSONUtil {
         return (T)(new Gson().fromJson(data, c));
     }
 
-    public static void updateConfig(String groupID, String data) throws FileNotFoundException, UnsupportedEncodingException {
-        PrintWriter pw = new PrintWriter("./shared_files/" + groupID + "/" + CONFIG_FILE_NAME, "UTF-8");
-        pw.write(data);
-        pw.close();
+    public static void updateConfig(String groupID, byte[] data) throws FileNotFoundException, UnsupportedEncodingException {
+        FileOutputStream fout = null;
+        try {
+            fout = new FileOutputStream(new File("./shared_files/" + groupID + "/config.json"));
+            fout.write(data);
+            fout.flush();
+        } catch(IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(fout != null) {
+                try {
+                    fout.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
 }
