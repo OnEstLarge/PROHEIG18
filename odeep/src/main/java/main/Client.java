@@ -502,7 +502,9 @@ public class Client extends Application {
                         String resp = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
                         validationGroup = resp.equals("true") ? true: false;
                         waitingForGroupValidation = false;
-                    } else {
+                    } else if(pm.getType().equals(MessageType.DOWN)) {
+                        saveReceivedJson(pm);
+                    }else {
                         redirectToHandler(pm, n, new PeerConnection(clientSocketToServerPublic));
                     }
 
@@ -604,9 +606,7 @@ public class Client extends Application {
         }
     }
 
-    public static String downloadJSON(String groupID) {
-        byte[] buffer;
-        byte[] configFile = null;
+    public static void downloadJSON(String groupID) {
 
         PeerMessage downloadMessage = new PeerMessage(MessageType.DOWN, groupID, myUsername, myUsername, groupID.getBytes());
 
@@ -614,26 +614,33 @@ public class Client extends Application {
             // Averti le serveur que le client désire avoir le fichier 'config.json'
             out.write(downloadMessage.getFormattedMessage());
             out.flush();
-            // Récupère le fichier 'config.json'
-            buffer = new byte[4096];
-            StringBuilder cipherConfig = new StringBuilder();
-
-            int c;
-            while ((c = in.read(buffer)) != -1) {
-                cipherConfig.append(new String(buffer, 0, c));
-            }
-
-            // Déchiffre le fichier 'config.json'
-            configFile = CipherUtil.AESDecrypt(cipherConfig.toString().getBytes(), n.getKey(groupID));
 
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (InvalidCipherTextException e) {
-            e.printStackTrace();
         }
-
-        return JSONUtil.toJson(configFile);
     }
 
-    
+    private static void saveReceivedJson(PeerMessage pm) {
+        byte[] buffer = new byte[4096];
+        int c;
+        FileOutputStream fout = null;
+        try {
+            fout = new FileOutputStream(new File("./shared_files/" + pm.getIdGroup() + "/config.json"));
+            while ((c = in.read(buffer)) != -1) {
+                fout.write(buffer,0,c);
+                fout.flush();
+            }
+
+        } catch(IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(fout != null) {
+                try {
+                    fout.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }
