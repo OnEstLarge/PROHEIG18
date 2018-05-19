@@ -43,7 +43,7 @@ public class PeerMessage {
     public static final int  FORCE_PADDING         =     16;
     public static final int  AES_PADDING           =     16;
     public static final int  HMAC_SIZE             =     CipherUtil.HMAC_SIZE;
-    public static final int  HEADER_SIZE           = TYPE_LENGTH + ID_GROUP_MAX_LENGTH + 2 * ID_MAX_LENGTH + NO_PACKET_DIGITS;
+    public static final int  HEADER_SIZE           = TYPE_LENGTH + ID_GROUP_MAX_LENGTH + 2 * ID_MAX_LENGTH + NO_PACKET_DIGITS + 4;
     public static final int  MESSAGE_CONTENT_SIZE  = BLOCK_SIZE - HEADER_SIZE - FORCE_PADDING - HMAC_SIZE  - AES_PADDING;
     public static final int  MESSAGE_WITH_PAD_SIZE = MESSAGE_CONTENT_SIZE + FORCE_PADDING + HMAC_SIZE + AES_PADDING;
 
@@ -275,10 +275,10 @@ public class PeerMessage {
     public byte[] getFormattedMessage() {
         StringBuilder message = new StringBuilder();
 
-        message.append(type);
-        message.append(addPadding(idGroup, ID_GROUP_MAX_LENGTH, PADDING_SYMBOL));
-        message.append(addPadding(idFrom, ID_MAX_LENGTH, PADDING_SYMBOL));
-        message.append(addPadding(idTo, ID_MAX_LENGTH, PADDING_SYMBOL));
+        message.append(type).append(',');
+        message.append(addPadding(idGroup, ID_GROUP_MAX_LENGTH, PADDING_SYMBOL)).append(',');
+        message.append(addPadding(idFrom, ID_MAX_LENGTH, PADDING_SYMBOL)).append(',');
+        message.append(addPadding(idTo, ID_MAX_LENGTH, PADDING_SYMBOL)).append(',');
         message.append(formatInt(noPacket, NO_PACKET_DIGITS));
 
         // -1 sinon bug

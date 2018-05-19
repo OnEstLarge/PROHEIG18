@@ -169,7 +169,6 @@ public class Node {
      * @throws IOException
      */
     public void sendFileToPeer(File file, String groupID, String destination) throws IOException {
-        PeerConnection c = null;
         byte[] key = this.getKey(groupID);
         int index = 0;
 
@@ -206,7 +205,7 @@ public class Node {
                 raf.close();
                 byte[] cipherMes = CipherUtil.AESEncrypt(mes, key);
                 PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
-                System.out.println("sending : " + filename + " : " + 100 * i / (fileSize/PeerMessage.MESSAGE_CONTENT_SIZE) + "%");
+                System.out.println("sending : " + filename + " : " + 100.0 * i / (fileSize/PeerMessage.MESSAGE_CONTENT_SIZE) + "%");
                 this.createTempConnection(pi, p);
             }
 

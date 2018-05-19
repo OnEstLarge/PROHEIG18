@@ -231,6 +231,7 @@ public class CipherUtil {
             throw new InvalidParameterException("Incorrect key length");
         }
         int dataLength = data.length;
+        System.out.println(dataLength);
         byte[] HMAC = new byte[HMAC_SIZE];
         byte[] rawData = new byte[data.length - HMAC_SIZE];
         for(int i = 0; i < dataLength - HMAC_SIZE; i++){
@@ -242,6 +243,7 @@ public class CipherUtil {
             index++;
         }
         byte[] expectedHMAC = generateHMAC(rawData, key);
+        System.out.println(new String(expectedHMAC) + " : " + new String(HMAC));
         return Arrays.equals(expectedHMAC, HMAC);
     }
 
