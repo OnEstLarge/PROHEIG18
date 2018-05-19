@@ -176,6 +176,9 @@ public class RootLayoutController implements Initializable {
         System.exit(1);
     }
 
+    @FXML
+    private void handleDownload(){}
+
 
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;

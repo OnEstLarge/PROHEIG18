@@ -1,15 +1,10 @@
 package server;
 
-import com.google.gson.JsonObject;
 import message.MessageType;
-import netscape.javascript.JSObject;
 import peer.PeerMessage;
 import util.CipherUtil;
 import util.DatabaseUtil;
-import util.JSONUtil;
-
 import java.io.*;
-import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
@@ -103,6 +98,9 @@ public class ServerPeerToPeer {
                         case MessageType.BYE:
                             bye(pm);
                             break;
+                        case MessageType.USRV:
+                            validationUsername(pm);
+                            break;
                         case MessageType.INFO:
                             giveInfoToSender(pm);
                             break;
@@ -118,52 +116,46 @@ public class ServerPeerToPeer {
                             redirect(pm);
                             break;
 
+                        case MessageType.NEWG:
+
+                            int ajout = DatabaseUtil.addGroupIfNotExists(pm.getIdGroup());
+                            System.out.println("Test : ajout " + ajout);
+                            if(ajout == 1) {
+                                out.write((new PeerMessage(pm.getType(),pm.getIdGroup(),pm.getIdFrom(),pm.getIdTo(),"true".getBytes())).getFormattedMessage());
+                                out.flush();
+                            }else{
+                                out.write((new PeerMessage(pm.getType(),pm.getIdGroup(),pm.getIdFrom(),pm.getIdTo(),"false".getBytes())).getFormattedMessage());
+                                out.flush();
+                            }
+
+                            break;
+
                         case MessageType.UPLO:
-                            //Mettre la methode pour acceder au serveur
-                            DatabaseUtil.addGroupIfNotExists(pm.getIdGroup());
 
                             //On récupère la taille du JSON a download
                             String s = CipherUtil.erasePadding(new String(pm.getMessageContent()),PeerMessage.PADDING_START);
-                            System.out.println(new String(pm.getMessageContent()));
-                            
-                            /*
-                            int taille = Integer.parseInt(s);
-                            byte[] json = new byte[taille];
-                            int byteLu = 0;
-                            byte[] testBuffer = new byte[4096];
-                            //Lecture pour avoir le fichier JSON
-                            while(byteLu != taille && in.read(bufferIn,0,4096) != -1){
-                                PeerMessage peerMessage = new PeerMessage(bufferIn);
-                                System.out.println("Recu : " + peerMessage.getType() + " " + new String(peerMessage.getMessageContent()));
-                                byte[] content = CipherUtil.erasePadding(peerMessage.getMessageContent(),PeerMessage.PADDING_START);
-                                for(int i = 0 ; i < content.length;++i)
-                                    json[byteLu + i] = content[i];
-                                byteLu += content.length;
+                            FileOutputStream fout = new FileOutputStream(new File("./groupsConfigs/" + pm.getIdGroup()));
+                            int byteLu;
+                            while((byteLu = in.read(bufferIn)) != -1){
+                                System.out.println(byteLu);
+                                fout.write(bufferIn,0,read);
+                                fout.flush();
                             }
-
-                            String stringJSON = new String(json);
-
-                            */
 
                             break;
 
                         case MessageType.DOWN:
-                            String stringJSON = DatabaseUtil.downloadJSON(pm.getIdGroup());
-                            int nbpack = (int) Math.ceil(stringJSON.length()/PeerMessage.MESSAGE_CONTENT_SIZE);
-                            String size = "" + nbpack;
-                            out.write(new PeerMessage(MessageType.DOWN,pm.getIdGroup(),pm.getIdFrom(),pm.getIdTo(),size.getBytes()).getFormattedMessage());
-                            if(nbpack == 1){
-                                out.write(new PeerMessage(MessageType.DOWN,pm.getIdGroup(),pm.getIdFrom(),pm.getIdTo(),stringJSON.getBytes()).getFormattedMessage());
-                            }else{
-                                for(int i = 0 ; i < nbpack; ++i){
-                                    out.write(new PeerMessage(MessageType.DOWN,pm.getIdGroup(),pm.getIdFrom(),pm.getIdTo(),
-                                            stringJSON.substring(i*PeerMessage.MESSAGE_CONTENT_SIZE,(i+1)*PeerMessage.MESSAGE_CONTENT_SIZE).getBytes()).getFormattedMessage());
-                                }
+
+                            FileInputStream fin = new FileInputStream(new File("./groupsConfigs/" + pm.getIdGroup()));
+                            int byteLus = 0 ;
+                            while ((byteLus = fin.read(bufferIn)) != -1){
+                                out.write(bufferIn,0,byteLus);
+                                out.flush();
                             }
+                            break;
 
                         default:
                             break;
-
                     }
                 }
             } catch (IOException e) {
@@ -172,10 +164,23 @@ public class ServerPeerToPeer {
         }
 
 
+        private void validationUsername(PeerMessage pm){
+            int validation = DatabaseUtil.addUserIfNotExists(pm.getIdFrom());
+            System.out.println("validation ngggggg");
+            try {
+                if(validation == 1) {
+                    out.write(new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "true".getBytes()).getFormattedMessage());
+                } else {
+                    out.write(new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "false".getBytes()).getFormattedMessage());
+                }
+                out.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         private void greetings(PeerMessage pm) {
-           byte[] b = CipherUtil.erasePadding(pm.getMessageContent(),PeerMessage.PADDING_START);
-
-
+            byte[] b = CipherUtil.erasePadding(pm.getMessageContent(),PeerMessage.PADDING_START);
             System.out.println("greetings " + pm.getIdFrom() + " " + new String(b));
             peopleInServ.put(pm.getIdFrom(), clientToSever);
             clientIPPrivee.put(pm.getIdFrom(), new String(b));
@@ -210,7 +215,7 @@ public class ServerPeerToPeer {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            } else {
+            } else if(pm.getType() != MessageType.INVI) {
                 try {
                     PeerMessage nok = new PeerMessage(MessageType.DISC,pm.getIdGroup(),pm.getIdFrom(),pm.getIdTo(), ("").getBytes());
                     out.write(nok.getFormattedMessage());

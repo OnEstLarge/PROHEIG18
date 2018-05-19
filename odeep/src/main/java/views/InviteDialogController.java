@@ -66,7 +66,7 @@ public class InviteDialogController {
     private void handleOk() {
         if (isInputValid()) {
             Label newPseudo = new Label();
-            newPseudo.setText(comboBox.getValue());
+            newPseudo.setText(newUserPseudoField.getText());
             for (int i = 0; i < RootLayoutController.getListView().size(); ++i) {
                 if (comboBox.getValue().equals(RootLayoutController.getListView().get(i).getId())) {
                     RootLayoutController.getListView().get(i).getItems().add(newPseudo);
