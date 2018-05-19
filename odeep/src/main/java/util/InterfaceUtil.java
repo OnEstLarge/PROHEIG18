@@ -86,17 +86,11 @@ public class InterfaceUtil {
     /**
      * @param filename
      * @param userID
-     * @param groupID
+     * @param group
      */
-    public static void addFile(String filename, String userID, String groupID) {
+    public static void addFile(String filename, String userID, Group group) {
 
         try {
-            //Récupère le contenu du fichier config.json
-            RandomAccessFile f = new RandomAccessFile("./shared_files/" + groupID + "/config.json", "r");
-            byte[] configData = new byte[(int) f.length()];
-            f.readFully(configData);
-
-            Group group = JSONUtil.parseJson(new String(configData), Group.class);
 
             // Vérifie que le nom de fichier est disponible (au sein du groupe)
             if (checkFilename(filename, group)) {
@@ -104,8 +98,13 @@ public class InterfaceUtil {
                 // Ajoute le fichier à la liste des fichiers de l'utilisateur
                 group.addFile(filename, userID);
 
-                // Affecte la modification au fichier config.json
-                //JSONUtil.updateConfig(groupID, JSONUtil.toJson(group));
+                // Affecte la modification au fichier config.json et le chiffre
+                RandomAccessFile f = new RandomAccessFile("./shared_files/" + group.getID() + "/key", "r");
+                byte[] key = new byte[(int) f.length()];
+                f.readFully(key);
+                byte[] cipherConfig = CipherUtil.AESEncrypt(JSONUtil.toJson(group).getBytes(), key);
+
+                JSONUtil.updateConfig(group.getID(), cipherConfig);
 
             }
         } catch (FileNotFoundException e) {
