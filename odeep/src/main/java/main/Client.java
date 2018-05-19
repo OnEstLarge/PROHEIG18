@@ -568,26 +568,32 @@ public class Client extends Application {
     public static void uploadJSON(String filenameJSON, String groupID, String idFrom) {
         //TODO tester validité des paramètres
 
-        PeerMessage uploadMessage = new PeerMessage(MessageType.UPLO, groupID, idFrom, idFrom, groupID.getBytes());
+        PeerMessage uploadMessage = null;
 
         try {
-            // Averti le serveur qu'un upload va être effectué
-            out.write(uploadMessage.getFormattedMessage());
-            out.flush();
 
             // Récupère et chiffre de fichier config.json
             RandomAccessFile configFile = new RandomAccessFile(filenameJSON, "r");
             byte[] configFileByte = new byte[(int) configFile.length()];
             configFile.readFully(configFileByte);
 
-            byte[] cipherConfig = CipherUtil.AESEncrypt(configFileByte, n.getKey(groupID));
+            String sizeJson = "" + configFileByte.length;
+            uploadMessage = new PeerMessage(MessageType.UPLO, groupID, idFrom, idFrom, sizeJson.getBytes());
+            // Averti le serveur qu'un upload va être effectué
+            out.write(uploadMessage.getFormattedMessage());
+            out.flush();
+            System.out.println("sent size " + configFileByte.length);
 
             // Upload le config.json chiffré au serveur
-            out.write(cipherConfig);
+            out.write(configFileByte, 0, configFileByte.length);
             out.flush();
 
-            Group group = JSONUtil.parseJson(new String(configFileByte), Group.class);
+
+            byte[] decipherConfigFile = CipherUtil.AESDecrypt(configFileByte, n.getKey(groupID));
+            System.out.println("Fichier dechiffré: " + new String(decipherConfigFile));
+            Group group = JSONUtil.parseJson(new String(decipherConfigFile), Group.class);
             for (Person person : group.getMembers()) {
+
                 PeerMessage pm = new PeerMessage(MessageType.UPDT, groupID, idFrom, person.getID(), "".getBytes());
                 try {
                     out.write(pm.getFormattedMessage());
@@ -600,6 +606,8 @@ public class Client extends Application {
 
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (InvalidCipherTextException ex) {
+            ex.printStackTrace();
         }
     }
 
