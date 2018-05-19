@@ -18,7 +18,6 @@ public class RFILHandler implements MessageHandler{
 
     @Override
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
-        c.close();
         RandomAccessFile f = null;
         byte[] key = null;
         try {

@@ -4,6 +4,7 @@ import message.MessageHandler;
 import message.MessageType;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import peer.PeerConnection;
+import peer.PeerInformations;
 import peer.PeerMessage;
 import util.CipherUtil;
 import Node.Node;
@@ -28,10 +29,24 @@ public class SFILHandler implements MessageHandler {
         byte[] rcv = new byte[0];
         try {
             rcv = CipherUtil.AESDecrypt(CipherUtil.erasePadding(m.getMessageContent(), PeerMessage.PADDING_START), key);
+
+            PeerInformations pi = null;
+            for (PeerInformations p : n.getKnownPeers()) {
+                if (p.getID().equals(m.getIdFrom())) {
+                    pi = p;
+                    break;
+                }
+            }
+            if (pi == null) {
+                throw new NullPointerException();
+            } else {
+                n.createTempConnection(pi, new PeerMessage(MessageType.PGET, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getNoPacket(), new byte[]{}));
+                return;
+            }
         } catch (InvalidCipherTextException e) {
-            c.sendMessage(new PeerMessage(MessageType.PGET, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getNoPacket(), new byte[]{}));
-            return;
+
         }
+
         if (m.getNoPacket() == 0) {
             String[] fileInfo = new String(rcv).split(":");
             n.filesizeDownloaded = Integer.parseInt(fileInfo[1]);

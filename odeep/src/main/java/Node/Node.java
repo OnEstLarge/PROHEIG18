@@ -169,7 +169,6 @@ public class Node {
      * @throws IOException
      */
     public void sendFileToPeer(File file, String groupID, String destination) throws IOException {
-        PeerConnection c = null;
         byte[] key = this.getKey(groupID);
         int index = 0;
 
