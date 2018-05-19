@@ -16,6 +16,7 @@ public class PGETHandler implements MessageHandler {
 
     @Override
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
+        c.close();
         RandomAccessFile f = null;
         byte[] key = null;
         try {
@@ -54,13 +55,7 @@ public class PGETHandler implements MessageHandler {
         if (pi == null) {
             throw new NullPointerException();
         } else {
-            try {
-                PeerConnection p = new PeerConnection(pi);
-                p.sendMessage(response);
-                p.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            n.createTempConection(pi, response);
         }
     }
 }
