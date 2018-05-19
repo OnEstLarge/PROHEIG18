@@ -100,8 +100,8 @@ public class RootLayoutController implements Initializable {
         groupNameField.setText("");
     }
 
-    public void fillFileMap(List<Group> groups) {
-        for (Group g : groups) {
+    public void fillFileMap() {
+        for (Group g : mainApp.getGroups()) {
             List<String> files = new ArrayList<String>();
             for (Person p : g.getMembers()) {
                 for (String s : p.getFiles()) {
@@ -111,6 +111,47 @@ public class RootLayoutController implements Initializable {
                 }
             }
             mapFile.put(g.getID(), files);
+        }
+    }
+
+    // On remet à jour les groupes dans le menu déroulant et les fichiers
+    private void updateGroupsAndFiles(){
+        accordion.getPanes().clear();
+        listView.clear();
+
+        // Update the list of files
+        fillFileMap();
+
+        for(final Group g: mainApp.getGroups()){
+            TitledPane pane = new TitledPane();
+            ListView view = new ListView();
+
+            for(Person p : g.getMembers()){
+                view.getItems().add(p.getID());
+            }
+
+            listView.add(view);
+            view.setId(g.getID());
+            pane.setText(g.getID());
+            pane.setContent(view);
+            pane.setCollapsible(true);
+
+            // Display the files availables in the group in the middle pane when the group is selected.
+            pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    middleList.getItems().clear();
+                    System.out.println(middleList.getItems());
+                    System.out.println(mapFile.toString());
+                    if (mapFile.containsKey(g.getID()) && mapFile.get(g.getID()) != null) {
+                        List<String> files = mapFile.get(g.getID());
+                        for (String s : files) {
+                            middleList.getItems().add(s);
+                        }
+                    }
+                }
+            });
+            accordion.getPanes().add(pane);
         }
     }
 
@@ -166,9 +207,9 @@ public class RootLayoutController implements Initializable {
                 System.out.println(file.getCanonicalFile());
             } catch (IOException e) {
                 e.printStackTrace();
-            }
-            //mainApp.loadPersonDataFromFile(file);
         }
+    }
+    //mainApp.loadPersonDataFromFile(file);
     }
 
     @FXML
