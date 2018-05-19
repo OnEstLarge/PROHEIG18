@@ -17,4 +17,6 @@ public class MessageType {
     public final static String UPLO = "UPLO"; //upload le fichier de config sur le serveur
     public final static String DISC = "DISC"; //indique que le destinataire d'un message est deconnecté
     public final static String NFIL = "NFIL"; //indique qu'on ne possede pas le fichier
+    public final static String NEWG = "NEWG"; //check si le nouveau groupe peut etre crée
+    public final static String USRV = "USRV"; //check si le nouveau groupe peut etre crée
 }
