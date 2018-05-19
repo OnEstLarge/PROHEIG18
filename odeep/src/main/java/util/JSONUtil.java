@@ -10,6 +10,7 @@ package util;
  -----------------------------------------------------------------------------------
 */
 
+import User.Group;
 import com.google.gson.*;
 
 import java.io.*;
@@ -30,6 +31,10 @@ public class JSONUtil {
 
     public static <T extends Serializable> T parseJson(String data, Class c){
         return (T)(new Gson().fromJson(data, c));
+    }
+
+    public static void updateConfig(Group group) {
+
     }
 
     public static void updateConfig(String groupID, byte[] data) throws FileNotFoundException, UnsupportedEncodingException {
