@@ -288,14 +288,14 @@ public class PeerMessage {
         System.out.println(new String(toSend));
         toSend[index++] = ",".getBytes()[0];
 
-        byte[] from = addPadding(idGroup, ID_GROUP_MAX_LENGTH, PADDING_SYMBOL).getBytes();
+        byte[] from = addPadding(idFrom, ID_MAX_LENGTH, PADDING_SYMBOL).getBytes();
         for (int i = 0; i < ID_MAX_LENGTH; i++) {
             toSend[index++] = from[i];
         }
         System.out.println(new String(toSend));
         toSend[index++] = ",".getBytes()[0];
 
-        byte[] to = addPadding(idGroup, ID_GROUP_MAX_LENGTH, PADDING_SYMBOL).getBytes();
+        byte[] to = addPadding(idTo, ID_MAX_LENGTH, PADDING_SYMBOL).getBytes();
         for (int i = 0; i < ID_MAX_LENGTH; i++) {
             toSend[index++] = to[i];
         }
