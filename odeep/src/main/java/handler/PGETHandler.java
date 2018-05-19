@@ -55,7 +55,7 @@ public class PGETHandler implements MessageHandler {
         if (pi == null) {
             throw new NullPointerException();
         } else {
-            n.createTempConection(pi, response);
+            n.createTempConnection(pi, response);
         }
     }
 }

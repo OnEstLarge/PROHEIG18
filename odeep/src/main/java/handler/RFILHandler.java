@@ -59,7 +59,7 @@ public class RFILHandler implements MessageHandler{
             if (pi == null) {
                 throw new NullPointerException();
             } else {
-                n.createTempConection(pi,new PeerMessage(MessageType.NFIL, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getMessageContent()) );
+                n.createTempConnection(pi,new PeerMessage(MessageType.NFIL, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getMessageContent()) );
             }
         }
     }
