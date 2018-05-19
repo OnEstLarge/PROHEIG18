@@ -281,7 +281,7 @@ public class Client extends Application {
 
 
 
-    private static final String IP_SERVER = "192.168.0.214";//"206.189.49.105";
+    private static final String IP_SERVER = "192.168.0.46";//"206.189.49.105";
     private static final int PORT_SERVER = 8080;
     private static final int LOCAL_PORT = 4444;
 
@@ -292,6 +292,7 @@ public class Client extends Application {
     private static int isUsernameAvailaible = -1;
     private static boolean waitingForGroupValidation = false;
     private static boolean validationGroup = false;
+    private static boolean waitingJsonFromServer = false;
 
     private static Node n;
     private static boolean nodeIsRunning = true;
@@ -489,11 +490,7 @@ public class Client extends Application {
         // Restore existing groups
         for(String groupID : scanGroups()) {
             downloadJSON(groupID);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+
             // Read config file
             try {
                 RandomAccessFile configFile = new RandomAccessFile("./shared_files/" + groupID + "/config.json", "r");
@@ -536,6 +533,7 @@ public class Client extends Application {
                     } else if(pm.getType().equals(MessageType.DOWN)) {
                         System.out.println("i'm in");
                         saveReceivedJson(pm);
+                        waitingJsonFromServer = false;
                         System.out.println("i'm out");
                     }else {
                         redirectToHandler(pm, n, new PeerConnection(clientSocketToServerPublic));
@@ -646,12 +644,20 @@ public class Client extends Application {
     public static void downloadJSON(String groupID) {
 
         PeerMessage downloadMessage = new PeerMessage(MessageType.DOWN, groupID, myUsername, myUsername, groupID.getBytes());
-
+        waitingJsonFromServer = true;
         try {
             System.out.println("I want to download");
             // Averti le serveur que le client désire avoir le fichier 'config.json'
             out.write(downloadMessage.getFormattedMessage());
             out.flush();
+
+            while(waitingJsonFromServer){
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
