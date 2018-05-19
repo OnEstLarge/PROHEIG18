@@ -553,13 +553,15 @@ public class Client extends Application {
     }
 
     public static boolean createGroup(String groupID) {
-        waitingForGroupValidation = true;
+        /*waitingForGroupValidation = true;
         Group group = InterfaceUtil.createGroup(groupID, Client.getUsername(), n);
         if(group != null) {
             group.addMember(myself);
             groups.add(group);
         }
-        return group != null;
+        return group != null;*/
+        downloadJSON("Children8");
+        return true;
     }
 
 
@@ -581,6 +583,7 @@ public class Client extends Application {
             byte[] cipherConfig = CipherUtil.AESEncrypt(configFileByte, n.getKey(groupID));
 
             // Upload le config.json chiffré au serveur
+            System.out.println("CipherConfig = " + cipherConfig.length);
             out.write(cipherConfig);
             out.flush();
 
