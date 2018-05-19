@@ -281,20 +281,23 @@ public class PeerMessage {
         System.out.println(new String(toSend));
         toSend[index++] = ",".getBytes()[0];
 
+        byte[] group = addPadding(idGroup, ID_GROUP_MAX_LENGTH, PADDING_SYMBOL).getBytes();
         for (int i = 0; i < ID_GROUP_MAX_LENGTH; i++) {
-            toSend[index++] = idGroup.getBytes()[i];
+            toSend[index++] = group[i];
         }
         System.out.println(new String(toSend));
         toSend[index++] = ",".getBytes()[0];
 
+        byte[] from = addPadding(idGroup, ID_GROUP_MAX_LENGTH, PADDING_SYMBOL).getBytes();
         for (int i = 0; i < ID_MAX_LENGTH; i++) {
-            toSend[index++] = idFrom.getBytes()[i];
+            toSend[index++] = from[i];
         }
         System.out.println(new String(toSend));
         toSend[index++] = ",".getBytes()[0];
 
+        byte[] to = addPadding(idGroup, ID_GROUP_MAX_LENGTH, PADDING_SYMBOL).getBytes();
         for (int i = 0; i < ID_MAX_LENGTH; i++) {
-            toSend[index++] = idTo.getBytes()[i];
+            toSend[index++] = to[i];
         }
         System.out.println(new String(toSend));
         toSend[index++] = ",".getBytes()[0];
