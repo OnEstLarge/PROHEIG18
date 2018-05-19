@@ -157,7 +157,7 @@ public class ServerPeerToPeer {
 
                             byte[] bufferJson = new byte[(int) json.length()];
                             json.readFully(bufferJson);
-                            PeerMessage msg = new PeerMessage(MessageType.DOWN, pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "".getBytes());
+                            PeerMessage msg = new PeerMessage(MessageType.DOWN, pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), ("" + (int) json.length()).getBytes());
                             out.write(msg.getFormattedMessage());
                             out.flush();
                             out.write(bufferJson);
