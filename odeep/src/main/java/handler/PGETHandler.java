@@ -54,13 +54,7 @@ public class PGETHandler implements MessageHandler {
         if (pi == null) {
             throw new NullPointerException();
         } else {
-            try {
-                PeerConnection p = new PeerConnection(pi);
-                p.sendMessage(response);
-                p.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            n.createTempConnection(pi, response);
         }
     }
 }

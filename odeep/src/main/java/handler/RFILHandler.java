@@ -18,7 +18,6 @@ public class RFILHandler implements MessageHandler{
 
     @Override
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
-        c.close();
         RandomAccessFile f = null;
         byte[] key = null;
         try {
@@ -59,13 +58,7 @@ public class RFILHandler implements MessageHandler{
             if (pi == null) {
                 throw new NullPointerException();
             } else {
-                try {
-                    PeerConnection p = new PeerConnection(pi);
-                    p.sendMessage(new PeerMessage(MessageType.NFIL, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getMessageContent()));
-                    p.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                n.createTempConnection(pi,new PeerMessage(MessageType.NFIL, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getMessageContent()) );
             }
         }
     }
