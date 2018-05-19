@@ -149,7 +149,7 @@ public class Client extends Application {
             // Give the controller access to the main app.
             RootLayoutController controller = loader.getController();
             controller.setMainApp(this);
-            controller.fillFileMap(groups);
+            controller.updateGroupsAndFiles();
 
             primaryStage.show();
         } catch (IOException e) {
@@ -315,7 +315,14 @@ public class Client extends Application {
                 System.out.println("Connecting to server");
                 //initconnection connect to serv, get pseudo, connect with pseudo
                 initConnections(IP_SERVER, PORT_SERVER);
-                initNode();
+                for(Group g : groups)
+                    System.out.println(g.getID());
+                //listening for incoming connections
+                System.out.println("Launching node listening");
+                n.acceptingConnections();
+
+
+
             }
         }).start();
 
@@ -443,13 +450,6 @@ public class Client extends Application {
         n.addMessageHandler(MessageType.SMES, new SMESHandler());
         n.addMessageHandler(MessageType.UPDT, new UPDTHandler());
         System.out.println("Added the handlers");
-
-        //connection au server publique
-        //Client c = new Client();
-
-        //listening for incoming connections
-        System.out.println("Launching node listening");
-        n.acceptingConnections();
     }
 
     //initialise la connection avec le serveur et de lancer le server d'écoute du client
@@ -482,15 +482,24 @@ public class Client extends Application {
 
         new Thread(new ReadFromServer()).start();
 
+
+        // Initialize the client node
+        initNode();
+
         // Restore existing groups
         for(String groupID : scanGroups()) {
             downloadJSON(groupID);
-
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             // Read config file
             try {
                 RandomAccessFile configFile = new RandomAccessFile("./shared_files/" + groupID + "/config.json", "r");
                 byte[] configFileByte = new byte[(int) configFile.length()];
                 configFile.readFully(configFileByte);
+                System.out.println(groupID);
 
                 String configJson = new String(CipherUtil.AESDecrypt(configFileByte, n.getKey(groupID)));
 
@@ -515,7 +524,7 @@ public class Client extends Application {
                 while ((read = in.read(buffer)) != -1) {
 
                     PeerMessage pm = new PeerMessage(buffer);
-                    //String type = pm.getType();
+                    System.out.println("type message received = " + pm.getType());
 
                     if (pm.getType().equals(MessageType.INFO)) {
                         System.out.println("Received info, writing in response static");
@@ -525,7 +534,9 @@ public class Client extends Application {
                         validationGroup = resp.equals("true") ? true: false;
                         waitingForGroupValidation = false;
                     } else if(pm.getType().equals(MessageType.DOWN)) {
+                        System.out.println("i'm in");
                         saveReceivedJson(pm);
+                        System.out.println("i'm out");
                     }else {
                         redirectToHandler(pm, n, new PeerConnection(clientSocketToServerPublic));
                     }
@@ -603,7 +614,6 @@ public class Client extends Application {
             uploadMessage = new PeerMessage(MessageType.UPLO, groupID, idFrom, idFrom, sizeJson.getBytes());
             // Averti le serveur qu'un upload va être effectué
             out.write(uploadMessage.getFormattedMessage());
-            out.flush();
 
             // Upload le config.json chiffré au serveur
             out.write(configFileByte, 0, configFileByte.length);
@@ -647,15 +657,16 @@ public class Client extends Application {
     }
 
     private static void saveReceivedJson(PeerMessage pm) {
-        byte[] buffer = new byte[4096];
+        int size = Integer.parseInt(new String(pm.getMessageContent()));
+        byte[] buffer = new byte[size];
         int c;
         FileOutputStream fout = null;
         try {
             fout = new FileOutputStream(new File("./shared_files/" + pm.getIdGroup() + "/config.json"));
-            while ((c = in.read(buffer)) != -1) {
-                fout.write(buffer,0,c);
-                fout.flush();
-            }
+            c = in.read(buffer);
+            fout.write(buffer,0,c);
+            fout.flush();
+
 
         } catch(IOException e) {
             e.printStackTrace();
