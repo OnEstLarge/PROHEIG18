@@ -100,7 +100,7 @@ public class RootLayoutController implements Initializable {
         groupNameField.setText("");
     }
 
-    public void fillFileMap() {
+    private void fillFileMap() {
         for (Group g : mainApp.getGroups()) {
             List<String> files = new ArrayList<String>();
             for (Person p : g.getMembers()) {
@@ -115,7 +115,7 @@ public class RootLayoutController implements Initializable {
     }
 
     // On remet à jour les groupes dans le menu déroulant et les fichiers
-    private void updateGroupsAndFiles(){
+    public void updateGroupsAndFiles(){
         accordion.getPanes().clear();
         listView.clear();
 
