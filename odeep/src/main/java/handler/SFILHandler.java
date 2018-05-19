@@ -29,7 +29,7 @@ public class SFILHandler implements MessageHandler {
         byte[] rcv = new byte[0];
         try {
             rcv = CipherUtil.AESDecrypt(CipherUtil.erasePadding(m.getMessageContent(), PeerMessage.PADDING_START), key);
-
+        } catch (InvalidCipherTextException e) {
             PeerInformations pi = null;
             for (PeerInformations p : n.getKnownPeers()) {
                 if (p.getID().equals(m.getIdFrom())) {
@@ -43,8 +43,6 @@ public class SFILHandler implements MessageHandler {
                 n.createTempConnection(pi, new PeerMessage(MessageType.PGET, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getNoPacket(), new byte[]{}));
                 return;
             }
-        } catch (InvalidCipherTextException e) {
-
         }
 
         if (m.getNoPacket() == 0) {
