@@ -593,13 +593,14 @@ public class Client extends Application {
             System.out.println("Fichier dechiffré: " + new String(decipherConfigFile));
             Group group = JSONUtil.parseJson(new String(decipherConfigFile), Group.class);
             for (Person person : group.getMembers()) {
-
-                PeerMessage pm = new PeerMessage(MessageType.UPDT, groupID, idFrom, person.getID(), "".getBytes());
-                try {
-                    out.write(pm.getFormattedMessage());
-                    out.flush();
-                } catch (IOException e) {
-                    System.out.println(e.getMessage());
+                if(!person.getID().equals(myUsername)) {
+                    PeerMessage pm = new PeerMessage(MessageType.UPDT, groupID, idFrom, person.getID(), "".getBytes());
+                    try {
+                        out.write(pm.getFormattedMessage());
+                        out.flush();
+                    } catch (IOException e) {
+                        System.out.println(e.getMessage());
+                    }
                 }
 
             }
@@ -616,6 +617,7 @@ public class Client extends Application {
         PeerMessage downloadMessage = new PeerMessage(MessageType.DOWN, groupID, myUsername, myUsername, groupID.getBytes());
 
         try {
+            System.out.println("I want to download");
             // Averti le serveur que le client désire avoir le fichier 'config.json'
             out.write(downloadMessage.getFormattedMessage());
             out.flush();
@@ -630,6 +632,7 @@ public class Client extends Application {
         int c;
         FileOutputStream fout = null;
         try {
+            System.out.println("I download");
             fout = new FileOutputStream(new File("./shared_files/" + pm.getIdGroup() + "/config.json"));
             while ((c = in.read(buffer)) != -1) {
                 fout.write(buffer,0,c);
