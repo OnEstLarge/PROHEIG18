@@ -43,9 +43,9 @@ public class PeerMessage {
     public static final int  FORCE_PADDING         =     16;
     public static final int  AES_PADDING           =     16;
     public static final int  HMAC_SIZE             =     CipherUtil.HMAC_SIZE;
-    public static final int  HEADER_SIZE           = TYPE_LENGTH + ID_GROUP_MAX_LENGTH + 2 * ID_MAX_LENGTH + NO_PACKET_DIGITS + 4;
+    public static final int  HEADER_SIZE           = TYPE_LENGTH + ID_GROUP_MAX_LENGTH + 2 * ID_MAX_LENGTH + NO_PACKET_DIGITS;
     public static final int  MESSAGE_CONTENT_SIZE  = BLOCK_SIZE - HEADER_SIZE - FORCE_PADDING - HMAC_SIZE  - AES_PADDING;
-    public static final int  MESSAGE_WITH_PAD_SIZE = MESSAGE_CONTENT_SIZE + FORCE_PADDING + HMAC_SIZE + AES_PADDING - 1;
+    public static final int  MESSAGE_WITH_PAD_SIZE = MESSAGE_CONTENT_SIZE + FORCE_PADDING + HMAC_SIZE + AES_PADDING;
 
 
     public static final char PADDING_START        = '_';
@@ -113,19 +113,19 @@ public class PeerMessage {
         int index = 0;
         this.type           = CipherUtil.erasePadding(new String(Arrays.copyOfRange(rawData,index, TYPE_LENGTH)), PADDING_START);
         //System.out.println("constr type " + this.type);
-        index += TYPE_LENGTH+1;
+        index += TYPE_LENGTH;
         this.idGroup        = CipherUtil.erasePadding(new String(Arrays.copyOfRange(rawData,index, index + ID_GROUP_MAX_LENGTH)), PADDING_START);
         //System.out.println("constr idGroup " + this.idGroup);
-        index += ID_GROUP_MAX_LENGTH+1;
+        index += ID_GROUP_MAX_LENGTH;
         this.idFrom         = CipherUtil.erasePadding(new String(Arrays.copyOfRange(rawData,index , index + ID_MAX_LENGTH)), PADDING_START);
         //System.out.println("constr idfrom " + this.idFrom);
-        index += ID_MAX_LENGTH+1;
+        index += ID_MAX_LENGTH;
         this.idTo           = CipherUtil.erasePadding(new String(Arrays.copyOfRange(rawData,index, index + ID_MAX_LENGTH)), PADDING_START);
         //System.out.println("constr idto " + this.idTo);
-        index += ID_MAX_LENGTH+1;
+        index += ID_MAX_LENGTH;
         this.noPacket       = Integer.parseInt(new String(Arrays.copyOfRange(rawData,index, index +NO_PACKET_DIGITS)));
         //System.out.println("constr noPa " + this.noPacket);
-        index += NO_PACKET_DIGITS+1;
+        index += NO_PACKET_DIGITS;
         this.messageContent = CipherUtil.erasePadding(Arrays.copyOfRange(rawData,index, rawData.length), PADDING_START);
         //System.out.println(new String(messageContent));
     }
@@ -275,11 +275,11 @@ public class PeerMessage {
     public byte[] getFormattedMessage() {
         StringBuilder message = new StringBuilder();
 
-        message.append(type).append(",");
-        message.append(addPadding(idGroup, ID_GROUP_MAX_LENGTH, PADDING_SYMBOL)).append(",");
-        message.append(addPadding(idFrom, ID_MAX_LENGTH, PADDING_SYMBOL)).append(",");
-        message.append(addPadding(idTo, ID_MAX_LENGTH, PADDING_SYMBOL)).append(",");
-        message.append(formatInt(noPacket, NO_PACKET_DIGITS)).append(",");
+        message.append(type);
+        message.append(addPadding(idGroup, ID_GROUP_MAX_LENGTH, PADDING_SYMBOL));
+        message.append(addPadding(idFrom, ID_MAX_LENGTH, PADDING_SYMBOL));
+        message.append(addPadding(idTo, ID_MAX_LENGTH, PADDING_SYMBOL));
+        message.append(formatInt(noPacket, NO_PACKET_DIGITS));
 
         // -1 sinon bug
         byte[] messageWithPad = addPadding(messageContent, MESSAGE_WITH_PAD_SIZE);

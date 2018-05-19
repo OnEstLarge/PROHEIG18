@@ -4,6 +4,7 @@ import message.MessageHandler;
 import message.MessageType;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import peer.PeerConnection;
+import peer.PeerInformations;
 import peer.PeerMessage;
 import util.CipherUtil;
 import Node.Node;
@@ -31,12 +32,20 @@ public class RFILHandler implements MessageHandler{
         }
         File fileAsked = null;
         try {
-            fileAsked = new File("./" + m.getIdGroup() + new String(CipherUtil.AESDecrypt(CipherUtil.erasePadding(m.getMessageContent(), PeerMessage.PADDING_START), key)));
+            fileAsked = new File(new String(CipherUtil.AESDecrypt(CipherUtil.erasePadding(m.getMessageContent(), PeerMessage.PADDING_START), key)));
         } catch (InvalidCipherTextException e) {
             e.printStackTrace();
         }
+
+        PeerInformations pi = null;
+        for (PeerInformations p : n.getKnownPeers()) {
+            if (p.getID().equals(m.getIdFrom())) {
+                pi = p;
+                break;
+            }
+        }
+
         if(fileAsked.exists() && !fileAsked.isDirectory()) {
-            c.close();
             n.filenameUploaded = fileAsked.getName();
             try {
                 n.sendFileToPeer(fileAsked, m.getIdGroup(), m.getIdFrom());
@@ -44,12 +53,20 @@ public class RFILHandler implements MessageHandler{
                 e.printStackTrace();
             }
             n.filenameUploaded = null;
-            //SEND FILE
 
         }
         else{
-            c.sendMessage(new PeerMessage(MessageType.NFIL, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getMessageContent()));
-            c.close();
+            if (pi == null) {
+                throw new NullPointerException();
+            } else {
+                try {
+                    PeerConnection p = new PeerConnection(pi);
+                    p.sendMessage(new PeerMessage(MessageType.NFIL, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getMessageContent()));
+                    p.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

@@ -190,7 +190,6 @@ public class Node {
 
 
             c.sendMessage(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherFileInfo));
-            c.close();
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
@@ -201,27 +200,24 @@ public class Node {
             byte[] mes = new byte[PeerMessage.MESSAGE_CONTENT_SIZE];
 
             for (int i = 0; i < (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE); i++, index++) {
-                PeerConnection c2 = new PeerConnection(pi);
                 RandomAccessFile raf = new RandomAccessFile("./shared_files/" + groupID + "/" + filename, "rw");
                 raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * i);
                 raf.read(mes, 0, mes.length);
                 raf.close();
                 byte[] cipherMes = CipherUtil.AESEncrypt(mes, key);
                 PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
-                c2.sendMessage(p);
-                c2.close();
+                c.sendMessage(p);
             }
 
             byte[] lastMes = new byte[(int) (fileSize % PeerMessage.MESSAGE_CONTENT_SIZE)];
-            PeerConnection c2 = new PeerConnection(pi);
             RandomAccessFile raf = new RandomAccessFile("./shared_files/" + groupID + "/" + filename, "rw");
             raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE));
             raf.read(lastMes, 0, lastMes.length);
             raf.close();
             byte[] cipherMes = CipherUtil.AESEncrypt(lastMes, key);
             PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
-            c2.sendMessage(p);
-            c2.close();
+            c.sendMessage(p);
+            c.close();
         }
     }
 
@@ -283,7 +279,7 @@ public class Node {
             e.printStackTrace();
         }
         p.sendMessage(new PeerMessage(MessageType.RFIL.toString(), groupID, this.getNodePeer().getID(), peerHavingFile.getID(), CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));
-
+        p.close();
     }
 
     /**
