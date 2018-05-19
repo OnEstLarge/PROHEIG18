@@ -92,7 +92,7 @@ public class Test {
         file.mkdirs();
 
         try {
-            JSONUtil.updateConfig(group1.getID(), JSONUtil.toJson(group1));
+            JSONUtil.updateConfig(group1.getID(), JSONUtil.toJson(group1).getBytes());
 
             InterfaceUtil.addFile("testFile", "PussySlayer69", "group1");
             InterfaceUtil.addFile("testFil2e", "FrouzDu78", "group1");

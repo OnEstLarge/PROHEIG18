@@ -473,6 +473,7 @@ public class Client extends Application {
             out.write(greetings.getFormattedMessage());
             out.flush();
 
+
         } catch (IOException e) {
             System.out.println(e.getMessage());
             System.out.println("Could not connect to the server");
@@ -480,6 +481,27 @@ public class Client extends Application {
         }
 
         new Thread(new ReadFromServer()).start();
+
+        // Restore existing groups
+        for(String groupID : scanGroups()) {
+            downloadJSON(groupID);
+
+            // Read config file
+            try {
+                RandomAccessFile configFile = new RandomAccessFile("./shared_files/" + groupID + "/config.json", "r");
+                byte[] configFileByte = new byte[(int) configFile.length()];
+                configFile.readFully(configFileByte);
+
+                String configJson = new String(CipherUtil.AESDecrypt(configFileByte, n.getKey(groupID)));
+
+                groups.add((Group) JSONUtil.parseJson(configJson, Group.class));
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InvalidCipherTextException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     //Classe permettant de threader la lecture des packets server
@@ -555,15 +577,13 @@ public class Client extends Application {
     }
 
     public static boolean createGroup(String groupID) {
-        /*waitingForGroupValidation = true;
+        waitingForGroupValidation = true;
         Group group = InterfaceUtil.createGroup(groupID, Client.getUsername(), n);
         if(group != null) {
             group.addMember(myself);
             groups.add(group);
         }
-        return group != null;*/
-        downloadJSON("Children8");
-        return true;
+        return group != null;
     }
 
 
@@ -642,5 +662,21 @@ public class Client extends Application {
                 }
             }
         }
+    }
+
+    private static String[] scanGroups() {
+        File directory = new File("./shared_files");
+        String[] groups = directory.list(new FilenameFilter() {
+
+            @Override
+            public boolean accept(File file, String name) {
+                return new File(file, name).isDirectory();
+            }
+        });
+
+        for(String group : groups) {
+            System.out.println(group);
+        }
+        return groups;
     }
 }
