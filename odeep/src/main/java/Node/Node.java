@@ -169,6 +169,7 @@ public class Node {
      * @throws IOException
      */
     public void sendFileToPeer(File file, String groupID, String destination) throws IOException {
+        PeerConnection c = null;
         byte[] key = this.getKey(groupID);
         int index = 0;
 
@@ -182,14 +183,13 @@ public class Node {
         if (pi == null) {
             throw new NullPointerException();
         } else {
-            PeerConnection c = new PeerConnection(pi);
             String filename = file.getName();
             long fileSize = file.length();
             String fileInfo = filename + ":" + Long.toString(fileSize);
             byte[] cipherFileInfo = CipherUtil.AESEncrypt(fileInfo.getBytes(), key);
 
+            this.createTempConnection(pi, new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherFileInfo));
 
-            c.sendMessage(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherFileInfo));
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
@@ -206,7 +206,8 @@ public class Node {
                 raf.close();
                 byte[] cipherMes = CipherUtil.AESEncrypt(mes, key);
                 PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
-                c.sendMessage(p);
+                System.out.println("sending : " + filename + " : " + 100 * i / (fileSize/PeerMessage.MESSAGE_CONTENT_SIZE) + "%");
+                this.createTempConnection(pi, p);
             }
 
             byte[] lastMes = new byte[(int) (fileSize % PeerMessage.MESSAGE_CONTENT_SIZE)];
@@ -216,8 +217,7 @@ public class Node {
             raf.close();
             byte[] cipherMes = CipherUtil.AESEncrypt(lastMes, key);
             PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
-            c.sendMessage(p);
-            c.close();
+            this.createTempConnection(pi, p);
         }
     }
 
@@ -278,7 +278,7 @@ public class Node {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        p.sendMessage(new PeerMessage(MessageType.RFIL.toString(), groupID, this.getNodePeer().getID(), peerHavingFile.getID(), CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));
+        p.sendMessage(new PeerMessage(MessageType.RFIL, groupID, this.getNodePeer().getID(), peerHavingFile.getID(), CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));
         p.close();
     }
 
@@ -354,6 +354,17 @@ public class Node {
             e.printStackTrace();
         }
         return key;
+    }
+
+    public synchronized void createTempConnection(PeerInformations peer, PeerMessage message){
+        PeerConnection p = null;
+        try {
+            p = new PeerConnection(peer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        p.sendMessage(message);
+        p.close();
     }
 
     // Informations sur le pair de ce noeud

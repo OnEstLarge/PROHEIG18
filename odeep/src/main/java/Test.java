@@ -79,6 +79,9 @@ public class Test {
         Person temp = new Person("florent");
         temp.addFile("JEE.pdf");
         group1.addMember(temp);
+        Person temp2 = new Person("olivier");
+        temp.addFile("Fear.the.Walking.Dead.S04E05.720p.HDTV.x264-AVS.mkv");
+        group1.addMember(temp2);
 
         List<Group> groups = new ArrayList<Group>();
         groups.add(group1);
@@ -89,7 +92,7 @@ public class Test {
         file.mkdirs();
 
         try {
-            JSONUtil.updateConfig(group1.getID(), JSONUtil.toJson(group1));
+            JSONUtil.updateConfig(group1.getID(), JSONUtil.toJson(group1).getBytes());
 
             InterfaceUtil.addFile("testFile", "PussySlayer69", "group1");
             InterfaceUtil.addFile("testFil2e", "FrouzDu78", "group1");
