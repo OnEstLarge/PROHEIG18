@@ -78,9 +78,10 @@ public class Test {
         Group group2 = new Group("group2", new Person(mathieu.getID()), new Person("LionelSuceur44"));
         Person temp = new Person("florent");
         temp.addFile("JEE.pdf");
+        temp.addFile("Fear.mkv");
         group1.addMember(temp);
         Person temp2 = new Person("olivier");
-        temp.addFile("Fear.the.Walking.Dead.S04E05.720p.HDTV.x264-AVS.mkv");
+        temp.addFile("Fear.mkv");
         group1.addMember(temp2);
 
         List<Group> groups = new ArrayList<Group>();

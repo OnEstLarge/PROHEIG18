@@ -278,32 +278,38 @@ public class PeerMessage {
         for (int i = 0; i < TYPE_LENGTH; i++) {
             toSend[index++] = type.getBytes()[i];
         }
+        System.out.println(new String(toSend));
         toSend[index++] = ",".getBytes()[0];
 
         for (int i = 0; i < ID_GROUP_MAX_LENGTH; i++) {
             toSend[index++] = idGroup.getBytes()[i];
         }
+        System.out.println(new String(toSend));
         toSend[index++] = ",".getBytes()[0];
 
         for (int i = 0; i < ID_MAX_LENGTH; i++) {
             toSend[index++] = idFrom.getBytes()[i];
         }
+        System.out.println(new String(toSend));
         toSend[index++] = ",".getBytes()[0];
 
         for (int i = 0; i < ID_MAX_LENGTH; i++) {
             toSend[index++] = idTo.getBytes()[i];
         }
+        System.out.println(new String(toSend));
         toSend[index++] = ",".getBytes()[0];
 
         for (int i = 0; i < NO_PACKET_DIGITS; i++) {
             toSend[index++] = formatInt(noPacket, NO_PACKET_DIGITS).getBytes()[i];
         }
+        System.out.println(new String(toSend));
 
         byte[] messageWithPad = addPadding(messageContent, MESSAGE_WITH_PAD_SIZE);
 
         for (int i = 0; i < MESSAGE_WITH_PAD_SIZE; i++) {
             toSend[index++] = messageWithPad[i];
         }
+        System.out.println(new String(toSend));
         return toSend;
         /*
         StringBuilder message = new StringBuilder();
