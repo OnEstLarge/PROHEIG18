@@ -110,6 +110,11 @@ public class InterfaceUtil {
 
                 // Copie du fichier dans le répertoire 'shared_files/groupID'
                 File fileDest = new File("./shared_files/" + group.getID() + "/" + file.getName());
+
+                System.out.println("\n\n\n-------COPY FILES--------------");
+                System.out.println("SRC PATH = " + file.toPath().toString());
+                System.out.println("DST PATH = " + fileDest.toPath().toString());
+
                 Files.copy(file.toPath(), fileDest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
                 // Envoi du fichier 'config.json' au serveur
