@@ -15,6 +15,7 @@ import User.Person;
 import main.Client;
 import Node.Node;
 import message.MessageType;
+import org.bouncycastle.crypto.InvalidCipherTextException;
 import peer.PeerMessage;
 
 import java.io.*;
@@ -86,7 +87,7 @@ public class InterfaceUtil {
     }
 
     /**
-     * @param filename
+     * @param file
      * @param userID
      * @param group
      */
@@ -217,6 +218,29 @@ public class InterfaceUtil {
         }
 
         return result;
+    }
+
+    //TODO: pour tests uniquement
+    public static void printConfig(String groupID, byte[] key) {
+        // Récupère et chiffre de fichier config.json
+        RandomAccessFile configFile = null;
+        try {
+            configFile = new RandomAccessFile("./shared_files/"+groupID+"config.json", "r");
+            byte[] configFileByte = new byte[(int) configFile.length()];
+            configFile.readFully(configFileByte);
+
+            byte[] plainConfig = CipherUtil.AESDecrypt(configFileByte, key);
+
+            System.out.println("\n\n--------CONFIG.JSON--------------");
+            System.out.println(new String(plainConfig) + "\n\n");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InvalidCipherTextException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }
