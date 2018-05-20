@@ -202,12 +202,10 @@ public class Node {
                 RandomAccessFile raf = new RandomAccessFile("./shared_files/" + groupID + "/" + filename, "rw");
                 raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * i);
                 raf.read(mes, 0, mes.length);
+                byte[] newMes = CipherUtil.eraseZero(mes);
                 raf.close();
-                byte[] cipherMes = CipherUtil.AESEncrypt(mes, key);
-                System.out.println(cipherMes.length);
+                byte[] cipherMes = CipherUtil.AESEncrypt(newMes, key);
                 PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
-                System.out.println(p.getFormattedMessage().length);
-                System.out.println(new String(p.getFormattedMessage()));
                 System.out.println("sending : " + filename + " : " + 100.0 * i / (fileSize/PeerMessage.MESSAGE_CONTENT_SIZE) + "%");
                 this.createTempConnection(pi, p);
             }
