@@ -2,7 +2,6 @@ package peer;
 import com.sun.media.sound.InvalidFormatException;
 import handler.RSAHandler;
 import Node.Node;
-import message.MessageType;
 /*
  -----------------------------------------------------------------------------------
  Odeep
@@ -40,14 +39,11 @@ public class PeerHandler implements Runnable {
 
         //handle message
 
-
+        //close connection
+        connection.close();
 
         node.getMapMessage().get(message.getType()).handleMessage(node,connection, message); //gerer erreur possible
 
-        if(message.getType() != MessageType.DHS1 || message.getType() != MessageType.DHR1 || message.getType() != MessageType.DHS2) {
-            //close connection
-            connection.close();
-        }
 
     }
 
