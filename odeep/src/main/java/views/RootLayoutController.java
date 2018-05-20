@@ -69,7 +69,7 @@ public class RootLayoutController implements Initializable {
             pane.setText(groupName);
             pane.setContent(view);
             pane.setCollapsible(true);
-            mapFile.put(groupName, null); // TODO: ajouter les fichiers de l'utilisateur.
+            mapFile.put(groupName, new ArrayList<String>()); // TODO: ajouter les fichiers de l'utilisateur.
 
             // Display the files availables in the group in the middle pane when the group is selected.
             pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -99,6 +99,7 @@ public class RootLayoutController implements Initializable {
             alert.showAndWait();
         }
         groupNameField.setText("");
+        updateGroupsAndFiles();
     }
 
     private void fillFileMap() {

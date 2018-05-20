@@ -79,8 +79,9 @@ public class Client extends Application {
 
         if(userFile.exists() && !userFile.isDirectory()) {
             username = readFromFile(userFile);
+            username = username.replaceAll("[^A-Za-z0-9]", ""); //remove all non aplhanumeric character
         }
-        username = username.replaceAll("[^A-Za-z0-9]", ""); //remove all non aplhanumeric character
+
         return username;
     }
     private static String readFromFile(File file) {
@@ -327,8 +328,8 @@ public class Client extends Application {
                 System.out.println("Connecting to server");
                 //initconnection connect to serv, get pseudo, connect with pseudo
                 initConnections(IP_SERVER, PORT_SERVER);
-                for(Group g : groups)
-                    InterfaceUtil.printConfig(g.getID(), n.getKey(g.getID()));
+                //for(Group g : groups)
+                   // InterfaceUtil.printConfig(g.getID(), n.getKey(g.getID()));
                 //listening for incoming connections
                 System.out.println("Launching node listening");
                 n.acceptingConnections();
