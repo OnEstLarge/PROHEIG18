@@ -42,6 +42,7 @@ public class Client extends Application {
 
     private Stage primaryStage;
     private BorderPane rootLayout;
+    private static RootLayoutController controller;
 
     @Override
     public void start(Stage primaryStage) {
@@ -147,8 +148,16 @@ public class Client extends Application {
             primaryStage.setScene(scene);
 
             // Give the controller access to the main app.
-            RootLayoutController controller = loader.getController();
+            controller = loader.getController();
             controller.setMainApp(this);
+
+            while(groupsNotInialized) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
             controller.updateGroupsAndFiles();
 
             primaryStage.show();
@@ -293,6 +302,7 @@ public class Client extends Application {
     private static boolean waitingForGroupValidation = false;
     private static boolean validationGroup = false;
     private static boolean waitingJsonFromServer = false;
+    private static boolean groupsNotInialized = true;
 
     private static Node n;
     private static boolean nodeIsRunning = true;
@@ -508,6 +518,9 @@ public class Client extends Application {
                 e.printStackTrace();
             }
         }
+
+        groupsNotInialized = false;
+        //controller.updateGroupsAndFiles();
     }
 
     //Classe permettant de threader la lecture des packets server
