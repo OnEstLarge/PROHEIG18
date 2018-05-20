@@ -83,10 +83,12 @@ public class CipherUtil {
         byte[] cipherData = new byte[0];
         try {
             cipherData = AESProcessing(data, keys[0], true);
+            //System.out.println(cipherData.length);
         } catch (InvalidCipherTextException e) {
             e.printStackTrace();
         }
         byte[] HMAC = generateHMAC(cipherData, keys[1]);
+        //System.out.println(HMAC.length);
         return Bytes.concat(cipherData, HMAC);
     }
 
@@ -113,12 +115,8 @@ public class CipherUtil {
             rawData[i] = data[i];
         }
         byte[] decipherData = AESProcessing(rawData, keys[0], false);
-        int padSize = 0;
-        int index = decipherData.length - 1;
-        while(decipherData[index--] == 0){
-            padSize++;
-        }
-        return Arrays.copyOfRange(decipherData, 0, decipherData.length - padSize);
+        byte[] ret = eraseZero(decipherData);
+        return ret;
     }
 
     /**
@@ -231,7 +229,6 @@ public class CipherUtil {
             throw new InvalidParameterException("Incorrect key length");
         }
         int dataLength = data.length;
-        System.out.println(dataLength);
         byte[] HMAC = new byte[HMAC_SIZE];
         byte[] rawData = new byte[data.length - HMAC_SIZE];
         for(int i = 0; i < dataLength - HMAC_SIZE; i++){
@@ -243,7 +240,6 @@ public class CipherUtil {
             index++;
         }
         byte[] expectedHMAC = generateHMAC(rawData, key);
-        System.out.println(new String(expectedHMAC) + " : " + new String(HMAC));
         return Arrays.equals(expectedHMAC, HMAC);
     }
 
@@ -296,6 +292,15 @@ public class CipherUtil {
         }
         String dataWithoutPadding = s.substring(0, s.length()-paddingSize);
         return dataWithoutPadding;
+    }
+
+    public static byte[] eraseZero(byte[] input){
+        int index = input.length-1;
+        int numberOfZero = 0;
+        while(input[index--] == '\0') {
+            numberOfZero++;
+        }
+        return Arrays.copyOfRange(input, 0, input.length - numberOfZero);
     }
 
     /**
