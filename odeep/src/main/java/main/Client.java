@@ -117,7 +117,7 @@ public class Client extends Application {
         try {
 
             writer = new PrintWriter(file, "UTF-8");
-            writer.println(data);
+            writer.print(data);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -643,24 +643,32 @@ public class Client extends Application {
         }
     }
 
-    public static void broadcastUpdate(String idFrom, String groupID) {
+    public static Group getGroupById(String id) {
         Group group = null;
         for(Group g: groups) {
-            if(g.getID().equals(groupID)) {
+            if(g.getID().equals(id)) {
                 group = g;
             }
         }
-        for (Person person : group.getMembers()) {
-            if(!person.getID().equals(myUsername)) {
-                PeerMessage pm = new PeerMessage(MessageType.UPDT, group.getID(), idFrom, person.getID(), "".getBytes());
-                try {
-                    out.write(pm.getFormattedMessage());
-                    out.flush();
-                } catch (IOException e) {
-                    System.out.println(e.getMessage());
-                }
-            }
+        return group;
+    }
 
+    public static void broadcastUpdate(String idFrom, String groupID) {
+        Group group = getGroupById(groupID);
+        if(group != null) {
+            for (Person person : group.getMembers()) {
+                if (!person.getID().equals(myUsername)) {
+                    System.out.println("FUCK YOU " + person.getID().length() + "  " + myUsername);
+                    PeerMessage pm = new PeerMessage(MessageType.UPDT, group.getID(), idFrom, person.getID(), "".getBytes());
+                    try {
+                        out.write(pm.getFormattedMessage());
+                        out.flush();
+                    } catch (IOException e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
+
+            }
         }
     }
 

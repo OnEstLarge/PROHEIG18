@@ -180,12 +180,17 @@ public class RootLayoutController implements Initializable {
         if (file != null && mapFile.containsKey(selectedGroup)) {
             mapFile.get(selectedGroup).add(file.getName());
             middleList.getItems().add(file.getName());
+            InterfaceUtil.addFile(file, Client.getUsername(), Client.getGroupById(selectedGroup));
         }
     }
 
     @FXML
     private void handleRemove() {
-
+        List<String> file =  middleList.getSelectionModel().getSelectedItems();
+        if(mapFile.containsKey(selectedGroup)){
+            mapFile.get(selectedGroup).remove(file.get(0));
+            middleList.getItems().remove(file.get(0));
+        }
     }
 
     @FXML
