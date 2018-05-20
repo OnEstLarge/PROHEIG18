@@ -225,7 +225,7 @@ public class InterfaceUtil {
         // Récupère et chiffre de fichier config.json
         RandomAccessFile configFile = null;
         try {
-            configFile = new RandomAccessFile("./shared_files/"+groupID+"config.json", "r");
+            configFile = new RandomAccessFile("./shared_files/"+groupID+"/config.json", "r");
             byte[] configFileByte = new byte[(int) configFile.length()];
             configFile.readFully(configFileByte);
 

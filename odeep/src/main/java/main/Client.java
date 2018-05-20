@@ -80,7 +80,7 @@ public class Client extends Application {
         if(userFile.exists() && !userFile.isDirectory()) {
             username = readFromFile(userFile);
         }
-
+        username = username.replaceAll("[^A-Za-z0-9]", ""); //remove all non aplhanumeric character
         return username;
     }
     private static String readFromFile(File file) {
@@ -328,7 +328,7 @@ public class Client extends Application {
                 //initconnection connect to serv, get pseudo, connect with pseudo
                 initConnections(IP_SERVER, PORT_SERVER);
                 for(Group g : groups)
-                    System.out.println(g.getID());
+                    InterfaceUtil.printConfig(g.getID(), n.getKey(g.getID()));
                 //listening for incoming connections
                 System.out.println("Launching node listening");
                 n.acceptingConnections();
@@ -353,6 +353,7 @@ public class Client extends Application {
             }
         }
         myself = new Person(myUsername);
+        myself.connect();
     }
 
     //ask the server if the entered username is available
@@ -520,6 +521,20 @@ public class Client extends Application {
             }
         }
 
+        for(Group group: groups){
+            System.out.println("-----------------------------------------------------------------------------------------------------"+myself.isConnected());
+            for(Person p: group.getMembers()) {
+                System.out.println(p.getID() + "   bnbnbnbnb   "+p.isConnected());
+                if(p.getID().equals(myUsername)) {
+                    p.connect();
+                }
+                System.out.println(p.getID() + "   bnbnbnbnb   "+p.isConnected());
+            }
+            System.out.println("upddateeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+            JSONUtil.updateConfig(group);
+            uploadJSON("./shared_files/" + group.getID() + "/config.json", group.getID(), myUsername);
+        }
+
         groupsNotInialized = false;
         //controller.updateGroupsAndFiles();
     }
@@ -657,7 +672,7 @@ public class Client extends Application {
         if(group != null) {
             for (Person person : group.getMembers()) {
                 if (!person.getID().equals(myUsername)) {
-                    System.out.println("FUCK YOU " + person.getID().length() + "  " + myUsername);
+                    System.out.println("FUCK YOU " +person.getID() + person.getID().length() + "  " + myUsername + myUsername.length());
                     PeerMessage pm = new PeerMessage(MessageType.UPDT, group.getID(), idFrom, person.getID(), "".getBytes());
                     try {
                         out.write(pm.getFormattedMessage());

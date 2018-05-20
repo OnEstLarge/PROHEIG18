@@ -34,10 +34,11 @@ public class JSONUtil {
     }
 
     public static void updateConfig(Group group) {
-
+        byte[] data = JSONUtil.toJson(group).getBytes();
+        updateConfig(group.getID(), data);
     }
 
-    public static void updateConfig(String groupID, byte[] data) throws FileNotFoundException, UnsupportedEncodingException {
+    public static void updateConfig(String groupID, byte[] data) {
         FileOutputStream fout = null;
         try {
             fout = new FileOutputStream(new File("./shared_files/" + groupID + "/config.json"));
