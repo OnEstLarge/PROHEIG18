@@ -161,6 +161,7 @@ public class Client extends Application {
             controller.updateGroupsAndFiles();
 
             primaryStage.show();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -312,7 +313,7 @@ public class Client extends Application {
     private static String response = null;
 
     private static List<Group> groups = new ArrayList();
-    private static Person myself;//set in getPseudo
+    public static Person myself;//set in getPseudo
 
 
 
@@ -631,26 +632,35 @@ public class Client extends Application {
             out.flush();
 
 
-            byte[] decipherConfigFile = CipherUtil.AESDecrypt(configFileByte, n.getKey(groupID));
-            System.out.println("Fichier dechiffré: " + new String(decipherConfigFile));
-            Group group = JSONUtil.parseJson(new String(decipherConfigFile), Group.class);
-            for (Person person : group.getMembers()) {
-                if(!person.getID().equals(myUsername)) {
-                    PeerMessage pm = new PeerMessage(MessageType.UPDT, groupID, idFrom, person.getID(), "".getBytes());
-                    try {
-                        out.write(pm.getFormattedMessage());
-                        out.flush();
-                    } catch (IOException e) {
-                        System.out.println(e.getMessage());
-                    }
-                }
+            //byte[] decipherConfigFile = CipherUtil.AESDecrypt(configFileByte, n.getKey(groupID));
+            //System.out.println("Fichier dechiffré: " + new String(decipherConfigFile));
+            //Group group = JSONUtil.parseJson(new String(decipherConfigFile), Group.class);
 
-            }
+            broadcastUpdate(idFrom, groupID);
 
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (InvalidCipherTextException ex) {
-            ex.printStackTrace();
+        }
+    }
+
+    public static void broadcastUpdate(String idFrom, String groupID) {
+        Group group = null;
+        for(Group g: groups) {
+            if(g.getID().equals(groupID)) {
+                group = g;
+            }
+        }
+        for (Person person : group.getMembers()) {
+            if(!person.getID().equals(myUsername)) {
+                PeerMessage pm = new PeerMessage(MessageType.UPDT, group.getID(), idFrom, person.getID(), "".getBytes());
+                try {
+                    out.write(pm.getFormattedMessage());
+                    out.flush();
+                } catch (IOException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+
         }
     }
 
