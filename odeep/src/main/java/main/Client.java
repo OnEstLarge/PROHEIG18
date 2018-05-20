@@ -749,4 +749,8 @@ public class Client extends Application {
         }
         return groups;
     }
+
+    public static void inviteNewMember(String username, String groupID) {
+        System.out.println("iiinnnnnnnnnnnnnnnnnnnvvvvvvvvvviteeeeeeeeee  " + username + "  " + groupID);
+    }
 }
