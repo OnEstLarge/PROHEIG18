@@ -42,6 +42,7 @@ public class Client extends Application {
 
     private Stage primaryStage;
     private BorderPane rootLayout;
+    private static RootLayoutController controller;
 
     @Override
     public void start(Stage primaryStage) {
@@ -147,11 +148,20 @@ public class Client extends Application {
             primaryStage.setScene(scene);
 
             // Give the controller access to the main app.
-            RootLayoutController controller = loader.getController();
+            controller = loader.getController();
             controller.setMainApp(this);
+
+            while(groupsNotInialized) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
             controller.updateGroupsAndFiles();
 
             primaryStage.show();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -293,6 +303,7 @@ public class Client extends Application {
     private static boolean waitingForGroupValidation = false;
     private static boolean validationGroup = false;
     private static boolean waitingJsonFromServer = false;
+    private static boolean groupsNotInialized = true;
 
     private static Node n;
     private static boolean nodeIsRunning = true;
@@ -302,7 +313,7 @@ public class Client extends Application {
     private static String response = null;
 
     private static List<Group> groups = new ArrayList();
-    private static Person myself;//set in getPseudo
+    public static Person myself;//set in getPseudo
 
 
 
@@ -508,6 +519,9 @@ public class Client extends Application {
                 e.printStackTrace();
             }
         }
+
+        groupsNotInialized = false;
+        //controller.updateGroupsAndFiles();
     }
 
     //Classe permettant de threader la lecture des packets server
@@ -618,26 +632,35 @@ public class Client extends Application {
             out.flush();
 
 
-            byte[] decipherConfigFile = CipherUtil.AESDecrypt(configFileByte, n.getKey(groupID));
-            System.out.println("Fichier dechiffré: " + new String(decipherConfigFile));
-            Group group = JSONUtil.parseJson(new String(decipherConfigFile), Group.class);
-            for (Person person : group.getMembers()) {
-                if(!person.getID().equals(myUsername)) {
-                    PeerMessage pm = new PeerMessage(MessageType.UPDT, groupID, idFrom, person.getID(), "".getBytes());
-                    try {
-                        out.write(pm.getFormattedMessage());
-                        out.flush();
-                    } catch (IOException e) {
-                        System.out.println(e.getMessage());
-                    }
-                }
+            //byte[] decipherConfigFile = CipherUtil.AESDecrypt(configFileByte, n.getKey(groupID));
+            //System.out.println("Fichier dechiffré: " + new String(decipherConfigFile));
+            //Group group = JSONUtil.parseJson(new String(decipherConfigFile), Group.class);
 
-            }
+            broadcastUpdate(idFrom, groupID);
 
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (InvalidCipherTextException ex) {
-            ex.printStackTrace();
+        }
+    }
+
+    public static void broadcastUpdate(String idFrom, String groupID) {
+        Group group = null;
+        for(Group g: groups) {
+            if(g.getID().equals(groupID)) {
+                group = g;
+            }
+        }
+        for (Person person : group.getMembers()) {
+            if(!person.getID().equals(myUsername)) {
+                PeerMessage pm = new PeerMessage(MessageType.UPDT, group.getID(), idFrom, person.getID(), "".getBytes());
+                try {
+                    out.write(pm.getFormattedMessage());
+                    out.flush();
+                } catch (IOException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+
         }
     }
 

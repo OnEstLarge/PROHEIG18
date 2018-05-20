@@ -143,6 +143,40 @@ public class InterfaceUtil {
         return true;
     }
 
+    /**
+     * @param filename
+     * @param userID
+     * @param group
+     */
+    public static void removeFile(String filename, String userID, Group group) {
+
+        try {
+
+            // Vérifie que le nom de fichier est disponible (au sein du groupe)
+            if (!checkFilename(filename, group)) {
+
+                // Ajoute le fichier à la liste des fichiers de l'utilisateur
+                Client.myself.removeFile(filename);
+
+                // Affecte la modification au fichier config.json et le chiffre
+                RandomAccessFile f = new RandomAccessFile("./shared_files/" + group.getID() + "/key", "r");
+                byte[] key = new byte[(int) f.length()];
+                f.readFully(key);
+                byte[] cipherConfig = CipherUtil.AESEncrypt(JSONUtil.toJson(group).getBytes(), key);
+
+                JSONUtil.updateConfig(group.getID(), cipherConfig);
+
+                Client.uploadJSON("./shared_file/" + group.getID() + "/config.json", group.getID(), userID);
+
+                //remove local file - additional feature not implemented
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void askFile(String groupID, String filename) {
 
     }
