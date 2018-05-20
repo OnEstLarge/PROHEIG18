@@ -833,4 +833,14 @@ public class Client extends Application {
 
         controller.updateGroupsAndFiles();
     }
+
+    public static void sendPM(PeerMessage pm) {
+        try {
+            out.write(pm.getFormattedMessage());
+            out.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
