@@ -34,8 +34,20 @@ public class JSONUtil {
     }
 
     public static void updateConfig(Group group) {
-        byte[] data = JSONUtil.toJson(group).getBytes();
-        updateConfig(group.getID(), data);
+        try {
+            RandomAccessFile f = new RandomAccessFile("./shared_files/" + group.getID() + "/key", "r");
+
+            byte[] key = new byte[(int) f.length()];
+            f.readFully(key);
+            byte[] cipherConfig = CipherUtil.AESEncrypt(JSONUtil.toJson(group).getBytes(), key);
+
+            updateConfig(group.getID(), cipherConfig);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void updateConfig(String groupID, byte[] data) {
