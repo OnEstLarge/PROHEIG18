@@ -516,7 +516,7 @@ public class Client extends Application {
 
             } catch (IOException e) {
                 e.printStackTrace();
-            } 
+            }
         }
 
         for(Group group: groups){
