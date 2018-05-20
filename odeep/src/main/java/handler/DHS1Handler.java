@@ -1,5 +1,6 @@
 package handler;
 
+import main.Client;
 import message.MessageHandler;
 import message.MessageType;
 import peer.PeerConnection;
@@ -20,7 +21,8 @@ public class DHS1Handler implements MessageHandler {
             n.setTempRSAInfo(RSA);
 
             PeerMessage response = new PeerMessage(MessageType.DHR1, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), RSA.getPublicKey());
-            PeerInformations pi = null;
+            Client.sendPM(response);
+            /*PeerInformations pi = null;
             for (PeerInformations p : n.getKnownPeers()) {
                 if (p.getID().equals(m.getIdFrom())) {
                     pi = p;
@@ -37,7 +39,7 @@ public class DHS1Handler implements MessageHandler {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
+            }*/
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (NoSuchProviderException e) {
