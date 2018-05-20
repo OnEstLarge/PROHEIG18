@@ -97,7 +97,6 @@ public class PeerMessage {
         this.idTo = idTo;
         this.noPacket = noPacket;
         this.messageContent = messageContent;
-        System.out.println("\n\n\n" + new String(this.getFormattedMessage()) + "\n\n\n");
     }
 
     public PeerMessage(String type, String idGroup, String idFrom, String idTo, byte[] message) {
@@ -108,26 +107,19 @@ public class PeerMessage {
         if (rawData.length < HEADER_SIZE + 1) {
             throw new InvalidFormatException("incorrect message");
         }
-        //System.out.println(new String(rawData));
 
         int index = 0;
         this.type = CipherUtil.erasePadding(new String(Arrays.copyOfRange(rawData, index, TYPE_LENGTH)), PADDING_START);
-        //System.out.println("constr type " + this.type);
         index += TYPE_LENGTH + 1;
         this.idGroup = CipherUtil.erasePadding(new String(Arrays.copyOfRange(rawData, index, index + ID_GROUP_MAX_LENGTH)), PADDING_START);
-        //System.out.println("constr idGroup " + this.idGroup);
         index += ID_GROUP_MAX_LENGTH + 1;
         this.idFrom = CipherUtil.erasePadding(new String(Arrays.copyOfRange(rawData, index, index + ID_MAX_LENGTH)), PADDING_START);
-        //System.out.println("constr idfrom " + this.idFrom);
         index += ID_MAX_LENGTH + 1;
         this.idTo = CipherUtil.erasePadding(new String(Arrays.copyOfRange(rawData, index, index + ID_MAX_LENGTH)), PADDING_START);
-        //System.out.println("constr idto " + this.idTo);
         index += ID_MAX_LENGTH + 1;
         this.noPacket = Integer.parseInt(new String(Arrays.copyOfRange(rawData, index, index + NO_PACKET_DIGITS)));
-        //System.out.println("constr noPa " + this.noPacket);
         index += NO_PACKET_DIGITS;
         this.messageContent = CipherUtil.erasePadding(Arrays.copyOfRange(rawData, index, rawData.length), PADDING_START);
-        //System.out.println(new String(messageContent));
     }
 
     /**
@@ -243,23 +235,23 @@ public class PeerMessage {
     }
 
     public String getType() {
-        return CipherUtil.erasePadding(type, PeerMessage.PADDING_START);
+        return type;
     }
 
     public String getIdFrom() {
-        return CipherUtil.erasePadding(idFrom, PeerMessage.PADDING_START);
+        return idFrom;
     }
 
     public String getIdTo() {
-        return CipherUtil.erasePadding(idTo, PeerMessage.PADDING_START);
+        return idTo;
     }
 
     public String getIdGroup() {
-        return CipherUtil.erasePadding(idGroup, PeerMessage.PADDING_START);
+        return idGroup;
     }
 
     public byte[] getMessageContent() {
-        return CipherUtil.erasePadding(messageContent, PeerMessage.PADDING_START);
+        return messageContent;
     }
 
     public int getNoPacket() {
@@ -271,69 +263,43 @@ public class PeerMessage {
      *
      * @return peer.PeerMessage formatté
      */
-    public byte[] getFormattedMessage() {
+    public synchronized byte[] getFormattedMessage() {
         byte[] toSend = new byte[HEADER_SIZE + MESSAGE_WITH_PAD_SIZE];
         int index = 0;
 
         for (int i = 0; i < TYPE_LENGTH; i++) {
             toSend[index++] = type.getBytes()[i];
         }
-        System.out.println(new String(toSend));
         toSend[index++] = ",".getBytes()[0];
 
         byte[] group = addPadding(idGroup, ID_GROUP_MAX_LENGTH, PADDING_SYMBOL).getBytes();
         for (int i = 0; i < ID_GROUP_MAX_LENGTH; i++) {
             toSend[index++] = group[i];
         }
-        System.out.println(new String(toSend));
         toSend[index++] = ",".getBytes()[0];
 
         byte[] from = addPadding(idFrom, ID_MAX_LENGTH, PADDING_SYMBOL).getBytes();
         for (int i = 0; i < ID_MAX_LENGTH; i++) {
             toSend[index++] = from[i];
         }
-        System.out.println(new String(toSend));
         toSend[index++] = ",".getBytes()[0];
 
         byte[] to = addPadding(idTo, ID_MAX_LENGTH, PADDING_SYMBOL).getBytes();
         for (int i = 0; i < ID_MAX_LENGTH; i++) {
             toSend[index++] = to[i];
         }
-        System.out.println(new String(toSend));
         toSend[index++] = ",".getBytes()[0];
 
         for (int i = 0; i < NO_PACKET_DIGITS; i++) {
             toSend[index++] = formatInt(noPacket, NO_PACKET_DIGITS).getBytes()[i];
         }
-        System.out.println(new String(toSend));
 
         byte[] messageWithPad = addPadding(messageContent, MESSAGE_WITH_PAD_SIZE);
 
         for (int i = 0; i < MESSAGE_WITH_PAD_SIZE; i++) {
             toSend[index++] = messageWithPad[i];
         }
-        System.out.println(new String(toSend));
         return toSend;
-        /*
-        StringBuilder message = new StringBuilder();
-
-        message.append(type).append(',');
-        message.append(addPadding(idGroup, ID_GROUP_MAX_LENGTH, PADDING_SYMBOL)).append(',');
-        message.append(addPadding(idFrom, ID_MAX_LENGTH, PADDING_SYMBOL)).append(',');
-        message.append(addPadding(idTo, ID_MAX_LENGTH, PADDING_SYMBOL)).append(',');
-        message.append(formatInt(noPacket, NO_PACKET_DIGITS));
-        System.out.println("length header : " + message.length());
-
-        // -1 sinon bug
-        byte[] messageWithPad = addPadding(messageContent, MESSAGE_WITH_PAD_SIZE);
-        System.out.println("message pad : " + messageWithPad.length + " : " + new String(messageWithPad));
-        byte[] toSend = new byte[message.toString().getBytes().length + messageWithPad.length];
-        System.arraycopy(message.toString().getBytes(), 0, toSend, 0, message.toString().getBytes().length);
-        System.arraycopy(messageWithPad, 0, toSend, message.toString().getBytes().length, messageWithPad.length);
-        System.out.println("tosend : " + toSend.length + " : " + new String(toSend));
-
-        return toSend;
-        */
     }
 
 }

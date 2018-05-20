@@ -61,6 +61,15 @@ public class Group implements Serializable {
         }
     }
 
+    public Person getMember(String userID) {
+        for(Person p : members) {
+            if(p.getID().equals(userID)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
     public List<Person> getMembers() {
         return new ArrayList<Person>(members);
     }
