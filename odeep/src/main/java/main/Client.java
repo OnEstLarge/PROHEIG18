@@ -477,6 +477,7 @@ public class Client extends Application {
         n.addMessageHandler(MessageType.SFIL, new SFILHandler());
         n.addMessageHandler(MessageType.SMES, new SMESHandler());
         n.addMessageHandler(MessageType.UPDT, new UPDTHandler());
+        n.addMessageHandler(MessageType.INVK, new INVKHandler());
         System.out.println("Added the handlers");
     }
 
