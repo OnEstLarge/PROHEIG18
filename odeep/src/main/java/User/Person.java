@@ -38,16 +38,7 @@ public class Person implements Serializable{
     }
 
     public void removeFile(String file){
-        int index = -1;
-        for(String f : files){
-            if(f.equals(file)){
-                index = files.indexOf(f);
-                break;
-            }
-        }
-        if(index != -1) {
-            files.remove(index);
-        }
+        files.remove(file);
     }
 
     public void connect(){isConnected = true;}

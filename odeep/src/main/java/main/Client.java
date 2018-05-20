@@ -14,6 +14,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.*;
+import java.lang.reflect.Member;
 import java.net.Inet4Address;
 import java.net.NetworkInterface;
 import java.net.Socket;
@@ -40,7 +41,7 @@ import User.Group;
 
 public class Client extends Application {
 
-    private Stage primaryStage;
+    private static Stage primaryStage;
     private BorderPane rootLayout;
     private static RootLayoutController controller;
 
@@ -62,6 +63,14 @@ public class Client extends Application {
                 });
             }
         });
+       /* Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+
+                System.out.println("xxxxXXXxxxxx");
+                showAcceptInviteDialog("a");
+            }
+        });*/
         initRootLayout();
     }
 
@@ -232,8 +241,9 @@ public class Client extends Application {
         }
     }
 
-    public boolean showAcceptInviteDialog(String groupName){
-        try{
+
+    public static boolean showAcceptInviteDialog(String groupName){
+        try {
             // Load the FXML filer and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Client.class.getResource("/views/AcceptInviteDialog.fxml"));
@@ -256,10 +266,11 @@ public class Client extends Application {
             dialogStage.showAndWait();
 
             return controller.isOkClicked();
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
+
     }
     /**
      * Returns the main stage.
@@ -563,7 +574,10 @@ public class Client extends Application {
                         saveReceivedJson(pm);
                         waitingJsonFromServer = false;
                         System.out.println("i'm out");
-                    }else {
+                    //} else if(pm.getType().equals(MessageType.INVI)) {
+                        //
+
+                    } else {
                         redirectToHandler(pm, n, new PeerConnection(clientSocketToServerPublic));
                     }
 
@@ -748,5 +762,19 @@ public class Client extends Application {
             System.out.println(group);
         }
         return groups;
+    }
+
+    public static void inviteNewMember(String username, String groupID) {
+
+        PeerMessage invitePM = new PeerMessage(MessageType.INVI, groupID, myUsername, username, "".getBytes());
+
+        try {
+            System.out.println("I send an invitation for user " + username + " in group " + groupID);
+            out.write(invitePM.getFormattedMessage());
+            out.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

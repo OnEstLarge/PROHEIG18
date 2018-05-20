@@ -189,9 +189,11 @@ public class RootLayoutController implements Initializable {
     private void handleRemove() {
         List<String> file =  middleList.getSelectionModel().getSelectedItems();
         if(mapFile.containsKey(selectedGroup)){
+            System.out.println("DDDDEEEELLLIIITTTIIINNNGGGG " + file.get(0));
+            InterfaceUtil.removeFile(file.get(0), Client.getUsername(), Client.getGroupById(selectedGroup));
             mapFile.get(selectedGroup).remove(file.get(0));
             middleList.getItems().remove(file.get(0));
-            InterfaceUtil.removeFile(file.get(0), Client.getUsername(), Client.getGroupById(selectedGroup));
+            //InterfaceUtil.removeFile(file.get(0), Client.getUsername(), Client.getGroupById(selectedGroup));
         }
     }
 

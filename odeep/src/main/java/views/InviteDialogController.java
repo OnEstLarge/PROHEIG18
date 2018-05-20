@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+import main.Client;
 import peer.PeerMessage;
 import sun.dc.path.PathError;
 
@@ -65,14 +66,8 @@ public class InviteDialogController {
     @FXML
     private void handleOk() {
         if (isInputValid()) {
-            Label newPseudo = new Label();
-            newPseudo.setText(newUserPseudoField.getText());
-            for (int i = 0; i < RootLayoutController.getListView().size(); ++i) {
-                if (comboBox.getValue().equals(RootLayoutController.getListView().get(i).getId())) {
-                    RootLayoutController.getListView().get(i).getItems().add(newPseudo);
-                    break;
-                }
-            }
+
+            Client.inviteNewMember(newUserPseudoField.getText(), comboBox.getValue());
 
             okClicked = true;
             dialogStage.close();
