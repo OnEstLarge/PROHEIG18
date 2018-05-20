@@ -37,7 +37,7 @@ public class PGETHandler implements MessageHandler {
             e.printStackTrace();
         }
         try {
-            raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * (m.getNoPacket() - 1));
+            raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * (m.getNoPacket() == 0 ? m.getNoPacket() : m.getNoPacket()-1));
             raf.read(mes, 0, PeerMessage.MESSAGE_CONTENT_SIZE);
             raf.close();
         } catch (IOException e) {
