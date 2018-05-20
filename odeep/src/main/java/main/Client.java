@@ -63,6 +63,14 @@ public class Client extends Application {
                 });
             }
         });
+       /* Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+
+                System.out.println("xxxxXXXxxxxx");
+                showAcceptInviteDialog("a");
+            }
+        });*/
         initRootLayout();
     }
 
@@ -203,35 +211,6 @@ public class Client extends Application {
         }
     }
 
-    public static boolean showAcceptInviteDialog() {
-        try {
-            // Load the FXML filer and create a new stage for the popup dialog.
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(Client.class.getResource("/views/AcceptInviteDialog.fxml"));
-            AnchorPane page = loader.load();
-
-            // Create the dialog Stage.
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle("You have been invited");
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.initOwner(primaryStage);
-            Scene scene = new Scene(page);
-            dialogStage.setScene(scene);
-
-            // Set the invite controller
-            InviteDialogController controller = loader.getController();
-            controller.setDialogStage(dialogStage);
-
-            // Show the dialog and wait  until the user closes it
-            dialogStage.showAndWait();
-
-            return controller.isOkClicked();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
     public boolean showPseudoDialog(){
         try{
             // Load the FXML filer and create a new stage for the popup dialog.
@@ -262,8 +241,9 @@ public class Client extends Application {
         }
     }
 
-    public boolean showAcceptInviteDialog(String groupName){
-        try{
+
+    public static boolean showAcceptInviteDialog(String groupName){
+        try {
             // Load the FXML filer and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Client.class.getResource("/views/AcceptInviteDialog.fxml"));
@@ -286,10 +266,11 @@ public class Client extends Application {
             dialogStage.showAndWait();
 
             return controller.isOkClicked();
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
+
     }
     /**
      * Returns the main stage.
@@ -593,8 +574,9 @@ public class Client extends Application {
                         saveReceivedJson(pm);
                         waitingJsonFromServer = false;
                         System.out.println("i'm out");
-                    } else if(pm.getType().equals(MessageType.INVI)) {
-                        showAcceptInviteDialog();
+                    //} else if(pm.getType().equals(MessageType.INVI)) {
+                        //
+
                     } else {
                         redirectToHandler(pm, n, new PeerConnection(clientSocketToServerPublic));
                     }

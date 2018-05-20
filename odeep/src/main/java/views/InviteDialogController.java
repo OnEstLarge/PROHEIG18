@@ -66,15 +66,7 @@ public class InviteDialogController {
     @FXML
     private void handleOk() {
         if (isInputValid()) {
-            //Label newPseudo = new Label();
-            //newPseudo.setText(newUserPseudoField.getText());
-            /*for (int i = 0; i < RootLayoutController.getListView().size(); ++i) {
-                if (comboBox.getValue().equals(RootLayoutController.getListView().get(i).getId())) {
-                    RootLayoutController.getListView().get(i).getItems().add(newPseudo);
 
-                    break;
-                }
-            }*/
             Client.inviteNewMember(newUserPseudoField.getText(), comboBox.getValue());
 
             okClicked = true;
