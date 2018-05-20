@@ -509,12 +509,13 @@ public class Client extends Application {
                 RandomAccessFile configFile = new RandomAccessFile("./shared_files/" + groupID + "/config.json", "r");
                 byte[] configFileByte = new byte[(int) configFile.length()];
                 configFile.readFully(configFileByte);
+                String configJson = new String(CipherUtil.AESDecrypt(configFileByte, n.getKey(groupID)));
 
-                //String configJson = new String(CipherUtil.AESDecrypt(configFileByte, n.getKey(groupID)));
-
-                groups.add((Group) JSONUtil.parseJson(new String(configFileByte), Group.class));
+                groups.add((Group) JSONUtil.parseJson(configJson, Group.class));
 
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InvalidCipherTextException e) {
                 e.printStackTrace();
             }
         }

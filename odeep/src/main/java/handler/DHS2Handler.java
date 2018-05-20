@@ -11,5 +11,6 @@ public class DHS2Handler implements MessageHandler {
         n.setKey(n.getTempRSAInfo().getFinalKey(m), m.getIdGroup());
         n.setTempRSAInfo(null);
         System.out.println("final key is : " + new String(n.getKey(m.getIdGroup())));
+        c.close();
     }
 }

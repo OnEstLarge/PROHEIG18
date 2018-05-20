@@ -165,6 +165,12 @@ public class InterfaceUtil {
                 // Ajoute le fichier à la liste des fichiers de l'utilisateur
                 Client.myself.removeFile(filename);
 
+                for(Person p: group.getMembers()) {
+                    for(String s: p.getFiles()) {
+                        System.out.println("fffffffffffff      "+s);
+                    }
+                }
+
                 // Affecte la modification au fichier config.json et le chiffre
                 RandomAccessFile f = new RandomAccessFile("./shared_files/" + group.getID() + "/key", "r");
                 byte[] key = new byte[(int) f.length()];
