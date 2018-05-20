@@ -112,7 +112,8 @@ public class InterfaceUtil {
                 File fileDest = new File("./shared_files/" + group.getID() + "/" + file.getName());
                 Files.copy(file.toPath(), fileDest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-
+                // Envoi du fichier 'config.json' au serveur
+                Client.uploadJSON("./shared_file/" + group.getID() + "/config.json", group.getID(), userID);
 
             }
         } catch (FileNotFoundException e) {
