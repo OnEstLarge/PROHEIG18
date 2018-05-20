@@ -118,7 +118,7 @@ public class InterfaceUtil {
                 Files.copy(file.toPath(), fileDest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
                 // Envoi du fichier 'config.json' au serveur
-                Client.uploadJSON("./shared_file/" + group.getID() + "/config.json", group.getID(), userID);
+                Client.uploadJSON("./shared_files/" + group.getID() + "/config.json", group.getID(), userID);
 
             }
         } catch (FileNotFoundException e) {
@@ -172,7 +172,7 @@ public class InterfaceUtil {
 
                 JSONUtil.updateConfig(group.getID(), cipherConfig);
 
-                Client.uploadJSON("./shared_file/" + group.getID() + "/config.json", group.getID(), userID);
+                Client.uploadJSON("./shared_files/" + group.getID() + "/config.json", group.getID(), userID);
 
                 //remove local file - additional feature not implemented
             }
