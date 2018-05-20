@@ -1,5 +1,6 @@
 package handler;
 
+import main.Client;
 import message.MessageHandler;
 import message.MessageType;
 import peer.PeerConnection;
@@ -19,7 +20,8 @@ public class DHR1Handler implements MessageHandler{
             byte[] encryptedKey = CipherUtil.RSAEncrypt(CipherUtil.byteToPublicKey(foreignKey), n.getKey(m.getIdGroup()));
 
             PeerMessage response = new PeerMessage(MessageType.DHS2, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), encryptedKey);
-            PeerInformations pi = null;
+            Client.sendPM(response);
+           /* PeerInformations pi = null;
             for (PeerInformations p : n.getKnownPeers()) {
                 if (p.getID().equals(m.getIdFrom())) {
                     pi = p;
@@ -36,7 +38,7 @@ public class DHR1Handler implements MessageHandler{
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
+            }*/
             n.setTempRSAInfo(null);
         }
     }
