@@ -479,7 +479,7 @@ public class Client extends Application {
         n.addMessageHandler(MessageType.SMES, new SMESHandler());
         n.addMessageHandler(MessageType.UPDT, new UPDTHandler());
         n.addMessageHandler(MessageType.INVK, new INVKHandler());
-        n.addMessageHandler(MessageType.DHS1, new DHR1Handler());
+        n.addMessageHandler(MessageType.DHS1, new DHS1Handler());
         n.addMessageHandler(MessageType.DHS2, new DHS2Handler());
         n.addMessageHandler(MessageType.DHR1, new DHR1Handler());
 
@@ -587,6 +587,7 @@ public class Client extends Application {
                         //
 
                     } else {
+                        System.out.println("Client redirect message " + pm.getType());
                         redirectToHandler(pm, n, new PeerConnection(clientSocketToServerPublic));
                     }
 

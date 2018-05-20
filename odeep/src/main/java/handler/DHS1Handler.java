@@ -15,13 +15,16 @@ import java.security.NoSuchProviderException;
 public class DHS1Handler implements MessageHandler {
     @Override
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
+
         try {
             RSAHandler RSA = new RSAHandler();
             RSA.setKeys();
             n.setTempRSAInfo(RSA);
 
             PeerMessage response = new PeerMessage(MessageType.DHR1, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), RSA.getPublicKey());
+            System.out.println("envoie reponse dhs1");
             Client.sendPM(response);
+            System.out.println("envoyé");
             /*PeerInformations pi = null;
             for (PeerInformations p : n.getKnownPeers()) {
                 if (p.getID().equals(m.getIdFrom())) {
