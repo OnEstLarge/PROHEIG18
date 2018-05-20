@@ -185,7 +185,11 @@ public class RootLayoutController implements Initializable {
 
     @FXML
     private void handleRemove() {
-
+        List<String> file =  middleList.getSelectionModel().getSelectedItems();
+        if(mapFile.containsKey(selectedGroup)){
+            mapFile.get(selectedGroup).remove(file.get(0));
+            middleList.getItems().remove(file.get(0));
+        }
     }
 
     @FXML
