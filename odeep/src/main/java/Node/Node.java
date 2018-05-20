@@ -14,6 +14,7 @@ import User.Person;
 import handler.RSAHandler;
 import message.MessageHandler;
 import message.MessageType;
+import org.bouncycastle.util.test.Test;
 import peer.PeerConnection;
 import peer.PeerHandler;
 import peer.PeerInformations;
@@ -59,8 +60,8 @@ public class Node {
      * @param typeMessage type de message reçu/envoyé (format: 4 lettres majuscules, ex: XXXX)
      * @param handler     handler correspondant au type de message
      */
-    public void addMessageHandler(String typeMessage, MessageHandler handler) throws IllegalArgumentException{
-        if(!PeerMessage.isValidTypeFormat(typeMessage)) {
+    public void addMessageHandler(String typeMessage, MessageHandler handler) throws IllegalArgumentException {
+        if (!PeerMessage.isValidTypeFormat(typeMessage)) {
             throw new IllegalArgumentException("Bad type format");
         }
         mapMessage.put(typeMessage, handler);
@@ -152,9 +153,8 @@ public class Node {
 
         } catch (IOException ex) {
 
-                return; //A gerer
-            }
-            finally {
+            return; //A gerer
+        } finally {
             // close clientSocket
             cleanup(null, null, clientSocket, serverSocket);
         }
@@ -190,7 +190,7 @@ public class Node {
             this.createTempConnection(pi, new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherFileInfo));
 
             try {
-                Thread.sleep(2000);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -206,8 +206,13 @@ public class Node {
                 raf.close();
                 byte[] cipherMes = CipherUtil.AESEncrypt(newMes, key);
                 PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
-                System.out.println("sending : " + filename + " : " + 100.0 * i / (fileSize/PeerMessage.MESSAGE_CONTENT_SIZE) + "%");
+                System.out.println("sending : " + filename + " : " + 100.0 * i / (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE) + "%");
                 this.createTempConnection(pi, p);
+                try {
+                    Thread.sleep(5);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
 
             byte[] lastMes = new byte[(int) (fileSize % PeerMessage.MESSAGE_CONTENT_SIZE)];
@@ -233,20 +238,19 @@ public class Node {
         byte[] payload = null;
         try {
             f = new RandomAccessFile("./shared_files/" + groupID + "/config.json", "r");
-            payload = new byte[(int)f.length()];
+            payload = new byte[(int) f.length()];
             f.readFully(payload);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         Group g = JSONUtil.parseJson(new String(payload), Group.class);
-        for (Person p : g.getMembers()){
-            for(String file : p.getFiles()){
-                if (file.equals(filename)){
-                    for(PeerInformations pi : getKnownPeers()){
-                        if(pi.getID().equals(p.getID())){
+        for (Person p : g.getMembers()) {
+            for (String file : p.getFiles()) {
+                if (file.equals(filename)) {
+                    for (PeerInformations pi : getKnownPeers()) {
+                        if (pi.getID().equals(p.getID())) {
                             return pi;
                         }
                     }
@@ -261,9 +265,9 @@ public class Node {
     /**
      * cette fonction envoie une requete afin de determiner si un pair possède effectivement un fichier
      *
-     * @param filename    nom du fichier
-     * @param groupID     groupe dans lequel la requete est effectuée
-     *                    remarque : le pair qui recoit cette requete cherchera le fichier uniquement dans le dossier du groupe passé en paramètre
+     * @param filename nom du fichier
+     * @param groupID  groupe dans lequel la requete est effectuée
+     *                 remarque : le pair qui recoit cette requete cherchera le fichier uniquement dans le dossier du groupe passé en paramètre
      */
     public void requestFile(String filename, String groupID) {
         if (filename == null || groupID == null) {
@@ -345,18 +349,17 @@ public class Node {
         byte[] key = null;
         try {
             f = new RandomAccessFile("./shared_files/" + group + "/key", "r");
-            key = new byte[(int)f.length()];
+            key = new byte[(int) f.length()];
             f.readFully(key);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return key;
     }
 
-    public synchronized void createTempConnection(PeerInformations peer, PeerMessage message){
+    public static void createTempConnection(PeerInformations peer, PeerMessage message) {
         PeerConnection p = null;
         try {
             p = new PeerConnection(peer);
@@ -387,4 +390,5 @@ public class Node {
 
     public static String filenameDownloaded = null;
     public static int filesizeDownloaded = 0;
+
 }

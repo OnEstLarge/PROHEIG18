@@ -2,18 +2,15 @@ package peer;
 
 import com.sun.media.sound.InvalidFormatException;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class PeerConnection {
 
     private Socket clientSocket;
-    private InputStream is;
-    private OutputStream os;
+    private BufferedInputStream is;
+    private BufferedOutputStream os;
     private PeerInformations peer;
 
     public InputStream getIs() {return is;}
@@ -23,8 +20,8 @@ public class PeerConnection {
 
         clientSocket = socket; //vérification sur socket?
         try {
-            os = clientSocket.getOutputStream();
-            is = clientSocket.getInputStream();
+            os = new BufferedOutputStream(clientSocket.getOutputStream());
+            is = new BufferedInputStream(clientSocket.getInputStream());
         }catch(IOException e) { System.out.println("problem peerconnection");}
     }
 
@@ -32,8 +29,8 @@ public class PeerConnection {
         this.peer = peer;
 
         clientSocket = new Socket(peer.getAddress(), peer.getPort());
-        os = clientSocket.getOutputStream();
-        is = clientSocket.getInputStream();
+        os = new BufferedOutputStream(clientSocket.getOutputStream());
+        is = new BufferedInputStream(clientSocket.getInputStream());
     }
 
     public PeerMessage receiveMessage() throws InvalidFormatException{

@@ -5,11 +5,25 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import main.Client;
 
 public class AcceptInviteDialogController {
 
     private Stage dialogStage;
     private boolean okClicked = false;
+
+    public void setGroupID(String groupID) {
+        this.groupID = groupID;
+    }
+
+    public void setIdFrom(String idFrom) {
+        this.idFrom = idFrom;
+    }
+
+    private String groupID;
+    private String idFrom;
+
+
 
     @FXML
     private Label messageLabel;
@@ -62,6 +76,7 @@ public class AcceptInviteDialogController {
         // TODO: ajouter le groupe sur l'interface et récuperer les fichiers.
         okClicked = true;
         System.out.println("accepté");
+        Client.acceptInvite(idFrom, groupID);
         dialogStage.close();
 
     }
