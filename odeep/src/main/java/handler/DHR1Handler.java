@@ -15,7 +15,7 @@ public class DHR1Handler implements MessageHandler{
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
         RSAHandler RSA = n.getTempRSAInfo();
         if (RSA != null) {
-            byte[] foreignKey = CipherUtil.erasePadding(m.getMessageContent(), PeerMessage.PADDING_START);
+            byte[] foreignKey = m.getMessageContent();
             byte[] encryptedKey = CipherUtil.RSAEncrypt(CipherUtil.byteToPublicKey(foreignKey), n.getKey(m.getIdGroup()));
 
             PeerMessage response = new PeerMessage(MessageType.DHS2, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), encryptedKey);

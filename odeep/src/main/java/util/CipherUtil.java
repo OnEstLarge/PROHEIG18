@@ -240,6 +240,7 @@ public class CipherUtil {
             index++;
         }
         byte[] expectedHMAC = generateHMAC(rawData, key);
+        System.out.println(new String(HMAC) + " : " + new String(expectedHMAC));
         return Arrays.equals(expectedHMAC, HMAC);
     }
 

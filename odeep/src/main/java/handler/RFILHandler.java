@@ -32,7 +32,7 @@ public class RFILHandler implements MessageHandler{
         }
         File fileAsked = null;
         try {
-            fileAsked = new File("./shared_files/" + m.getIdGroup() + "/" + new String(CipherUtil.AESDecrypt(CipherUtil.erasePadding(m.getMessageContent(), PeerMessage.PADDING_START), key)));
+            fileAsked = new File("./shared_files/" + m.getIdGroup() + "/" + new String(CipherUtil.AESDecrypt(m.getMessageContent(), key)));
         } catch (InvalidCipherTextException e) {
             e.printStackTrace();
         }

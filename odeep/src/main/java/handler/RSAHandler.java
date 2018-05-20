@@ -19,7 +19,7 @@ public class RSAHandler {
     }
 
     public byte[] getFinalKey(PeerMessage m) {
-        byte[] message = CipherUtil.erasePadding(m.getMessageContent(), PeerMessage.PADDING_START);
+        byte[] message = m.getMessageContent();
         return CipherUtil.RSADecrypt(kp.getPrivate(), message);
     }
 
