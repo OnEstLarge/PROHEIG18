@@ -474,10 +474,15 @@ public class Client extends Application {
         n.addMessageHandler(MessageType.DISC, new DISCHandler());
         n.addMessageHandler(MessageType.NFIL, new NFILHandler());
         n.addMessageHandler(MessageType.RFIL, new RFILHandler());
+        n.addMessageHandler(MessageType.PGET, new PGETHandler());
         n.addMessageHandler(MessageType.SFIL, new SFILHandler());
         n.addMessageHandler(MessageType.SMES, new SMESHandler());
         n.addMessageHandler(MessageType.UPDT, new UPDTHandler());
         n.addMessageHandler(MessageType.INVK, new INVKHandler());
+        n.addMessageHandler(MessageType.DHS1, new DHR1Handler());
+        n.addMessageHandler(MessageType.DHS2, new DHS2Handler());
+        n.addMessageHandler(MessageType.DHR1, new DHR1Handler());
+
         System.out.println("Added the handlers");
     }
 
