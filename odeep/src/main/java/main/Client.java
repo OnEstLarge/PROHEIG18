@@ -242,7 +242,7 @@ public class Client extends Application {
     }
 
 
-    public static boolean showAcceptInviteDialog(String groupName){
+    public static boolean showAcceptInviteDialog(String idFrom, String groupName){
         try {
             // Load the FXML filer and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
@@ -261,6 +261,9 @@ public class Client extends Application {
             AcceptInviteDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage);
             controller.getMessageLabel().setText("Vous avez été invité dans le groupe " + groupName);
+
+            controller.setGroupID(groupName);
+            controller.setIdFrom(idFrom);
 
             // Show the dialog and wait  until the user closes it
             dialogStage.showAndWait();
@@ -771,6 +774,19 @@ public class Client extends Application {
         try {
             System.out.println("I send an invitation for user " + username + " in group " + groupID);
             out.write(invitePM.getFormattedMessage());
+            out.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void acceptInvite(String usernameFrom, String groupID) {
+        PeerMessage acceptInvitePM = new PeerMessage(MessageType.INVK, groupID, myUsername, usernameFrom, "".getBytes());
+
+        try {
+            System.out.println("I accept an invitation for user " + usernameFrom + " in group " + groupID);
+            out.write(acceptInvitePM.getFormattedMessage());
             out.flush();
 
         } catch (IOException e) {
