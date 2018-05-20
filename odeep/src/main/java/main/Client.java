@@ -42,6 +42,7 @@ public class Client extends Application {
 
     private Stage primaryStage;
     private BorderPane rootLayout;
+    private static RootLayoutController controller;
 
     @Override
     public void start(Stage primaryStage) {
@@ -116,7 +117,7 @@ public class Client extends Application {
         try {
 
             writer = new PrintWriter(file, "UTF-8");
-            writer.println(data);
+            writer.print(data);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -147,11 +148,20 @@ public class Client extends Application {
             primaryStage.setScene(scene);
 
             // Give the controller access to the main app.
-            RootLayoutController controller = loader.getController();
+            controller = loader.getController();
             controller.setMainApp(this);
+
+            while(groupsNotInialized) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
             controller.updateGroupsAndFiles();
 
             primaryStage.show();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -281,7 +291,7 @@ public class Client extends Application {
 
 
 
-    private static final String IP_SERVER = "192.168.0.214";//"206.189.49.105";
+    private static final String IP_SERVER = "192.168.0.46";//"206.189.49.105";
     private static final int PORT_SERVER = 8080;
     private static final int LOCAL_PORT = 4444;
 
@@ -292,6 +302,8 @@ public class Client extends Application {
     private static int isUsernameAvailaible = -1;
     private static boolean waitingForGroupValidation = false;
     private static boolean validationGroup = false;
+    private static boolean waitingJsonFromServer = false;
+    private static boolean groupsNotInialized = true;
 
     private static Node n;
     private static boolean nodeIsRunning = true;
@@ -301,7 +313,7 @@ public class Client extends Application {
     private static String response = null;
 
     private static List<Group> groups = new ArrayList();
-    private static Person myself;//set in getPseudo
+    public static Person myself;//set in getPseudo
 
 
 
@@ -489,11 +501,7 @@ public class Client extends Application {
         // Restore existing groups
         for(String groupID : scanGroups()) {
             downloadJSON(groupID);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+
             // Read config file
             try {
                 RandomAccessFile configFile = new RandomAccessFile("./shared_files/" + groupID + "/config.json", "r");
@@ -511,6 +519,9 @@ public class Client extends Application {
                 e.printStackTrace();
             }
         }
+
+        groupsNotInialized = false;
+        //controller.updateGroupsAndFiles();
     }
 
     //Classe permettant de threader la lecture des packets server
@@ -536,6 +547,7 @@ public class Client extends Application {
                     } else if(pm.getType().equals(MessageType.DOWN)) {
                         System.out.println("i'm in");
                         saveReceivedJson(pm);
+                        waitingJsonFromServer = false;
                         System.out.println("i'm out");
                     }else {
                         redirectToHandler(pm, n, new PeerConnection(clientSocketToServerPublic));
@@ -591,7 +603,6 @@ public class Client extends Application {
         waitingForGroupValidation = true;
         Group group = InterfaceUtil.createGroup(groupID, Client.getUsername(), n);
         if(group != null) {
-            group.addMember(myself);
             groups.add(group);
         }
         return group != null;
@@ -620,36 +631,63 @@ public class Client extends Application {
             out.flush();
 
 
-            byte[] decipherConfigFile = CipherUtil.AESDecrypt(configFileByte, n.getKey(groupID));
-            System.out.println("Fichier dechiffré: " + new String(decipherConfigFile));
-            Group group = JSONUtil.parseJson(new String(decipherConfigFile), Group.class);
-            for (Person person : group.getMembers()) {
+            //byte[] decipherConfigFile = CipherUtil.AESDecrypt(configFileByte, n.getKey(groupID));
+            //System.out.println("Fichier dechiffré: " + new String(decipherConfigFile));
+            //Group group = JSONUtil.parseJson(new String(decipherConfigFile), Group.class);
 
-                PeerMessage pm = new PeerMessage(MessageType.UPDT, groupID, idFrom, person.getID(), "".getBytes());
-                try {
-                    out.write(pm.getFormattedMessage());
-                    out.flush();
-                } catch (IOException e) {
-                    System.out.println(e.getMessage());
-                }
-
-            }
+            broadcastUpdate(idFrom, groupID);
 
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (InvalidCipherTextException ex) {
-            ex.printStackTrace();
+        }
+    }
+
+    public static Group getGroupById(String id) {
+        Group group = null;
+        for(Group g: groups) {
+            if(g.getID().equals(id)) {
+                group = g;
+            }
+        }
+        return group;
+    }
+
+    public static void broadcastUpdate(String idFrom, String groupID) {
+        Group group = getGroupById(groupID);
+        if(group != null) {
+            for (Person person : group.getMembers()) {
+                if (!person.getID().equals(myUsername)) {
+                    System.out.println("FUCK YOU " + person.getID().length() + "  " + myUsername);
+                    PeerMessage pm = new PeerMessage(MessageType.UPDT, group.getID(), idFrom, person.getID(), "".getBytes());
+                    try {
+                        out.write(pm.getFormattedMessage());
+                        out.flush();
+                    } catch (IOException e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
+
+            }
         }
     }
 
     public static void downloadJSON(String groupID) {
 
         PeerMessage downloadMessage = new PeerMessage(MessageType.DOWN, groupID, myUsername, myUsername, groupID.getBytes());
-
+        waitingJsonFromServer = true;
         try {
+            System.out.println("I want to download");
             // Averti le serveur que le client désire avoir le fichier 'config.json'
             out.write(downloadMessage.getFormattedMessage());
             out.flush();
+
+            while(waitingJsonFromServer){
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -662,6 +700,7 @@ public class Client extends Application {
         int c;
         FileOutputStream fout = null;
         try {
+            System.out.println("I download");
             fout = new FileOutputStream(new File("./shared_files/" + pm.getIdGroup() + "/config.json"));
             c = in.read(buffer);
             fout.write(buffer,0,c);

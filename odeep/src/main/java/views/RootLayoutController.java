@@ -23,7 +23,7 @@ public class RootLayoutController implements Initializable {
     private Client mainApp;
     private static List<ListView> listView = new ArrayList();
     private Stage dialogStage;
-    private boolean okClicked = false;
+    private String selectedGroup;
 
     public HashMap<String, List<String>> getMapFile() {
         return mapFile;
@@ -60,7 +60,7 @@ public class RootLayoutController implements Initializable {
             errorMsg += "Group name must be between " + PeerMessage.ID_GROUP_MIN_LENGTH + " and " + PeerMessage.ID_GROUP_MAX_LENGTH + " characters long.\n";
         } else {
             TitledPane pane = new TitledPane();
-            ListView view = new ListView();
+            final ListView view = new ListView();
 
             // TODO: s'ajouter au groupe et mettre les fichiers dispo a jour.
             listView.add(view);
@@ -75,6 +75,7 @@ public class RootLayoutController implements Initializable {
             pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
+                    selectedGroup = view.getId();
                     middleList.getItems().clear();
                     System.out.println(middleList.getItems());
                     System.out.println(mapFile.toString());
@@ -124,7 +125,7 @@ public class RootLayoutController implements Initializable {
 
         for(final Group g: mainApp.getGroups()){
             TitledPane pane = new TitledPane();
-            ListView view = new ListView();
+            final ListView view = new ListView();
 
             for(Person p : g.getMembers()){
                 view.getItems().add(p.getID());
@@ -140,6 +141,7 @@ public class RootLayoutController implements Initializable {
             pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
+                    selectedGroup = view.getId();
                     middleList.getItems().clear();
                     System.out.println(middleList.getItems());
                     System.out.println(mapFile.toString());
@@ -175,41 +177,20 @@ public class RootLayoutController implements Initializable {
         // Show open file dialog
         File file = fileChooser.showOpenDialog(mainApp.getPrimaryStage());
 
-        if (file != null) {
-            // TODO: la faking function
-            System.out.println(file.getName());
-            //mainApp.loadPersonDataFromFile(file);
+        if (file != null && mapFile.containsKey(selectedGroup)) {
+            mapFile.get(selectedGroup).add(file.getName());
+            middleList.getItems().add(file.getName());
+            InterfaceUtil.addFile(file, Client.getUsername(), Client.getGroupById(selectedGroup));
         }
     }
 
     @FXML
     private void handleRemove() {
-        FileChooser fileChooser = new FileChooser();
-
-        // Set the name of the window
-        fileChooser.setTitle("Choose file to remove");
-
-        // Set extension filter
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("All", "*.*");
-        fileChooser.getExtensionFilters().add(extFilter);
-
-        // Set the root directory
-        //fileChooser.setInitialDirectory(".userInfo");
-
-        // Show open file dialog
-        File file = null;
-        file = fileChooser.showOpenDialog(mainApp.getPrimaryStage());
-
-
-        if (file != null) {
-            // TODO: la faking function
-            try {
-                System.out.println(file.getCanonicalFile());
-            } catch (IOException e) {
-                e.printStackTrace();
+        List<String> file =  middleList.getSelectionModel().getSelectedItems();
+        if(mapFile.containsKey(selectedGroup)){
+            mapFile.get(selectedGroup).remove(file.get(0));
+            middleList.getItems().remove(file.get(0));
         }
-    }
-    //mainApp.loadPersonDataFromFile(file);
     }
 
     @FXML
