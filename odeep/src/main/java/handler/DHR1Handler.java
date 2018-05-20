@@ -16,6 +16,7 @@ public class DHR1Handler implements MessageHandler{
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
         System.out.println("J'entre dans dhr1");
         RSAHandler RSA = n.getTempRSAInfo();
+        System.out.println("RSA : " + (RSA != null));
         if (RSA != null) {
             byte[] foreignKey = m.getMessageContent();
             byte[] encryptedKey = CipherUtil.RSAEncrypt(CipherUtil.byteToPublicKey(foreignKey), n.getKey(m.getIdGroup()));
