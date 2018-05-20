@@ -18,6 +18,8 @@ import message.MessageType;
 import peer.PeerMessage;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Properties;
 
 /**
@@ -88,15 +90,15 @@ public class InterfaceUtil {
      * @param userID
      * @param group
      */
-    public static void addFile(String filename, String userID, Group group) {
+    public static void addFile(File file, String userID, Group group) {
 
         try {
-
+            System.out.println("file.getName() = " + file.getName());
             // Vérifie que le nom de fichier est disponible (au sein du groupe)
-            if (checkFilename(filename, group)) {
+            if (checkFilename(file.getName(), group)) {
 
                 // Ajoute le fichier à la liste des fichiers de l'utilisateur
-                group.addFile(filename, userID);
+                group.addFile(file.getName(), userID);
 
                 // Affecte la modification au fichier config.json et le chiffre
                 RandomAccessFile f = new RandomAccessFile("./shared_files/" + group.getID() + "/key", "r");
@@ -106,12 +108,23 @@ public class InterfaceUtil {
 
                 JSONUtil.updateConfig(group.getID(), cipherConfig);
 
+                // Copie du fichier dans le répertoire 'shared_files/groupID'
+                File fileDest = new File("./shared_files/" + group.getID() + "/" + file.getName());
+                Files.copy(file.toPath(), fileDest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+
+
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    // Copie le fichier dans le répertoire 'shared_files/groupID'
+    private static void copyFile(File file, Group group) {
+
     }
 
     /**
