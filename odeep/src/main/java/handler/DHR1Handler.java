@@ -19,7 +19,24 @@ public class DHR1Handler implements MessageHandler{
             byte[] encryptedKey = CipherUtil.RSAEncrypt(CipherUtil.byteToPublicKey(foreignKey), n.getKey(m.getIdGroup()));
 
             PeerMessage response = new PeerMessage(MessageType.DHS2, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), encryptedKey);
-            c.sendMessage(response);
+            PeerInformations pi = null;
+            for (PeerInformations p : n.getKnownPeers()) {
+                if (p.getID().equals(m.getIdFrom())) {
+                    pi = p;
+                    break;
+                }
+            }
+            if (pi == null) {
+                throw new NullPointerException();
+            } else {
+                try {
+                    PeerConnection p = new PeerConnection(pi);
+                    p.sendMessage(response);
+                    p.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             n.setTempRSAInfo(null);
         }
     }

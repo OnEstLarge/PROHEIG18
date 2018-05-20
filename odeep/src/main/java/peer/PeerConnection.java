@@ -45,7 +45,7 @@ public class PeerConnection {
         } catch(IOException e) {
 
         }
-        //System.out.println("rcv tab: " + new String(b));
+        System.out.println("rcv tab: " + new String(b));
         PeerMessage rcv = new PeerMessage(b);
         return rcv;
     }
