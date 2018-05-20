@@ -20,24 +20,7 @@ public class DHS1Handler implements MessageHandler {
             n.setTempRSAInfo(RSA);
 
             PeerMessage response = new PeerMessage(MessageType.DHR1, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), RSA.getPublicKey());
-            PeerInformations pi = null;
-            for (PeerInformations p : n.getKnownPeers()) {
-                if (p.getID().equals(m.getIdFrom())) {
-                    pi = p;
-                    break;
-                }
-            }
-            if (pi == null) {
-                throw new NullPointerException();
-            } else {
-                try {
-                    PeerConnection p = new PeerConnection(pi);
-                    p.sendMessage(response);
-                    p.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            c.sendMessage(response);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (NoSuchProviderException e) {
