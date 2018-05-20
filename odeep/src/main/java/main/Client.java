@@ -819,6 +819,10 @@ public class Client extends Application {
             Group group = JSONUtil.parseJson(new String(plainConfig), Group.class);
             group.addMember(myself);
             groups.add(group);
+
+            System.out.println("Group member = ");
+            for(Person p : group.getMembers())
+                System.out.println(p.getID());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
