@@ -142,6 +142,7 @@ public class InterfaceUtil {
     private static boolean checkFilename(String filename, Group group) {
         for (Person person : group.getMembers()) {
             for (String f : person.getFiles()) {
+                System.out.println(filename + "     ffffffffffffffffffffffffff         " + f);
                 if (filename.equals(f)) {
                     return false;
                 }
@@ -163,7 +164,8 @@ public class InterfaceUtil {
             if (!checkFilename(filename, group)) {
 
                 // Ajoute le fichier à la liste des fichiers de l'utilisateur
-                Client.myself.removeFile(filename);
+                //Client.myself.removeFile(filename);
+                group.getMember(userID).removeFile(filename);
 
                 for(Person p: group.getMembers()) {
                     for(String s: p.getFiles()) {
@@ -177,7 +179,11 @@ public class InterfaceUtil {
                 f.readFully(key);
                 byte[] cipherConfig = CipherUtil.AESEncrypt(JSONUtil.toJson(group).getBytes(), key);
 
+                InterfaceUtil.printConfig(group.getID(), key);
+
                 JSONUtil.updateConfig(group.getID(), cipherConfig);
+
+                InterfaceUtil.printConfig(group.getID(), key);
 
                 Client.uploadJSON("./shared_files/" + group.getID() + "/config.json", group.getID(), userID);
 
