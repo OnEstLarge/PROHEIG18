@@ -204,7 +204,10 @@ public class Node {
                 raf.read(mes, 0, mes.length);
                 raf.close();
                 byte[] cipherMes = CipherUtil.AESEncrypt(mes, key);
+                System.out.println(cipherMes.length);
                 PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
+                System.out.println(p.getFormattedMessage().length);
+                System.out.println(new String(p.getFormattedMessage()));
                 System.out.println("sending : " + filename + " : " + 100.0 * i / (fileSize/PeerMessage.MESSAGE_CONTENT_SIZE) + "%");
                 this.createTempConnection(pi, p);
             }

@@ -603,7 +603,6 @@ public class Client extends Application {
         waitingForGroupValidation = true;
         Group group = InterfaceUtil.createGroup(groupID, Client.getUsername(), n);
         if(group != null) {
-            group.addMember(myself);
             groups.add(group);
         }
         return group != null;

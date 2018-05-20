@@ -37,7 +37,7 @@ public class Test {
         final PeerInformations schurch = new PeerInformations("schurch", "192.168.1.110", 4444);
         final PeerInformations lionel = new PeerInformations("lionel", "192.168.1.119", 4444);
         final PeerInformations florent = new PeerInformations("florent", "192.168.0.214", 4444);
-        final PeerInformations romain = new PeerInformations("romain", "10.192.93.186", 4444);
+        final PeerInformations romain = new PeerInformations("romain", "192.168.0.248", 4444);
         final PeerInformations olivier = new PeerInformations("olivier", "192.168.0.249", 4444);
         final PeerInformations mathieu = new PeerInformations("mathieu", "10.192.91.89", 4444);
 
@@ -81,8 +81,10 @@ public class Test {
         temp.addFile("Fear.mkv");
         group1.addMember(temp);
         Person temp2 = new Person("olivier");
-        temp.addFile("Fear.mkv");
+        temp2.addFile("Fear.mkv");
         group1.addMember(temp2);
+        Person temp3 = new Person("romain");
+        group1.addMember(temp3);
 
         List<Group> groups = new ArrayList<Group>();
         groups.add(group1);
