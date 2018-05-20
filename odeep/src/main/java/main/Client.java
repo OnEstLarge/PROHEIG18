@@ -723,6 +723,8 @@ public class Client extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        controller.updateGroupsAndFiles();
     }
 
     private static void saveReceivedJson(PeerMessage pm) {
@@ -792,5 +794,37 @@ public class Client extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void updateJsonAfterInvitation(String groupID) {
+        //download json du groupe
+        Client.downloadJSON(groupID);
+        //ajoute le group dans sa liste groups
+
+        RandomAccessFile configFile = null;
+        try {
+            configFile = new RandomAccessFile("./shared_files/"+groupID+"/config.json", "r");
+            byte[] configFileByte = new byte[(int) configFile.length()];
+            configFile.readFully(configFileByte);
+
+            byte[] plainConfig = CipherUtil.AESDecrypt(configFileByte, n.getKey(groupID));
+
+            Group group = JSONUtil.parseJson(new String(plainConfig), Group.class);
+            group.addMember(myself);
+            groups.add(group);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InvalidCipherTextException e) {
+            e.printStackTrace();
+        }
+
+        //update le json en s'ajoutant dans le groupe
+        JSONUtil.updateConfig(Client.getGroupById(groupID));
+        //upload le nouveau json sur le serv
+        Client.uploadJSON("./shared_files/" + groupID + "/config.json", groupID, myUsername);
+
+        controller.updateGroupsAndFiles();
     }
 }
