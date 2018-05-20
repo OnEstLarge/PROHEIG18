@@ -28,7 +28,7 @@ public class SFILHandler implements MessageHandler {
 
         byte[] rcv = new byte[0];
         try {
-            rcv = CipherUtil.AESDecrypt(CipherUtil.erasePadding(m.getMessageContent(), PeerMessage.PADDING_START), key);
+            rcv = CipherUtil.AESDecrypt(m.getMessageContent(), key);
         } catch (InvalidCipherTextException e) {
             PeerInformations pi = null;
             for (PeerInformations p : n.getKnownPeers()) {
