@@ -588,7 +588,13 @@ public class Client extends Application {
 
                     } else {
                         System.out.println("Client redirect message " + pm.getType());
-                        redirectToHandler(pm, n, new PeerConnection(clientSocketToServerPublic));
+                        final PeerMessage redirectPM = pm;
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                redirectToHandler(redirectPM, n, new PeerConnection(clientSocketToServerPublic));
+                            }
+                        }).start();
                     }
 
                 }
@@ -597,6 +603,7 @@ public class Client extends Application {
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             } finally {
+                System.out.println("ERROR STOPPED LISTENING TO SERVER PUBLIC");
                 try {
                     clientSocketToServerPublic.close();
                     in.close();
@@ -721,6 +728,7 @@ public class Client extends Application {
 
             while(waitingJsonFromServer){
                 try {
+                    System.out.println("waiting download");
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -731,7 +739,13 @@ public class Client extends Application {
             e.printStackTrace();
         }
 
-        controller.updateGroupsAndFiles();
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                controller.updateGroupsAndFiles();
+            }
+        });
     }
 
     private static void saveReceivedJson(PeerMessage pm) {
@@ -798,18 +812,32 @@ public class Client extends Application {
             out.write(acceptInvitePM.getFormattedMessage());
             out.flush();
 
+            // Crée le groupe localement
+            String dir = "./shared_files/" + groupID;
+            File file = new File(dir);
+            if (!file.exists() || !file.isDirectory()) {
+                file.mkdirs();
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public static void updateJsonAfterInvitation(String groupID) {
+
+
+        System.out.println("updateJsonAfterInvitation in");
+
         //download json du groupe
-        Client.downloadJSON(groupID);
+        downloadJSON(groupID);
         //ajoute le group dans sa liste groups
+        System.out.println("updateJsonAfterInvitation downloaded");
 
         RandomAccessFile configFile = null;
         try {
+            System.out.println("updateJsonAfterInvitation will read json received");
+
             configFile = new RandomAccessFile("./shared_files/"+groupID+"/config.json", "r");
             byte[] configFileByte = new byte[(int) configFile.length()];
             configFile.readFully(configFileByte);
@@ -820,7 +848,7 @@ public class Client extends Application {
             group.addMember(myself);
             groups.add(group);
 
-            System.out.println("Group member = ");
+            System.out.println("updateJsonAfterInvitation Group member, should have added myself ");
             for(Person p : group.getMembers())
                 System.out.println(p.getID());
         } catch (FileNotFoundException e) {
@@ -831,12 +859,25 @@ public class Client extends Application {
             e.printStackTrace();
         }
 
+        System.out.println("updateJsonAfterInvitation update config");
+
         //update le json en s'ajoutant dans le groupe
         JSONUtil.updateConfig(Client.getGroupById(groupID));
+
+        System.out.println("updateJsonAfterInvitation updated, uploading");
+
         //upload le nouveau json sur le serv
         Client.uploadJSON("./shared_files/" + groupID + "/config.json", groupID, myUsername);
 
-        controller.updateGroupsAndFiles();
+        System.out.println("updateJsonAfterInvitation uploaded");
+
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                controller.updateGroupsAndFiles();
+            }
+        });
     }
 
     public static void sendPM(PeerMessage pm) {
