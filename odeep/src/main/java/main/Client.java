@@ -21,6 +21,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 
 import javafx.stage.WindowEvent;
@@ -306,7 +307,7 @@ public class Client extends Application {
 
 
 
-    private static final String IP_SERVER = "192.168.0.46";//"206.189.49.105";
+    private static final String IP_SERVER = "192.168.0.214";//"206.189.49.105";
     private static final int PORT_SERVER = 8080;
     private static final int LOCAL_PORT = 4444;
 
@@ -330,7 +331,8 @@ public class Client extends Application {
     private static List<Group> groups = new ArrayList();
     public static Person myself;//set in getPseudo
 
-
+    private static int count = 0;
+    private static HashMap<Integer, Boolean> mutex = new HashMap<>();
 
 
     public static void main(String[] args) {
@@ -587,8 +589,11 @@ public class Client extends Application {
                         waitingForGroupValidation = false;
                     } else if(pm.getType().equals(MessageType.DOWN)) {
                         System.out.println("i'm in");
+                        String[] rcv = new String(pm.getMessageContent()).split("-");
                         saveReceivedJson(pm);
-                        waitingJsonFromServer = false;
+                        //waitingJsonFromServer = false;
+                        System.out.println("count rcv ------------------------- " + rcv[0]);
+                        mutex.put(Integer.parseInt(rcv[0]), false);
                         System.out.println("i'm out");
                     //} else if(pm.getType().equals(MessageType.INVI)) {
                         //
@@ -715,9 +720,12 @@ public class Client extends Application {
                     try {
                         out.write(pm.getFormattedMessage());
                         out.flush();
+                        //Thread.sleep(100);
                     } catch (IOException e) {
                         System.out.println(e.getMessage());
-                    }
+                    } /*catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }*/
                 }
 
             }
@@ -726,15 +734,18 @@ public class Client extends Application {
 
     public static void downloadJSON(String groupID) {
 
-        PeerMessage downloadMessage = new PeerMessage(MessageType.DOWN, groupID, myUsername, myUsername, groupID.getBytes());
-        waitingJsonFromServer = true;
+        int id = count++;
+        mutex.put(id, true);
+        System.out.println("count -------------------------------- "+id);
+        PeerMessage downloadMessage = new PeerMessage(MessageType.DOWN, groupID, myUsername, myUsername, (""+id).getBytes());
+        //waitingJsonFromServer = true;
         try {
             System.out.println("I want to download");
             // Averti le serveur que le client désire avoir le fichier 'config.json'
             out.write(downloadMessage.getFormattedMessage());
             out.flush();
 
-            while(waitingJsonFromServer){
+            while(mutex.get(id)){
                 try {
                     System.out.println("waiting download");
                     Thread.sleep(100);
@@ -751,7 +762,6 @@ public class Client extends Application {
             updateGroupsWithJson(groupID);
         }
 
-
         Platform.runLater(new Runnable() {
 
             @Override
@@ -759,10 +769,13 @@ public class Client extends Application {
                 controller.updateGroupsAndFiles();
             }
         });
+
+        mutex.remove(id);
     }
 
     private static void saveReceivedJson(PeerMessage pm) {
-        int size = Integer.parseInt(new String(pm.getMessageContent()));
+        String[] content = new String(pm.getMessageContent()).split("-");
+        int size = Integer.parseInt(content[1]);
         byte[] buffer = new byte[size];
         int c;
         FileOutputStream fout = null;
