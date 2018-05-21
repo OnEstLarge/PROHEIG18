@@ -1,5 +1,15 @@
 package handler;
 
+/*
+ -----------------------------------------------------------------------------------
+ Odeep
+ Fichier     : handler.SFILHandler.java
+ Auteur(s)   : Kopp Olivier
+ Date        : 10.05.2018
+ Compilateur : jdk 1.8.0_144
+ -----------------------------------------------------------------------------------
+*/
+
 import message.MessageHandler;
 import message.MessageType;
 import org.bouncycastle.crypto.InvalidCipherTextException;
@@ -11,6 +21,9 @@ import Node.Node;
 
 import java.io.*;
 
+/**
+ * Classe permettant le traitement d'un message de type SFIL
+ */
 public class SFILHandler implements MessageHandler {
 
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {

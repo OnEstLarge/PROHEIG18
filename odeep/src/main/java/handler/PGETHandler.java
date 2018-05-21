@@ -1,5 +1,15 @@
 package handler;
 
+/*
+ -----------------------------------------------------------------------------------
+ Odeep
+ Fichier     : handler.PGETHandler.java
+ Auteur(s)   : Kopp Olivier
+ Date        : 18.05.2018
+ Compilateur : jdk 1.8.0_144
+ -----------------------------------------------------------------------------------
+*/
+
 import message.MessageHandler;
 import message.MessageType;
 import peer.PeerConnection;
@@ -12,11 +22,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+/**
+ * Classe permettant le traitement d'un message de type PGET
+ */
 public class PGETHandler implements MessageHandler {
 
     @Override
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
-        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         RandomAccessFile f = null;
         byte[] key = null;
         try {

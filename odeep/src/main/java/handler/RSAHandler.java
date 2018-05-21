@@ -1,5 +1,15 @@
 package handler;
 
+/*
+ -----------------------------------------------------------------------------------
+ Odeep
+ Fichier     : handler.RSAHandler.java
+ Auteur(s)   : Kopp Olivier
+ Date        : 27.04.2018
+ Compilateur : jdk 1.8.0_144
+ -----------------------------------------------------------------------------------
+*/
+
 import peer.PeerMessage;
 import util.CipherUtil;
 
@@ -13,7 +23,7 @@ public class RSAHandler {
     public RSAHandler() {
     }
 
-    public void setKeys() throws NoSuchAlgorithmException, NoSuchProviderException {
+    public void setKeys() {
         kp = CipherUtil.GenerateRSAKey();
         publicKey = CipherUtil.publicKeyToByte(kp.getPublic());
     }

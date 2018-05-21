@@ -1,5 +1,15 @@
 package handler;
 
+/*
+ -----------------------------------------------------------------------------------
+ Odeep
+ Fichier     : handler.DISCHandler.java
+ Auteur(s)   :
+ Date        :
+ Compilateur : jdk 1.8.0_144
+ -----------------------------------------------------------------------------------
+*/
+
 import User.Group;
 import message.MessageHandler;
 import peer.PeerConnection;
@@ -10,6 +20,9 @@ import Node.Node;
 
 import java.io.File;
 
+/**
+ * Classe permettant le traitement d'un message de type DISC
+ */
 public class DISCHandler implements MessageHandler{
     @Override
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {

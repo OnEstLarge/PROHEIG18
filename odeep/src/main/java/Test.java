@@ -162,10 +162,6 @@ public class Test {
                             p.close();
                         } catch (IOException e) {
                             e.printStackTrace();
-                        } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
-                        } catch (NoSuchProviderException e) {
-                            e.printStackTrace();
                         }
                     }else if (type.equals(MessageType.RFIL)) {
                         n.requestFile(content, group);

@@ -1,16 +1,26 @@
 package handler;
 
+/*
+ -----------------------------------------------------------------------------------
+ Odeep
+ Fichier     : handler.DHR1Handler.java
+ Auteur(s)   : Kopp Olivier
+ Date        : 27.04.2018
+ Compilateur : jdk 1.8.0_144
+ -----------------------------------------------------------------------------------
+*/
+
 import main.Client;
 import message.MessageHandler;
 import message.MessageType;
 import peer.PeerConnection;
-import peer.PeerInformations;
 import peer.PeerMessage;
 import util.CipherUtil;
 import Node.Node;
 
-import java.io.IOException;
-
+/**
+ * Classe permettant le traitement d'un message de type DHR1
+ */
 public class DHR1Handler implements MessageHandler{
     @Override
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
