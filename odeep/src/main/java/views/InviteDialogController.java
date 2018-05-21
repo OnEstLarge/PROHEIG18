@@ -72,6 +72,7 @@ public class InviteDialogController {
 
             Client.inviteNewMember(newUserPseudoField.getText(), comboBox.getValue());
 
+            Client.getController().enableButtons();
             okClicked = true;
             dialogStage.close();
         }
