@@ -203,7 +203,17 @@ public class RootLayoutController implements Initializable {
     }
 
     @FXML
-    private void handleDownload(){}
+    private void handleDownload(){
+        List<String> file =  middleList.getSelectionModel().getSelectedItems();
+        String filename = file.get(0);
+        File fileToDownload = new File("./shared_files/" + selectedGroup + "/" + filename);
+        if(fileToDownload.exists()){
+            return;
+        }
+        else{
+            mainApp.requestFile(filename, selectedGroup);
+        }
+    }
 
 
     public void setDialogStage(Stage dialogStage) {

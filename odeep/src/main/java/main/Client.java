@@ -937,4 +937,8 @@ public class Client extends Application {
             }
         }
     }
+
+    public static void requestFile(String file, String group){
+        n.requestFile(file, group);
+    }
 }

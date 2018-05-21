@@ -28,7 +28,7 @@ public class DHS2Handler implements MessageHandler {
         System.out.println("final key is : " + new String(n.getKey(m.getIdGroup())));
 
 
-        //Client.updateJsonAfterInvitation(m.getIdGroup());
-        Client.downloadJSON(m.getIdGroup());
+        Client.updateJsonAfterInvitation(m.getIdGroup());
+        //Client.downloadJSON(m.getIdGroup());
     }
 }
