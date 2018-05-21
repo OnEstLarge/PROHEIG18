@@ -611,6 +611,7 @@ public class Client extends Application {
                 System.out.println(e.getMessage());
             } finally {
                 System.out.println("ERROR STOPPED LISTENING TO SERVER PUBLIC");
+                System.out.println(new String(buffer));
                 try {
                     clientSocketToServerPublic.close();
                     in.close();
