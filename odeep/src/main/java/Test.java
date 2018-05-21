@@ -82,6 +82,7 @@ public class Test {
         group1.addMember(temp);
         Person temp2 = new Person("olivier");
         temp2.addFile("Fear.mkv");
+        temp2.addFile("test.mp4");
         group1.addMember(temp2);
         Person temp3 = new Person("romain");
         group1.addMember(temp3);
@@ -94,13 +95,11 @@ public class Test {
         File file = new File(dir);
         file.mkdirs();
 
+        JSONUtil.updateConfig(group1.getID(), JSONUtil.toJson(group1).getBytes());
 
-            JSONUtil.updateConfig(group1.getID(), JSONUtil.toJson(group1).getBytes());
-
-            //InterfaceUtil.addFile("testFile", "PussySlayer69", group1);
-            //InterfaceUtil.addFile("testFil2e", "FrouzDu78", group1);
-            System.out.println("testFile added");
-
+        //InterfaceUtil.addFile("testFile", "PussySlayer69", group1);
+        //InterfaceUtil.addFile("testFil2e", "FrouzDu78", group1);
+        System.out.println("testFile added");
 
         ////////////////////////////////////////////////
 

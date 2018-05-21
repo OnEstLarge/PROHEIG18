@@ -1,4 +1,5 @@
-package Node;/*
+package Node;
+/*
  -----------------------------------------------------------------------------------
  Odeep
  Fichier     : Node.Node.java
@@ -14,7 +15,6 @@ import User.Person;
 import handler.RSAHandler;
 import message.MessageHandler;
 import message.MessageType;
-import org.bouncycastle.util.test.Test;
 import peer.PeerConnection;
 import peer.PeerHandler;
 import peer.PeerInformations;
@@ -25,7 +25,6 @@ import util.JSONUtil;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -98,33 +97,6 @@ public class Node {
 
     public PeerInformations getNodePeer() {
         return myInfos;
-    }
-
-    /**
-     * @param message
-     * @param peer
-     */
-    public void sendToPeer(PeerMessage message, PeerInformations peer) {
-        Socket clientSocket = null;
-        OutputStream outputStream = null;
-
-        try {
-            clientSocket = new Socket(peer.getAddress(), peer.getPort());
-            outputStream = clientSocket.getOutputStream();
-
-            outputStream.write(message.getFormattedMessage());
-            System.out.println("Message sent from: " + myInfos.getID() + ", to: " + peer.getID());
-
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-
-        } finally {
-            // close outputStream and clientSocket
-            cleanup(outputStream, null, clientSocket, null);
-        }
     }
 
     public HashMap<String, MessageHandler> getMapMessage() {
