@@ -799,15 +799,18 @@ public class Client extends Application {
 
     public static void inviteNewMember(String username, String groupID) {
 
-        PeerMessage invitePM = new PeerMessage(MessageType.INVI, groupID, myUsername, username, "".getBytes());
+        if(getGroupById(groupID).getMember(username) != null) {
 
-        try {
-            System.out.println("I send an invitation for user " + username + " in group " + groupID);
-            out.write(invitePM.getFormattedMessage());
-            out.flush();
+            PeerMessage invitePM = new PeerMessage(MessageType.INVI, groupID, myUsername, username, "".getBytes());
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                System.out.println("I send an invitation for user " + username + " in group " + groupID);
+                out.write(invitePM.getFormattedMessage());
+                out.flush();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
