@@ -195,6 +195,7 @@ public class PeerMessage {
         StringBuilder result = new StringBuilder(text);
         if (result.length() < sizeWithPad) {
             result.append(PADDING_START);
+            result.append(PADDING_START);
         }
 
         while (result.length() < sizeWithPad) {
@@ -220,6 +221,8 @@ public class PeerMessage {
         if (index == sizeWithPad) {
             return result;
         }
+        //result[index] = PADDING_START;
+        result[index++] = PADDING_START;
         result[index] = PADDING_START;
         index++;
         for (; index < sizeWithPad; index++) {
@@ -292,6 +295,7 @@ public class PeerMessage {
             }
 
             byte[] messageWithPad = addPadding(messageContent, MESSAGE_WITH_PAD_SIZE);
+            System.out.println("message : " + new String(messageWithPad));
 
             for (int i = 0; i < MESSAGE_WITH_PAD_SIZE; i++) {
                 toSend[index++] = messageWithPad[i];
