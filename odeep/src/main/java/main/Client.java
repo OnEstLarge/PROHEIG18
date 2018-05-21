@@ -668,11 +668,12 @@ public class Client extends Application {
         PeerMessage uploadMessage = null;
 
         try {
+            System.out.println("UPLOADING will read file");
             // Récupère et chiffre de fichier config.json
             RandomAccessFile configFile = new RandomAccessFile(filenameJSON, "r");
             byte[] configFileByte = new byte[(int) configFile.length()];
             configFile.readFully(configFileByte);
-
+            System.out.println("UPLOADING did read file");
             uploadMessage = new PeerMessage(MessageType.UPLO, groupID, idFrom, idFrom, configFileByte);
             System.out.println("UPLOAD " + new String(uploadMessage.getFormattedMessage()));
             out.write(uploadMessage.getFormattedMessage());
