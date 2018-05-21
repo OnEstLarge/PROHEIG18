@@ -28,6 +28,7 @@ public class INVKHandler implements MessageHandler{
         final String toSendTo = m.getIdFrom();
 
         //n.setKey(CipherUtil.generateKey(), groupId);
+        Client.getController().disableButtons();
 
         RSAInfo RSA = new RSAInfo();
         RSA.setKeys();
