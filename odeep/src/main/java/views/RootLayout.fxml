@@ -10,24 +10,24 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="486.0" prefWidth="738.0" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="views.RootLayoutController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="486.0" prefWidth="738.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="views.RootLayoutController">
     <left>
-        <Accordion fx:id="accordion" prefHeight="461.0" prefWidth="255.0" stylesheets="@DarkTheme.css" BorderPane.alignment="CENTER" />
+        <Accordion fx:id="accordion" prefHeight="461.0" prefWidth="255.0" BorderPane.alignment="CENTER" />
     </left>
     <top>
         <MenuBar BorderPane.alignment="CENTER">
             <menus>
-                <Menu mnemonicParsing="false" text="File">
+                <Menu mnemonicParsing="false" text="Fichier">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#handleQuit" text="Close" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleQuit" text="Fermer" />
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
+                <Menu mnemonicParsing="false" text="Editer">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#handleInvite" text="Invite" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleInvite" text="Inviter" />
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Help">
+                <Menu mnemonicParsing="false" text="Aide">
                     <items>
                         <MenuItem mnemonicParsing="false" text="About" />
                     </items>
@@ -36,7 +36,7 @@
         </MenuBar>
     </top>
     <center>
-        <AnchorPane fx:id="middleAnchor" prefHeight="375.0" prefWidth="16.0" stylesheets="@DarkTheme.css" BorderPane.alignment="CENTER">
+        <AnchorPane fx:id="middleAnchor" prefHeight="375.0" prefWidth="16.0" BorderPane.alignment="CENTER">
          <children>
             <ListView fx:id="middleList" layoutX="-1.0" layoutY="48.0" prefHeight="461.0" prefWidth="267.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-4.0" AnchorPane.topAnchor="0.0" />
          </children></AnchorPane>
@@ -44,12 +44,12 @@
     <right>
         <AnchorPane fx:id="buttonAnchor" prefHeight="461.0" prefWidth="215.0" BorderPane.alignment="CENTER">
             <children>
-                <Button fx:id="downloadButton" defaultButton="true" layoutX="80.0" layoutY="39.0" mnemonicParsing="false" onAction="#handleDownload" text="Download" AnchorPane.rightAnchor="64.0" AnchorPane.topAnchor="39.0" />
-                <Button fx:id="inviteButton" layoutX="93.0" layoutY="104.0" mnemonicParsing="false" onAction="#handleInvite" text="Invite" AnchorPane.rightAnchor="77.0" AnchorPane.topAnchor="104.0" />
-                <Button fx:id="addButton" cancelButton="true" layoutX="27.0" layoutY="278.0" mnemonicParsing="false" onAction="#handleAdd" text="Add file" AnchorPane.rightAnchor="130.0" AnchorPane.topAnchor="278.0" />
-                <Button fx:id="createButton" layoutX="90.0" layoutY="218.0" mnemonicParsing="false" onAction="#handleCreateButtonAction" text="Create" AnchorPane.rightAnchor="74.0" AnchorPane.topAnchor="218.0" />
-            <TextField fx:id="groupNameField" layoutX="27.0" layoutY="171.0" prefHeight="37.0" prefWidth="178.0" promptText="Group name &gt; 6" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="171.0" />
-            <Button fx:id="removeButton" cancelButton="true" layoutX="112.0" layoutY="278.0" mnemonicParsing="false" onAction="#handleRemove" text="Remove file" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="278.0" />
+                <Button fx:id="downloadButton" defaultButton="true" layoutX="80.0" layoutY="39.0" mnemonicParsing="false" onAction="#handleDownload" text="Télécharger" AnchorPane.rightAnchor="64.0" AnchorPane.topAnchor="39.0" />
+                <Button fx:id="inviteButton" layoutX="93.0" layoutY="104.0" mnemonicParsing="false" onAction="#handleInvite" text="Inviter" AnchorPane.rightAnchor="77.0" AnchorPane.topAnchor="104.0" />
+                <Button fx:id="addButton" cancelButton="true" layoutX="62.0" layoutY="265.0" mnemonicParsing="false" onAction="#handleAdd" text="Ajouter un fichier" AnchorPane.rightAnchor="45.0" AnchorPane.topAnchor="265.0" />
+                <Button fx:id="createButton" layoutX="67.0" layoutY="218.0" mnemonicParsing="false" onAction="#handleCreateButtonAction" text="Creer le groupe" AnchorPane.rightAnchor="49.0" AnchorPane.topAnchor="218.0" />
+            <TextField fx:id="groupNameField" layoutX="26.0" layoutY="171.0" prefHeight="37.0" prefWidth="178.0" promptText="Nom du groupe &gt; 6" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="171.0" />
+            <Button fx:id="removeButton" cancelButton="true" layoutX="56.0" layoutY="314.0" mnemonicParsing="false" onAction="#handleRemove" text="Supprimer le fichier" AnchorPane.rightAnchor="39.0" AnchorPane.topAnchor="314.0" />
             </children>
         </AnchorPane>
     </right>

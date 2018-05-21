@@ -4,10 +4,10 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="174.0" prefWidth="377.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="views.AcceptInviteDialogController">
+<AnchorPane prefHeight="174.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="views.AcceptInviteDialogController">
     <children>
         <Label fx:id="messageLabel" layoutX="69.0" layoutY="28.0" text="Vous avez été invité dans un groupe" AnchorPane.leftAnchor="69.0" AnchorPane.topAnchor="28.0" />
-        <Button defaultButton="true" layoutX="97.0" layoutY="98.0" mnemonicParsing="false" onAction="#handleOk" prefHeight="25.0" prefWidth="92.0" text="Accepter" AnchorPane.leftAnchor="97.0" AnchorPane.topAnchor="98.0" />
-        <Button cancelButton="true" layoutX="209.0" layoutY="98.0" mnemonicParsing="false" onAction="#handleRefuse" prefHeight="25.0" prefWidth="92.0" text="Refuser" AnchorPane.leftAnchor="209.0" AnchorPane.topAnchor="98.0" />
+        <Button defaultButton="true" layoutX="108.0" layoutY="98.0" mnemonicParsing="false" onAction="#handleOk" prefHeight="25.0" prefWidth="92.0" text="Accepter" AnchorPane.leftAnchor="108.0" AnchorPane.topAnchor="98.0" />
+        <Button cancelButton="true" layoutX="243.0" layoutY="98.0" mnemonicParsing="false" onAction="#handleRefuse" prefHeight="25.0" prefWidth="92.0" text="Refuser" AnchorPane.leftAnchor="243.0" AnchorPane.topAnchor="98.0" />
     </children>
 </AnchorPane>
