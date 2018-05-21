@@ -120,8 +120,8 @@ public class PeerMessage {
                 this.noPacket = Integer.parseInt(new String(Arrays.copyOfRange(rawData, index, index + NO_PACKET_DIGITS)));
             }
             catch (NumberFormatException e){
-                System.out.println(new String(rawData));
-                System.out.flush();
+                //System.out.println(new String(rawData));
+                //System.out.flush();
             }
             index += NO_PACKET_DIGITS;
             this.messageContent = CipherUtil.erasePadding(Arrays.copyOfRange(rawData, index, rawData.length), PADDING_START);
@@ -206,7 +206,6 @@ public class PeerMessage {
         StringBuilder result = new StringBuilder(text);
         if (result.length() < sizeWithPad) {
             result.append(PADDING_START);
-            result.append(PADDING_START);
         }
 
         while (result.length() < sizeWithPad) {
@@ -232,8 +231,6 @@ public class PeerMessage {
         if (index == sizeWithPad) {
             return result;
         }
-        //result[index] = PADDING_START;
-        result[index++] = PADDING_START;
         result[index] = PADDING_START;
         index++;
         for (; index < sizeWithPad; index++) {

@@ -77,7 +77,7 @@ public class Client extends Application {
         initRootLayout();
     }
 
-    public static RootLayoutController getController(){
+    public static RootLayoutController getController() {
         return controller;
     }
 
@@ -85,20 +85,21 @@ public class Client extends Application {
      * Vérifie dans le fichier '.userInfo' si l'utilisateur possède déjà un pseudo.
      *
      * @return le pseudo de l'utilisateur.
-     *         null, si l'utilisateur ne possède pas encorede pseudo.
+     * null, si l'utilisateur ne possède pas encorede pseudo.
      */
     private static String usernameExists() {
         String username = null;
         final String userFilename = ".userInfo";
         File userFile = new File("./" + userFilename);
 
-        if(userFile.exists() && !userFile.isDirectory()) {
+        if (userFile.exists() && !userFile.isDirectory()) {
             username = readFromFile(userFile);
             username = username.replaceAll("[^A-Za-z0-9]", ""); //remove all non aplhanumeric character
         }
 
         return username;
     }
+
     private static String readFromFile(File file) {
         StringBuilder stringBuilder = new StringBuilder();
         FileInputStream fileInputStream = null;
@@ -147,7 +148,7 @@ public class Client extends Application {
     public void initRootLayout() {
         if ((myUsername = usernameExists()) == null) {
             boolean ok = showPseudoDialog();
-            while(!ok){ // Ask for a pseudo until a valid one is entered.
+            while (!ok) { // Ask for a pseudo until a valid one is entered.
                 ok = showPseudoDialog();
             }
             //write file .userInfo with the valid username
@@ -168,7 +169,7 @@ public class Client extends Application {
             controller = loader.getController();
             controller.setMainApp(this);
 
-            while(groupsNotInialized) {
+            while (groupsNotInialized) {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -205,7 +206,7 @@ public class Client extends Application {
 
             // Clear comboBox and put groups name
             controller.clearCombo();
-            for(Group g : groups) {
+            for (Group g : groups) {
                 controller.addGroupNameToCombo(g.getID());
             }
             // Show the dialog and wait  until the user closes it
@@ -218,8 +219,8 @@ public class Client extends Application {
         }
     }
 
-    public boolean showPseudoDialog(){
-        try{
+    public boolean showPseudoDialog() {
+        try {
             // Load the FXML filer and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Client.class.getResource("/views/PseudoDialog.fxml"));
@@ -242,14 +243,14 @@ public class Client extends Application {
             dialogStage.showAndWait();
 
             return controller.isNameOK();
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
     }
 
 
-    public static boolean showAcceptInviteDialog(String idFrom, String groupName){
+    public static boolean showAcceptInviteDialog(String idFrom, String groupName) {
         try {
             // Load the FXML filer and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
@@ -282,6 +283,7 @@ public class Client extends Application {
         }
 
     }
+
     /**
      * Returns the main stage.
      *
@@ -295,21 +297,12 @@ public class Client extends Application {
         myUsername = pseudo;
     }
 
-    public List<Group> getGroups(){
+    public List<Group> getGroups() {
         return groups;
     }
 
 
-
-
-
-
-
-
-
-
-
-    private static final String IP_SERVER = "192.168.0.46";//"206.189.49.105";
+    private static final String IP_SERVER = "192.168.1.110";//"206.189.49.105";
     private static final int PORT_SERVER = 8080;
     private static final int LOCAL_PORT = 4444;
 
@@ -353,7 +346,6 @@ public class Client extends Application {
                 n.acceptingConnections();
 
 
-
             }
         }).start();
 
@@ -380,7 +372,7 @@ public class Client extends Application {
 
         isUsernameAvailaible = -1;
 
-        while(!communicationReady) {
+        while (!communicationReady) {
             try {
                 System.out.println("waiting comm ready");
                 Thread.sleep(100);
@@ -400,7 +392,7 @@ public class Client extends Application {
             e.printStackTrace();
         }
 
-        while(isUsernameAvailaible == -1) {
+        while (isUsernameAvailaible == -1) {
             try {
 
                 int read;
@@ -434,7 +426,7 @@ public class Client extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        while(waitingForGroupValidation) {
+        while (waitingForGroupValidation) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -468,6 +460,7 @@ public class Client extends Application {
 
         System.out.println("Your local ip: " + localIP);
     }
+
     private static void initNode() {
         PeerInformations myInfos = new PeerInformations(myUsername, localIP, LOCAL_PORT);
         System.out.println("Created myInfos");
@@ -506,7 +499,7 @@ public class Client extends Application {
             System.out.println("we got the pseudo");
 
             //Greetings to server, receivinig response
-            System.out.println("aaaa" +localIP);
+            System.out.println("aaaa" + localIP);
             PeerMessage greetings = new PeerMessage(MessageType.HELO, "XXXXXX", myUsername, "XXXXXX", 0, localIP.getBytes());
             out.write(greetings.getFormattedMessage());
             out.flush();
@@ -525,7 +518,7 @@ public class Client extends Application {
         initNode();
 
         // Restore existing groups
-        for(String groupID : scanGroups()) {
+        for (String groupID : scanGroups()) {
             downloadJSON(groupID);
 
             // Read config file
@@ -544,14 +537,14 @@ public class Client extends Application {
             }
         }
 
-        for(Group group: groups){
-            System.out.println("-----------------------------------------------------------------------------------------------------"+myself.isConnected());
-            for(Person p: group.getMembers()) {
-                System.out.println(p.getID() + "   bnbnbnbnb   "+p.isConnected());
-                if(p.getID().equals(myUsername)) {
+        for (Group group : groups) {
+            System.out.println("-----------------------------------------------------------------------------------------------------" + myself.isConnected());
+            for (Person p : group.getMembers()) {
+                System.out.println(p.getID() + "   bnbnbnbnb   " + p.isConnected());
+                if (p.getID().equals(myUsername)) {
                     p.connect();
                 }
-                System.out.println(p.getID() + "   bnbnbnbnb   "+p.isConnected());
+                System.out.println(p.getID() + "   bnbnbnbnb   " + p.isConnected());
             }
             System.out.println("upddateeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
             JSONUtil.updateConfig(group);
@@ -577,25 +570,25 @@ public class Client extends Application {
 
             System.out.println("Start reading in main.Client.ReadFromServer");
             try {
-                while ((read = in.read(buffer)) != -1) {
+                while ((read = in.read(buffer, 0, 4096)) != -1) {
 
                     PeerMessage pm = new PeerMessage(buffer);
-                    System.out.println("type message received = " + pm.getType());
+                    //System.out.println("type message received = " + pm.getType());
 
                     if (pm.getType().equals(MessageType.INFO)) {
                         System.out.println("Received info, writing in response static");
                         response = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
-                    } else if(pm.getType().equals(MessageType.NEWG)) {
+                    } else if (pm.getType().equals(MessageType.NEWG)) {
                         String resp = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
-                        validationGroup = resp.equals("true") ? true: false;
+                        validationGroup = resp.equals("true") ? true : false;
                         waitingForGroupValidation = false;
-                    } else if(pm.getType().equals(MessageType.DOWN)) {
+                    } else if (pm.getType().equals(MessageType.DOWN)) {
                         System.out.println("i'm in");
                         saveReceivedJson(pm);
                         waitingJsonFromServer = false;
                         System.out.println("i'm out");
                     } else {
-                        System.out.println("Client redirect message " + pm.getType());
+                        //System.out.println("Client redirect message " + pm.getType());
                         final PeerMessage redirectPM = pm;
                         new Thread(new Runnable() {
                             @Override
@@ -604,7 +597,11 @@ public class Client extends Application {
                             }
                         }).start();
                     }
-
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
                 System.out.println("End of reading in main.Client.ReadFromServer");
 
@@ -625,7 +622,11 @@ public class Client extends Application {
 
     private static void redirectToHandler(PeerMessage message, Node node, PeerConnection connection) {
         //handle message
-        node.getMapMessage().get(message.getType()).handleMessage(node, connection, message); //gerer erreur possible
+        try {
+            node.getMapMessage().get(message.getType()).handleMessage(node, connection, message); //gerer erreur possible
+        } catch (NullPointerException e) {
+            System.out.println("ERREUR");
+        }
     }
 
     private static String askForInfos(String pseudo) {
@@ -655,7 +656,7 @@ public class Client extends Application {
     public static boolean createGroup(String groupID) {
         waitingForGroupValidation = true;
         Group group = InterfaceUtil.createGroup(groupID, Client.getUsername(), n);
-        if(group != null) {
+        if (group != null) {
             groups.add(group);
         }
         return group != null;
@@ -688,8 +689,8 @@ public class Client extends Application {
 
     public static Group getGroupById(String id) {
         Group group = null;
-        for(Group g: groups) {
-            if(g.getID().equals(id)) {
+        for (Group g : groups) {
+            if (g.getID().equals(id)) {
                 group = g;
             }
         }
@@ -698,10 +699,10 @@ public class Client extends Application {
 
     public static void broadcastUpdate(String idFrom, String groupID) {
         Group group = getGroupById(groupID);
-        if(group != null) {
+        if (group != null) {
             for (Person person : group.getMembers()) {
                 if (!person.getID().equals(myUsername)) {
-                    System.out.println("FUCK YOU " +person.getID() + person.getID().length() + "  " + myUsername + myUsername.length());
+                    System.out.println("FUCK YOU " + person.getID() + person.getID().length() + "  " + myUsername + myUsername.length());
                     PeerMessage pm = new PeerMessage(MessageType.UPDT, group.getID(), idFrom, person.getID(), "".getBytes());
                     try {
                         out.write(pm.getFormattedMessage());
@@ -729,7 +730,7 @@ public class Client extends Application {
             out.flush();
             waitingJsonFromServer = true;
 
-            while(waitingJsonFromServer){
+            while (waitingJsonFromServer) {
                 try {
                     System.out.println("waiting download");
                     Thread.sleep(100);
@@ -742,7 +743,7 @@ public class Client extends Application {
             e.printStackTrace();
         }
 
-        if(groups != null){
+        if (groups != null) {
             updateGroupsWithJson(groupID);
         }
 
@@ -763,13 +764,13 @@ public class Client extends Application {
         try {
             System.out.println("I download");
             fout = new FileOutputStream(new File("./shared_files/" + pm.getIdGroup() + "/config.json"));
-            fout.write(buffer,0,size);
+            fout.write(buffer, 0, size);
             fout.flush();
 
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if(fout != null) {
+            if (fout != null) {
                 try {
                     fout.close();
                 } catch (IOException e) {
@@ -789,7 +790,7 @@ public class Client extends Application {
             }
         });
 
-        for(String group : groups) {
+        for (String group : groups) {
             System.out.println(group);
         }
         return groups;
@@ -797,7 +798,7 @@ public class Client extends Application {
 
     public static void inviteNewMember(String username, String groupID) {
 
-        if(getGroupById(groupID).getMember(username) == null) {
+        if (getGroupById(groupID).getMember(username) == null) {
 
             PeerMessage invitePM = new PeerMessage(MessageType.INVI, groupID, myUsername, username, "".getBytes());
 
@@ -846,7 +847,7 @@ public class Client extends Application {
         try {
             System.out.println("updateJsonAfterInvitation will read json received");
 
-            configFile = new RandomAccessFile("./shared_files/"+groupID+"/config.json", "r");
+            configFile = new RandomAccessFile("./shared_files/" + groupID + "/config.json", "r");
             byte[] configFileByte = new byte[(int) configFile.length()];
             configFile.readFully(configFileByte);
 
@@ -857,7 +858,7 @@ public class Client extends Application {
             groups.add(group);
 
             System.out.println("updateJsonAfterInvitation Group member, should have added myself ");
-            for(Person p : group.getMembers())
+            for (Person p : group.getMembers())
                 System.out.println(p.getID());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -899,7 +900,7 @@ public class Client extends Application {
         }
     }
 
-    public static void refresh(){
+    public static void refresh() {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -910,7 +911,7 @@ public class Client extends Application {
 
     private static void updateGroupsWithJson(String groupID) {
         int index = groups.indexOf(getGroupById(groupID));
-        if(index >= 0) {
+        if (index >= 0) {
             RandomAccessFile configFile = null;
             try {
                 configFile = new RandomAccessFile("./shared_files/" + groupID + "/config.json", "r");
@@ -932,7 +933,7 @@ public class Client extends Application {
         }
     }
 
-    public static void requestFile(String file, String group){
+    public static void requestFile(String file, String group) {
         n.requestFile(file, group);
     }
 
