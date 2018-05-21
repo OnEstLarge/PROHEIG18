@@ -10,17 +10,12 @@ package handler;
  -----------------------------------------------------------------------------------
 */
 
-import javafx.application.Platform;
 import main.Client;
 import message.MessageHandler;
 import message.MessageType;
 import peer.PeerConnection;
 import peer.PeerMessage;
 import Node.Node;
-import util.CipherUtil;
-
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 
 /**
  * Classe permettant le traitement d'un message de type INVK
@@ -34,7 +29,7 @@ public class INVKHandler implements MessageHandler{
 
         //n.setKey(CipherUtil.generateKey(), groupId);
 
-        RSAHandler RSA = new RSAHandler();
+        RSAInfo RSA = new RSAInfo();
         RSA.setKeys();
         n.setTempRSAInfo(RSA);
         PeerMessage pm = new PeerMessage(MessageType.DHS1, groupId, Client.getUsername(), toSendTo, "".getBytes());
