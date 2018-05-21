@@ -524,7 +524,7 @@ public class Client extends Application {
 
         // Restore existing groups
         for(String groupID : scanGroups()) {
-            downloadJSON(groupID, false);
+            downloadJSON(groupID);
 
             // Read config file
             try {
@@ -590,15 +590,8 @@ public class Client extends Application {
                         waitingForGroupValidation = false;
                     } else if(pm.getType().equals(MessageType.DOWN)) {
                         System.out.println("i'm in");
-                        //String[] rcv = new String(pm.getMessageContent()).split("-");
                         saveReceivedJson(pm);
-                        //waitingJsonFromServer = false;
-                        //System.out.println("count rcv ------------------------- " + rcv[0]);
-                        //mutex.put(Integer.parseInt(rcv[0]), false);
                         System.out.println("i'm out");
-                    //} else if(pm.getType().equals(MessageType.INVI)) {
-                        //
-
                     } else {
                         System.out.println("Client redirect message " + pm.getType());
                         final PeerMessage redirectPM = pm;
@@ -733,68 +726,37 @@ public class Client extends Application {
         }
     }
 
-    private static Object o = new Object();
-    public static synchronized void downloadJSON(String groupID, boolean invitation) {
+    public static synchronized void downloadJSON(String groupID) {
 
-        int id;
-        //synchronized (o) {
-            id = count++;
+        PeerMessage downloadMessage = new PeerMessage(MessageType.DOWN, groupID, myUsername, myUsername, "".getBytes());
+        //waitingJsonFromServer = true;
+        try {
+            System.out.println("I want to download");
+            // Averti le serveur que le client désire avoir le fichier 'config.json'
+            out.write(downloadMessage.getFormattedMessage());
+            out.flush();
 
-            mutex.put(id, true);
-            System.out.println("count -------------------------------- " + id);
-            PeerMessage downloadMessage = new PeerMessage(MessageType.DOWN, groupID, myUsername, myUsername, ("" + invitation).getBytes());
-            //waitingJsonFromServer = true;
-            try {
-                System.out.println("I want to download");
-                // Averti le serveur que le client désire avoir le fichier 'config.json'
-                out.write(downloadMessage.getFormattedMessage());
-                out.flush();
+            /*while (mutex.get(id)) {
+                try {
+                    System.out.println("waiting download");
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }*/
 
-                /*while (mutex.get(id)) {
-                    try {
-                        System.out.println("waiting download");
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }*/
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        //}
-        /*
-        if(groups != null){
-            updateGroupsWithJson(groupID);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                controller.updateGroupsAndFiles();
-            }
-        });
-
-        mutex.remove(id);*/
     }
 
     private static void saveReceivedJson(PeerMessage pm) {
-        String[] content = new String(pm.getMessageContent()).split("-");
-        int size = Integer.parseInt(content[1]);
-        byte[] buffer = new byte[size];
-        int c;
+        byte[] buffer = pm.getMessageContent();
         FileOutputStream fout = null;
         try {
-            System.out.println("I download");
             fout = new FileOutputStream(new File("./shared_files/" + pm.getIdGroup() + "/config.json"));
-            c = in.read(buffer);
-            fout.write(buffer,0,c);
+            fout.write(buffer);
             fout.flush();
-
-            if(content[0].equals("true")) {
-                updateJsonAfterInvitation(pm.getIdGroup());
-            }
 
         } catch(IOException e) {
             e.printStackTrace();
@@ -810,6 +772,8 @@ public class Client extends Application {
         if(groups != null){
             updateGroupsWithJson(pm.getIdGroup());
         }
+
+        //updateJsonAfterInvitation(pm.getIdGroup());
 
         Platform.runLater(new Runnable() {
 
@@ -875,13 +839,7 @@ public class Client extends Application {
 
     public static void updateJsonAfterInvitation(String groupID) {
 
-
         System.out.println("updateJsonAfterInvitation in");
-
-        //download json du groupe
-        //downloadJSON(groupID);
-        //ajoute le group dans sa liste groups
-        System.out.println("updateJsonAfterInvitation downloaded");
 
         RandomAccessFile configFile = null;
         try {
