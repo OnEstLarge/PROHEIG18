@@ -138,15 +138,18 @@ public class ServerPeerToPeer {
                         case MessageType.UPLO:
                             System.out.println("upload received from " + pm.getIdFrom());
                             //On récupère la taille du JSON a download
-                            String s = CipherUtil.erasePadding(new String(pm.getMessageContent()), PeerMessage.PADDING_START);
+                            //String s = CipherUtil.erasePadding(new String(pm.getMessageContent()), PeerMessage.PADDING_START);
+                            byte[] input = CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START);
                             FileOutputStream fout = new FileOutputStream(new File("./groupsConfigs/" + pm.getIdGroup()));
-                            int size = Integer.parseInt(s);
+                            //int size = Integer.parseInt(s);
+                            int size = input.length;
                             //System.out.println("Size =" + size);
-                            int byteLu;
+                            //int byteLu;
                             byte[] bufferTest = new byte[size];
-                            byteLu = in.read(bufferTest, 0, size);
-                            size -= byteLu;
-                            fout.write(bufferTest, 0, byteLu);
+                            //byteLu = in.read(bufferTest, 0, size);
+                            //size -= byteLu;
+                            //fout.write(input, 0, byteLu);
+                            fout.write(input,0,size);
                             fout.flush();
                             fout.close();
 
@@ -242,6 +245,8 @@ public class ServerPeerToPeer {
         }
 
         void redirect(PeerMessage pm) {
+            System.out.println(pm.getType());
+            System.out.println(pm.getIdTo());
             if (peopleInServ.containsKey(pm.getIdTo())) {
                 try {
                     BufferedOutputStream toOut = new BufferedOutputStream(peopleInServ.get(pm.getIdTo()).getOutputStream());

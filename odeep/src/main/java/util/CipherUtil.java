@@ -257,7 +257,7 @@ public class CipherUtil {
         if(data[data.length - 1] != PeerMessage.PADDING_SYMBOL && data[data.length - 1] != PeerMessage.PADDING_START){
             return data;
         }
-        int paddingSize = 1;
+        int paddingSize = 0;
         for(int i = data.length-1; i >= 0; i--){
             paddingSize++;
             if(data[i] == pad){
@@ -287,7 +287,7 @@ public class CipherUtil {
         if(s.charAt(s.length()-1) != PeerMessage.PADDING_SYMBOL && s.charAt(s.length()-1) != PeerMessage.PADDING_START){
             return s;
         }
-        int paddingSize = 1;
+        int paddingSize = 0;
         for(int i = s.length()-1; i >= 0; i--){
             paddingSize++;
             if(s.charAt(i) == pad){
