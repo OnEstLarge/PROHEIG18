@@ -951,4 +951,8 @@ public class Client extends Application {
             }
         }
     }
+
+    private static void requestFile(String filename, String group) {
+        n.requestFile(filename, group);
+    }
 }
