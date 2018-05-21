@@ -746,6 +746,11 @@ public class Client extends Application {
             e.printStackTrace();
         }
 
+        if(groups != null){
+            updateGroupsWithJson(groupID);
+        }
+
+
         Platform.runLater(new Runnable() {
 
             @Override
@@ -907,5 +912,29 @@ public class Client extends Application {
                 controller.updateGroupsAndFiles();
             }
         });
+    }
+
+    private static void updateGroupsWithJson(String groupID) {
+        int index = groups.indexOf(getGroupById(groupID));
+        if(index >= 0) {
+            RandomAccessFile configFile = null;
+            try {
+                configFile = new RandomAccessFile("./shared_files/" + groupID + "/config.json", "r");
+                byte[] configFileByte = new byte[(int) configFile.length()];
+                configFile.readFully(configFileByte);
+
+                byte[] plainConfig = CipherUtil.AESDecrypt(configFileByte, n.getKey(groupID));
+
+                Group group = JSONUtil.parseJson(new String(plainConfig), Group.class);
+                groups.set(index, group);
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InvalidCipherTextException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
