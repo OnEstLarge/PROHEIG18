@@ -10,9 +10,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="views.RootLayoutController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="486.0" prefWidth="738.0" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="views.RootLayoutController">
     <left>
-        <Accordion fx:id="accordion" prefHeight="375.0" prefWidth="199.0" BorderPane.alignment="CENTER" />
+        <Accordion fx:id="accordion" prefHeight="461.0" prefWidth="255.0" stylesheets="@DarkTheme.css" BorderPane.alignment="CENTER" />
     </left>
     <top>
         <MenuBar BorderPane.alignment="CENTER">
@@ -36,20 +36,20 @@
         </MenuBar>
     </top>
     <center>
-        <AnchorPane fx:id="middleAnchor" prefHeight="375.0" prefWidth="16.0" BorderPane.alignment="CENTER">
+        <AnchorPane fx:id="middleAnchor" prefHeight="375.0" prefWidth="16.0" stylesheets="@DarkTheme.css" BorderPane.alignment="CENTER">
          <children>
-            <ListView fx:id="middleList" layoutX="-1.0" layoutY="48.0" prefHeight="375.0" prefWidth="201.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <ListView fx:id="middleList" layoutX="-1.0" layoutY="48.0" prefHeight="461.0" prefWidth="267.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-4.0" AnchorPane.topAnchor="0.0" />
          </children></AnchorPane>
     </center>
     <right>
-        <AnchorPane fx:id="buttonAnchor" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <AnchorPane fx:id="buttonAnchor" prefHeight="461.0" prefWidth="215.0" BorderPane.alignment="CENTER">
             <children>
-                <Button fx:id="downloadButton" defaultButton="true" layoutX="65.0" layoutY="60.0" mnemonicParsing="false" onAction="#handleDownload" text="Download" AnchorPane.rightAnchor="64.0" AnchorPane.topAnchor="60.0" />
-                <Button fx:id="inviteButton" layoutX="78.0" layoutY="121.0" mnemonicParsing="false" onAction="#handleInvite" text="Invite" AnchorPane.rightAnchor="77.0" AnchorPane.topAnchor="121.0" />
-                <Button fx:id="addButton" cancelButton="true" layoutX="46.0" layoutY="278.0" mnemonicParsing="false" onAction="#handleAdd" text="Add file" AnchorPane.rightAnchor="115.0" AnchorPane.topAnchor="278.0" />
-                <Button fx:id="createButton" layoutX="75.0" layoutY="221.0" mnemonicParsing="false" onAction="#handleCreateButtonAction" text="Create" AnchorPane.rightAnchor="74.0" AnchorPane.topAnchor="221.0" />
-            <TextField fx:id="groupNameField" layoutX="26.0" layoutY="188.0" promptText="Group name &gt; 6" />
-            <Button fx:id="removeButton" cancelButton="true" layoutX="94.0" layoutY="278.0" mnemonicParsing="false" onAction="#handleRemove" text="Remove file" />
+                <Button fx:id="downloadButton" defaultButton="true" layoutX="80.0" layoutY="39.0" mnemonicParsing="false" onAction="#handleDownload" text="Download" AnchorPane.rightAnchor="64.0" AnchorPane.topAnchor="39.0" />
+                <Button fx:id="inviteButton" layoutX="93.0" layoutY="104.0" mnemonicParsing="false" onAction="#handleInvite" text="Invite" AnchorPane.rightAnchor="77.0" AnchorPane.topAnchor="104.0" />
+                <Button fx:id="addButton" cancelButton="true" layoutX="27.0" layoutY="278.0" mnemonicParsing="false" onAction="#handleAdd" text="Add file" AnchorPane.rightAnchor="130.0" AnchorPane.topAnchor="278.0" />
+                <Button fx:id="createButton" layoutX="90.0" layoutY="218.0" mnemonicParsing="false" onAction="#handleCreateButtonAction" text="Create" AnchorPane.rightAnchor="74.0" AnchorPane.topAnchor="218.0" />
+            <TextField fx:id="groupNameField" layoutX="27.0" layoutY="171.0" prefHeight="37.0" prefWidth="178.0" promptText="Group name &gt; 6" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="171.0" />
+            <Button fx:id="removeButton" cancelButton="true" layoutX="112.0" layoutY="278.0" mnemonicParsing="false" onAction="#handleRemove" text="Remove file" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="278.0" />
             </children>
         </AnchorPane>
     </right>
