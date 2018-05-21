@@ -77,6 +77,9 @@ public class Client extends Application {
         initRootLayout();
     }
 
+    public static RootLayoutController getController(){
+        return controller;
+    }
 
     /**
      * Vérifie dans le fichier '.userInfo' si l'utilisateur possède déjà un pseudo.
@@ -286,10 +289,6 @@ public class Client extends Application {
      */
     public Stage getPrimaryStage() {
         return primaryStage;
-    }
-
-    public String getUserPseudo() {
-        return myUsername;
     }
 
     public void setUserPseudo(String pseudo) {
@@ -675,6 +674,7 @@ public class Client extends Application {
             configFile.readFully(configFileByte);
 
             uploadMessage = new PeerMessage(MessageType.UPLO, groupID, idFrom, idFrom, configFileByte);
+            System.out.println("UPLOAD " + new String(uploadMessage.getFormattedMessage()));
             out.write(uploadMessage.getFormattedMessage());
             out.flush();
 
@@ -882,6 +882,7 @@ public class Client extends Application {
 
             @Override
             public void run() {
+                controller.enableButtons();
                 controller.updateGroupsAndFiles();
             }
         });
@@ -933,4 +934,6 @@ public class Client extends Application {
     public static void requestFile(String file, String group){
         n.requestFile(file, group);
     }
+
+
 }

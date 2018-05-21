@@ -56,6 +56,7 @@ public class AcceptInviteDialogController {
      * @return
      */
     public boolean isOkClicked() {
+        Client.getController().disableButtons();
         return okClicked;
     }
 

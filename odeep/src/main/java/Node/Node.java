@@ -210,7 +210,7 @@ public class Node {
      * @param groupID  nom du groupe
      * @return liste de peerInformation
      */
-    public PeerInformations getFileLocation(String filename, String groupID) {
+    public String getFileLocation(String filename, String groupID) {
         RandomAccessFile f = null;
         byte[] payload = null;
         byte[] plainPayload = null;
@@ -230,12 +230,7 @@ public class Node {
         for (Person p : g.getMembers()) {
             for (String file : p.getFiles()) {
                 if (file.equals(filename)) {
-                    for (PeerInformations pi : getKnownPeers()) {
-                        if (pi.getID().equals(p.getID())) {
-                            return pi;
-                        }
-                    }
-                    return null;
+                    return p.getID();
                 }
             }
         }

@@ -25,10 +25,6 @@ public class RootLayoutController implements Initializable {
     private Stage dialogStage;
     private String selectedGroup;
 
-    public HashMap<String, List<String>> getMapFile() {
-        return mapFile;
-    }
-
     private HashMap<String, List<String>> mapFile = new HashMap<String, List<String>>();
 
     @FXML
@@ -40,17 +36,39 @@ public class RootLayoutController implements Initializable {
     @FXML
     private ListView middleList;
 
-    public void setMainApp(Client mainApp) {
-        this.mainApp = mainApp;
+    @FXML
+    private Button downloadButton;
+
+    @FXML
+    private Button inviteButton;
+
+    @FXML
+    private Button createButton;
+
+    @FXML
+    private Button addButton;
+
+    @FXML
+    private Button removeButton;
+
+    public void disableButtons(){
+        downloadButton.setDisable(true);
+        inviteButton.setDisable(true);
+        createButton.setDisable(true);
+        addButton.setDisable(true);
+        removeButton.setDisable(true);
     }
 
-    /**
-     * Return the list of view. Used to add accordion to the layout.
-     *
-     * @return the list of view from the root layout
-     */
-    public static List<ListView> getListView() {
-        return listView;
+    public void enableButtons(){
+        downloadButton.setDisable(false);
+        inviteButton.setDisable(false);
+        createButton.setDisable(false);
+        addButton.setDisable(false);
+        removeButton.setDisable(false);
+    }
+
+    public void setMainApp(Client mainApp) {
+        this.mainApp = mainApp;
     }
 
     @FXML
@@ -160,6 +178,7 @@ public class RootLayoutController implements Initializable {
 
     @FXML
     private void handleInvite() {
+        disableButtons();
         mainApp.showInviteDialog();
     }
 
@@ -214,11 +233,6 @@ public class RootLayoutController implements Initializable {
         else{
             mainApp.requestFile(filename, selectedGroup);
         }
-    }
-
-
-    public void setDialogStage(Stage dialogStage) {
-        this.dialogStage = dialogStage;
     }
 
     public void initialize(URL url, ResourceBundle rb) {
