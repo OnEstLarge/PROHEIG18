@@ -45,7 +45,7 @@ public class ServerPeerToPeer {
             try {
                 serverSocket = new ServerSocket(8080);
             } catch (IOException e) {
-                System.out.println(e.getMessage());
+                //System.out.println(e.getMessage());
             }
 
             while (!serverStopped) {
@@ -53,7 +53,7 @@ public class ServerPeerToPeer {
                     Socket client = serverSocket.accept();
                     new Thread(new server.ServerPeerToPeer.ServeurWorker(client)).start();
                 } catch (IOException e) {
-                    System.out.println(e.getMessage());
+                    //System.out.println(e.getMessage());
                 }
             }
         }
@@ -73,7 +73,7 @@ public class ServerPeerToPeer {
                 out = new BufferedOutputStream(clientSocket.getOutputStream());
                 out.flush();
             } catch (IOException e) {
-                System.out.println(e.getMessage());
+                //System.out.println(e.getMessage());
             }
         }
 
@@ -106,6 +106,7 @@ public class ServerPeerToPeer {
                             giveInfoToSender(pm);
                             break;
                         case MessageType.INVI:
+                        case MessageType.INVK:
                         case MessageType.RFIL:
                         case MessageType.DHR1:
                         case MessageType.DHS2:
@@ -113,7 +114,7 @@ public class ServerPeerToPeer {
                         case MessageType.SFIL:
                         case MessageType.SMES:
                         case MessageType.UPDT:
-                            System.out.println("Message reçu " + pm.getType());
+                            //System.out.println("Message reçu " + pm.getType());
                             redirectBuffer = bufferIn.clone();
                             redirect(pm);
                             break;
@@ -121,13 +122,13 @@ public class ServerPeerToPeer {
                         case MessageType.NEWG:
 
                             int ajout = DatabaseUtil.addGroupIfNotExists(pm.getIdGroup());
-                            System.out.println("Test : ajout " + ajout);
+                            //System.out.println("Test : ajout " + ajout);
                             if (ajout == 1) {
-                                System.out.println("envoi du true");
+                                //System.out.println("envoi du true");
                                 out.write((new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "true".getBytes())).getFormattedMessage());
                                 out.flush();
                             } else {
-                                System.out.println("envoi du false");
+                                //System.out.println("envoi du false");
                                 out.write((new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "false".getBytes())).getFormattedMessage());
                                 out.flush();
                             }
@@ -139,11 +140,11 @@ public class ServerPeerToPeer {
                             String s = CipherUtil.erasePadding(new String(pm.getMessageContent()), PeerMessage.PADDING_START);
                             FileOutputStream fout = new FileOutputStream(new File("./groupsConfigs/" + pm.getIdGroup()));
                             int size = Integer.parseInt(s);
-                            System.out.println("Size =" + size);
+                            //System.out.println("Size =" + size);
                             int byteLu;
                             byte[] bufferTest = new byte[size];
                             byteLu = in.read(bufferTest, 0, size);
-                            System.out.println(byteLu);
+                            //System.out.println(byteLu);
                             size -= byteLu;
                             fout.write(bufferTest, 0, byteLu);
                             fout.flush();
@@ -157,11 +158,20 @@ public class ServerPeerToPeer {
 
                             byte[] bufferJson = new byte[(int) json.length()];
                             json.readFully(bufferJson);
+                            System.out.println("Download asked from " + pm.getIdFrom());
+                            System.out.println("Download dest = " + pm.getIdTo());
+                            System.out.println("PEOPLE IN SERV = ");
+                            for(String p : peopleInServ.keySet()) {
+                                System.out.println(p);
+                            }
+
                             PeerMessage msg = new PeerMessage(MessageType.DOWN, pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), ("" + (int) json.length()).getBytes());
                             out.write(msg.getFormattedMessage());
                             out.flush();
+                            System.out.println("msg sent from server = " + new String(msg.getFormattedMessage()));
                             out.write(bufferJson);
                             out.flush();
+                            System.out.println("bufferJson sent from server = " + new String(bufferJson));
                             break;
 
                         default:
@@ -169,14 +179,14 @@ public class ServerPeerToPeer {
                     }
                 }
             } catch (IOException e) {
-                System.out.println(e.getMessage());
+                //System.out.println(e.getMessage());
             }
         }
 
 
         private void validationUsername(PeerMessage pm) {
             int validation = DatabaseUtil.addUserIfNotExists(pm.getIdFrom());
-            System.out.println("validation ngggggg");
+            //System.out.println("validation ngggggg");
             try {
                 if (validation == 1) {
                     out.write(new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "true".getBytes()).getFormattedMessage());
@@ -191,20 +201,20 @@ public class ServerPeerToPeer {
 
         private void greetings(PeerMessage pm) {
             byte[] b = CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START);
-            System.out.println("greetings " + pm.getIdFrom() + " " + new String(b));
+            //System.out.println("greetings " + pm.getIdFrom() + " " + new String(b));
             peopleInServ.put(pm.getIdFrom(), clientToSever);
             clientIPPrivee.put(pm.getIdFrom(), new String(b));
         }
 
         void giveInfoToSender(PeerMessage pm) {
-            System.out.println("giveInfo " + pm.getIdFrom() + " " + pm.getType());
+            //System.out.println("giveInfo " + pm.getIdFrom() + " " + pm.getType());
             if (clientIPPrivee.containsKey(pm.getIdTo())) {
                 try {
 
                     out.write(new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), clientIPPrivee.get(pm.getIdTo()).getBytes()).getFormattedMessage());
                     out.flush();
                 } catch (IOException e) {
-                    System.out.println(e.getMessage());
+                    //System.out.println(e.getMessage());
                 }
             } else {
                 try {
@@ -225,7 +235,7 @@ public class ServerPeerToPeer {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            } else if (pm.getType() != MessageType.INVI) {
+            } else if (pm.getType().equals(MessageType.INVI)) {
                 try {
                     PeerMessage nok = new PeerMessage(MessageType.DISC, pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), ("").getBytes());
                     out.write(nok.getFormattedMessage());
