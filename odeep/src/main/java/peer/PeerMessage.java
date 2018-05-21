@@ -61,37 +61,38 @@ public class PeerMessage {
 
 
     public PeerMessage(String type, String idGroup, String idFrom, String idTo, int noPacket, byte[] messageContent) throws IllegalArgumentException {
+        synchronized (this) {
+            if (!isValidTypeFormat(type)) {
+                throw new IllegalArgumentException("Bad 'type' format");
+            }
 
-        if (!isValidTypeFormat(type)) {
-            throw new IllegalArgumentException("Bad 'type' format");
+            if (!isValidIdFormat(idGroup, ID_GROUP_MIN_LENGTH, ID_GROUP_MAX_LENGTH)) {
+                throw new IllegalArgumentException("Bad 'idGroup' format");
+            }
+
+            if (!isValidIdFormat(idFrom, ID_MIN_LENGTH, ID_MAX_LENGTH)) {
+                throw new IllegalArgumentException("Bad 'idFrom' format");
+            }
+
+            if (!isValidIdFormat(idTo, ID_MIN_LENGTH, ID_MAX_LENGTH)) {
+                throw new IllegalArgumentException("Bad 'idTo' format");
+            }
+
+            if (noPacket < 0) {
+                throw new IllegalArgumentException("Invalid packet number (must be positiv)");
+            }
+
+            if (!isValidMessageContentFormat(messageContent)) {
+                throw new IllegalArgumentException("Invalid message content (size must match block size (" + (MESSAGE_CONTENT_SIZE + HMAC_SIZE + AES_PADDING) + " bytes))");
+            }
+
+            this.type = type;
+            this.idGroup = idGroup;
+            this.idFrom = idFrom;
+            this.idTo = idTo;
+            this.noPacket = noPacket;
+            this.messageContent = messageContent;
         }
-
-        if (!isValidIdFormat(idGroup, ID_GROUP_MIN_LENGTH, ID_GROUP_MAX_LENGTH)) {
-            throw new IllegalArgumentException("Bad 'idGroup' format");
-        }
-
-        if (!isValidIdFormat(idFrom, ID_MIN_LENGTH, ID_MAX_LENGTH)) {
-            throw new IllegalArgumentException("Bad 'idFrom' format");
-        }
-
-        if (!isValidIdFormat(idTo, ID_MIN_LENGTH, ID_MAX_LENGTH)) {
-            throw new IllegalArgumentException("Bad 'idTo' format");
-        }
-
-        if (noPacket < 0) {
-            throw new IllegalArgumentException("Invalid packet number (must be positiv)");
-        }
-
-        if (!isValidMessageContentFormat(messageContent)) {
-            throw new IllegalArgumentException("Invalid message content (size must match block size (" + (MESSAGE_CONTENT_SIZE + HMAC_SIZE + AES_PADDING) + " bytes))");
-        }
-
-        this.type = type;
-        this.idGroup = idGroup;
-        this.idFrom = idFrom;
-        this.idTo = idTo;
-        this.noPacket = noPacket;
-        this.messageContent = messageContent;
     }
 
     public PeerMessage(String type, String idGroup, String idFrom, String idTo, byte[] message) {
@@ -99,22 +100,32 @@ public class PeerMessage {
     }
 
     public PeerMessage(byte[] rawData) throws InvalidFormatException {
-        if (rawData.length < HEADER_SIZE + 1) {
-            throw new InvalidFormatException("incorrect message");
-        }
+        synchronized (this) {
+            //System.out.println(new String(rawData));
+            //System.out.flush();
+            if (rawData.length < HEADER_SIZE + 1) {
+                throw new InvalidFormatException("incorrect message");
+            }
 
-        int index = 0;
-        this.type = CipherUtil.erasePadding(new String(Arrays.copyOfRange(rawData, index, TYPE_LENGTH)), PADDING_START);
-        index += TYPE_LENGTH + 1;
-        this.idGroup = CipherUtil.erasePadding(new String(Arrays.copyOfRange(rawData, index, index + ID_GROUP_MAX_LENGTH)), PADDING_START);
-        index += ID_GROUP_MAX_LENGTH + 1;
-        this.idFrom = CipherUtil.erasePadding(new String(Arrays.copyOfRange(rawData, index, index + ID_MAX_LENGTH)), PADDING_START);
-        index += ID_MAX_LENGTH + 1;
-        this.idTo = CipherUtil.erasePadding(new String(Arrays.copyOfRange(rawData, index, index + ID_MAX_LENGTH)), PADDING_START);
-        index += ID_MAX_LENGTH + 1;
-        this.noPacket = Integer.parseInt(new String(Arrays.copyOfRange(rawData, index, index + NO_PACKET_DIGITS)));
-        index += NO_PACKET_DIGITS;
-        this.messageContent = CipherUtil.erasePadding(Arrays.copyOfRange(rawData, index, rawData.length), PADDING_START);
+            int index = 0;
+            this.type = new String(CipherUtil.erasePadding(Arrays.copyOfRange(rawData, index, TYPE_LENGTH), PADDING_START));
+            index += TYPE_LENGTH + 1;
+            this.idGroup = new String(CipherUtil.erasePadding(Arrays.copyOfRange(rawData, index, index + ID_GROUP_MAX_LENGTH), PADDING_START));
+            index += ID_GROUP_MAX_LENGTH + 1;
+            this.idFrom = new String(CipherUtil.erasePadding(Arrays.copyOfRange(rawData, index, index + ID_MAX_LENGTH), PADDING_START));
+            index += ID_MAX_LENGTH + 1;
+            this.idTo = new String(CipherUtil.erasePadding(Arrays.copyOfRange(rawData, index, index + ID_MAX_LENGTH), PADDING_START));
+            index += ID_MAX_LENGTH + 1;
+            try {
+                this.noPacket = Integer.parseInt(new String(Arrays.copyOfRange(rawData, index, index + NO_PACKET_DIGITS)));
+            }
+            catch (NumberFormatException e){
+                System.out.println(new String(rawData));
+                System.out.flush();
+            }
+            index += NO_PACKET_DIGITS;
+            this.messageContent = CipherUtil.erasePadding(Arrays.copyOfRange(rawData, index, rawData.length), PADDING_START);
+        }
     }
 
     /**
@@ -262,7 +273,8 @@ public class PeerMessage {
      * @return peer.PeerMessage formatté
      */
     public synchronized byte[] getFormattedMessage() {
-        synchronized (toSend) {
+        synchronized (this) {
+            byte[] toSend = null;
             do {
                 toSend = new byte[HEADER_SIZE + MESSAGE_WITH_PAD_SIZE];
                 int index = 0;
@@ -295,7 +307,7 @@ public class PeerMessage {
                 }
 
                 byte[] messageWithPad = addPadding(messageContent, MESSAGE_WITH_PAD_SIZE);
-                System.out.println("message : " + new String(messageWithPad));
+                //System.out.println("message : " + new String(messageWithPad));
 
                 for (int i = 0; i < MESSAGE_WITH_PAD_SIZE; i++) {
                     toSend[index++] = messageWithPad[i];
@@ -309,7 +321,5 @@ public class PeerMessage {
             return toSend;
         }
     }
-
-    private static byte[] toSend = new byte[]{};
 
 }
