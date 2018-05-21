@@ -121,6 +121,7 @@ public class InterfaceUtil {
                 // Envoi du fichier 'config.json' au serveur
                 Client.uploadJSON("./shared_files/" + group.getID() + "/config.json", group.getID(), userID);
 
+                Client.refresh();
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -188,6 +189,8 @@ public class InterfaceUtil {
                 Client.uploadJSON("./shared_files/" + group.getID() + "/config.json", group.getID(), userID);
 
                 //remove local file - additional feature not implemented
+
+                Client.refresh();
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();

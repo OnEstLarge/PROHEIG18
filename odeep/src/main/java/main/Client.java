@@ -799,7 +799,7 @@ public class Client extends Application {
 
     public static void inviteNewMember(String username, String groupID) {
 
-        if(getGroupById(groupID).getMember(username) != null) {
+        if(getGroupById(groupID).getMember(username) == null) {
 
             PeerMessage invitePM = new PeerMessage(MessageType.INVI, groupID, myUsername, username, "".getBytes());
 
@@ -898,5 +898,14 @@ public class Client extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void refresh(){
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                controller.updateGroupsAndFiles();
+            }
+        });
     }
 }
