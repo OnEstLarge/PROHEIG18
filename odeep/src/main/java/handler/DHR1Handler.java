@@ -25,12 +25,14 @@ public class DHR1Handler implements MessageHandler{
     @Override
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
         System.out.println("J'entre dans dhr1");
-        RSAHandler RSA = n.getTempRSAInfo();
+        //recupération des info RSA pour l'échange Diffie-Hellman
+        RSAInfo RSA = n.getTempRSAInfo();
         System.out.println("RSA : " + (RSA != null));
         if (RSA != null) {
             byte[] foreignKey = m.getMessageContent();
             byte[] encryptedKey = CipherUtil.RSAEncrypt(CipherUtil.byteToPublicKey(foreignKey), n.getKey(m.getIdGroup()));
 
+            //envoie de la clé AES chiffrée grâce à la clé public du destinataire
             PeerMessage response = new PeerMessage(MessageType.DHS2, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), encryptedKey);
             System.out.println("j'envoie la réponse dhr1");
             Client.sendPM(response);
@@ -53,6 +55,7 @@ public class DHR1Handler implements MessageHandler{
                     e.printStackTrace();
                 }
             }*/
+           //fin du protocole DH on efface les info RSA
             n.setTempRSAInfo(null);
         }
     }

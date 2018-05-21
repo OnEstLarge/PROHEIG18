@@ -1,15 +1,11 @@
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 import User.Group;
 import User.Person;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -21,7 +17,6 @@ import peer.PeerConnection;
 import peer.PeerInformations;
 import peer.PeerMessage;
 
-import util.InterfaceUtil;
 import util.JSONUtil;
 
 import util.CipherUtil;
@@ -150,7 +145,7 @@ public class Test {
                         try {
                             n.setKey(CipherUtil.generateKey(), group);
 
-                            RSAHandler RSA = new RSAHandler();
+                            RSAInfo RSA = new RSAInfo();
                             RSA.setKeys();
                             n.setTempRSAInfo(RSA);
 

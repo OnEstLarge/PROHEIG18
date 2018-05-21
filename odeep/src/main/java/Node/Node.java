@@ -12,7 +12,7 @@ package Node;
 
 import User.Group;
 import User.Person;
-import handler.RSAHandler;
+import handler.RSAInfo;
 import message.MessageHandler;
 import message.MessageType;
 import peer.PeerConnection;
@@ -295,11 +295,11 @@ public class Node {
         }
     }
 
-    public RSAHandler getTempRSAInfo() {
+    public RSAInfo getTempRSAInfo() {
         return tempRsaInfo;
     }
 
-    public void setTempRSAInfo(RSAHandler tempRSAInfo) {
+    public void setTempRSAInfo(RSAInfo tempRSAInfo) {
         this.tempRsaInfo = tempRSAInfo;
     }
 
@@ -355,7 +355,7 @@ public class Node {
     private boolean nodeIsRunning = true;
 
     //permet de conserver temporairement la pair de clé RSA utilisé lors d'un protocole Diffie Hellman
-    private RSAHandler tempRsaInfo = null;
+    private RSAInfo tempRsaInfo = null;
 
     public static String filenameUploaded = null;
     public static int filesizeUploaded = 0;

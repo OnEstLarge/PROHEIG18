@@ -1,6 +1,6 @@
 package peer;
 import com.sun.media.sound.InvalidFormatException;
-import handler.RSAHandler;
+import handler.RSAInfo;
 import Node.Node;
 /*
  -----------------------------------------------------------------------------------
@@ -19,7 +19,7 @@ public class PeerHandler implements Runnable {
     private Thread activity;
     Socket clientSocket;
     private Node node;
-    private RSAHandler RSA;
+    private RSAInfo RSA;
 
     public PeerHandler(Node node, Socket socket) {
         this.node = node;

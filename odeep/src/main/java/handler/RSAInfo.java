@@ -3,7 +3,7 @@ package handler;
 /*
  -----------------------------------------------------------------------------------
  Odeep
- Fichier     : handler.RSAHandler.java
+ Fichier     : handler.RSAInfo.java
  Auteur(s)   : Kopp Olivier
  Date        : 27.04.2018
  Compilateur : jdk 1.8.0_144
@@ -15,12 +15,12 @@ import util.CipherUtil;
 
 import java.security.*;
 
-public class RSAHandler {
+public class RSAInfo {
 
     private KeyPair kp;
     private byte[] publicKey;
 
-    public RSAHandler() {
+    public RSAInfo() {
     }
 
     public void setKeys() {
