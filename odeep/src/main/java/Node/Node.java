@@ -13,6 +13,7 @@ package Node;
 import User.Group;
 import User.Person;
 import handler.RSAInfo;
+import main.Client;
 import message.MessageHandler;
 import message.MessageType;
 import peer.PeerConnection;
@@ -143,7 +144,7 @@ public class Node {
     public void sendFileToPeer(File file, String groupID, String destination) throws IOException {
         byte[] key = this.getKey(groupID);
         int index = 0;
-
+        /*
         PeerInformations pi = null;
         for (PeerInformations p : this.getKnownPeers()) {
             if (p.getID().equals(destination)) {
@@ -153,13 +154,14 @@ public class Node {
         }
         if (pi == null) {
             throw new NullPointerException();
-        } else {
+        } else {*/
             String filename = file.getName();
             long fileSize = file.length();
             String fileInfo = filename + ":" + Long.toString(fileSize);
             byte[] cipherFileInfo = CipherUtil.AESEncrypt(fileInfo.getBytes(), key);
 
-            this.createTempConnection(pi, new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherFileInfo));
+            Client.sendPM(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherFileInfo));
+            //this.createTempConnection(pi, new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherFileInfo));
 
             try {
                 Thread.sleep(10);
@@ -179,7 +181,8 @@ public class Node {
                 byte[] cipherMes = CipherUtil.AESEncrypt(newMes, key);
                 PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
                 System.out.println("sending : " + filename + " : " + 100.0 * i / (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE) + "%");
-                this.createTempConnection(pi, p);
+                Client.sendPM(p);
+                //this.createTempConnection(pi, p);
                 try {
                     Thread.sleep(5);
                 } catch (InterruptedException e) {
@@ -194,8 +197,9 @@ public class Node {
             raf.close();
             byte[] cipherMes = CipherUtil.AESEncrypt(lastMes, key);
             PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
-            this.createTempConnection(pi, p);
-        }
+            Client.sendPM(p);
+            //this.createTempConnection(pi, p);
+        //}
     }
 
     /**
@@ -248,6 +252,9 @@ public class Node {
         byte[] buffer = filename.getBytes();
         PeerInformations peerHavingFile = getFileLocation(filename, groupID);
 
+        Client.sendPM(new PeerMessage(MessageType.RFIL, groupID, this.getNodePeer().getID(), peerHavingFile.getID(), CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));
+        /*
+
         PeerConnection p = null;
         try {
             p = new PeerConnection(peerHavingFile);
@@ -255,7 +262,7 @@ public class Node {
             e.printStackTrace();
         }
         p.sendMessage(new PeerMessage(MessageType.RFIL, groupID, this.getNodePeer().getID(), peerHavingFile.getID(), CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));
-        p.close();
+        p.close();*/
     }
 
     /**
