@@ -136,10 +136,8 @@ public class ServerPeerToPeer {
                             break;
 
                         case MessageType.UPLO:
-<<<<<<< HEAD
                             System.out.println("upload received from " + pm.getIdFrom());
-=======
->>>>>>> parent of 56c16fd... yolo
+
                             //On récupère la taille du JSON a download
                             String s = CipherUtil.erasePadding(new String(pm.getMessageContent()), PeerMessage.PADDING_START);
                             FileOutputStream fout = new FileOutputStream(new File("./groupsConfigs/" + pm.getIdGroup()));
@@ -157,10 +155,8 @@ public class ServerPeerToPeer {
                             break;
 
                         case MessageType.DOWN:
-<<<<<<< HEAD
-=======
                             System.out.println("download");
->>>>>>> parent of 56c16fd... yolo
+
                             RandomAccessFile json = new RandomAccessFile("./groupsConfigs/" + pm.getIdGroup(), "r");
 
                             byte[] bufferJson = new byte[(int) json.length()];
