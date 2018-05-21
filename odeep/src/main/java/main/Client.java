@@ -556,6 +556,13 @@ public class Client extends Application {
 
         groupsNotInialized = false;
         //controller.updateGroupsAndFiles();
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                controller.updateGroupsAndFiles();
+            }
+        });
     }
 
     //Classe permettant de threader la lecture des packets server
