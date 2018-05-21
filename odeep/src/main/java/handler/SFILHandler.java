@@ -10,6 +10,7 @@ package handler;
  -----------------------------------------------------------------------------------
 */
 
+import main.Client;
 import message.MessageHandler;
 import message.MessageType;
 import org.bouncycastle.crypto.InvalidCipherTextException;
@@ -43,6 +44,7 @@ public class SFILHandler implements MessageHandler {
         try {
             rcv = CipherUtil.AESDecrypt(m.getMessageContent(), key);
         } catch (InvalidCipherTextException e) {
+            /*
             PeerInformations pi = null;
             for (PeerInformations p : n.getKnownPeers()) {
                 if (p.getID().equals(m.getIdFrom())) {
@@ -56,6 +58,9 @@ public class SFILHandler implements MessageHandler {
                 n.createTempConnection(pi, new PeerMessage(MessageType.PGET, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getNoPacket(), new byte[]{}));
                 return;
             }
+            */
+            Client.sendPM(new PeerMessage(MessageType.PGET, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getNoPacket(), new byte[]{}));
+            return;
         }
 
         //cas du premier paquet : le paquet contient uniquement le nom et la taille du fichier
