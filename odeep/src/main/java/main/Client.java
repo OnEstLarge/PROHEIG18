@@ -402,7 +402,7 @@ public class Client extends Application {
             try {
 
                 int read;
-                byte[] buffer = new byte[4096];
+                byte[] buffer = new byte[PeerMessage.BLOCK_SIZE];
                 read = in.read(buffer);
                 PeerMessage pm = new PeerMessage(buffer);
                 System.out.println("Received response for username validation");
@@ -617,6 +617,7 @@ public class Client extends Application {
                 System.out.println(e.getMessage());
             } finally {
                 System.out.println("ERROR STOPPED LISTENING TO SERVER PUBLIC");
+                System.out.println(new String(buffer));
                 try {
                     clientSocketToServerPublic.close();
                     in.close();

@@ -16,7 +16,7 @@ public class ServerPeerToPeer {
     private DatabaseUtil databaseUtil;
     private HashMap<String, String> clientIPPrivee = new HashMap<String, String>();
     private HashMap<String, Socket> peopleInServ = new HashMap<String, Socket>();
-    private static byte[] redirectBuffer = new byte[4096];
+    private static byte[] redirectBuffer = new byte[PeerMessage.BLOCK_SIZE];
 
     public static void main(String[] args) {
         server.ServerPeerToPeer m = new server.ServerPeerToPeer();
@@ -63,8 +63,8 @@ public class ServerPeerToPeer {
         Socket clientToSever;
         BufferedInputStream in = null;
         BufferedOutputStream out = null;
-        byte[] bufferIn = new byte[4096];
-        byte[] bufferOut = new byte[4096];
+        byte[] bufferIn = new byte[PeerMessage.BLOCK_SIZE];
+        byte[] bufferOut = new byte[PeerMessage.BLOCK_SIZE];
 
         public ServeurWorker(Socket clientSocket) {
             try {
@@ -84,7 +84,7 @@ public class ServerPeerToPeer {
 
                 while (true) {
                     int read = 0;
-                    while (read != 4096) {
+                    while (read != PeerMessage.BLOCK_SIZE) {
                         int lu;
                         lu = in.read(bufferIn, 0, bufferIn.length);
                         read += lu;
@@ -136,6 +136,7 @@ public class ServerPeerToPeer {
                             break;
 
                         case MessageType.UPLO:
+                            System.out.println("upload received from " + pm.getIdFrom());
                             //On récupère la taille du JSON a download
                             String s = CipherUtil.erasePadding(new String(pm.getMessageContent()), PeerMessage.PADDING_START);
                             FileOutputStream fout = new FileOutputStream(new File("./groupsConfigs/" + pm.getIdGroup()));
@@ -153,7 +154,6 @@ public class ServerPeerToPeer {
                             break;
 
                         case MessageType.DOWN:
-                            System.out.println("download");
                             RandomAccessFile json = new RandomAccessFile("./groupsConfigs/" + pm.getIdGroup(), "r");
 
                             byte[] bufferJson = new byte[(int) json.length()];
