@@ -250,9 +250,9 @@ public class Node {
             throw new NullPointerException();
         }
         byte[] buffer = filename.getBytes();
-        PeerInformations peerHavingFile = getFileLocation(filename, groupID);
+        String peerHavingFile = getFileLocation(filename, groupID);
 
-        Client.sendPM(new PeerMessage(MessageType.RFIL, groupID, this.getNodePeer().getID(), peerHavingFile.getID(), CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));
+        Client.sendPM(new PeerMessage(MessageType.RFIL, groupID, this.getNodePeer().getID(), peerHavingFile, CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));
         /*
 
         PeerConnection p = null;
