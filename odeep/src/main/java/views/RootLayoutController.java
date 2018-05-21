@@ -180,6 +180,7 @@ public class RootLayoutController implements Initializable {
     private void handleInvite() {
         disableButtons();
         mainApp.showInviteDialog();
+        enableButtons();
     }
 
 
