@@ -669,25 +669,14 @@ public class Client extends Application {
         PeerMessage uploadMessage = null;
 
         try {
-
             // Récupère et chiffre de fichier config.json
             RandomAccessFile configFile = new RandomAccessFile(filenameJSON, "r");
             byte[] configFileByte = new byte[(int) configFile.length()];
             configFile.readFully(configFileByte);
 
-            String sizeJson = "" + configFileByte.length;
-            uploadMessage = new PeerMessage(MessageType.UPLO, groupID, idFrom, idFrom, sizeJson.getBytes());
-            // Averti le serveur qu'un upload va être effectué
+            uploadMessage = new PeerMessage(MessageType.UPLO, groupID, idFrom, idFrom, configFileByte);
             out.write(uploadMessage.getFormattedMessage());
-
-            // Upload le config.json chiffré au serveur
-            out.write(configFileByte, 0, configFileByte.length);
             out.flush();
-
-
-            //byte[] decipherConfigFile = CipherUtil.AESDecrypt(configFileByte, n.getKey(groupID));
-            //System.out.println("Fichier dechiffré: " + new String(decipherConfigFile));
-            //Group group = JSONUtil.parseJson(new String(decipherConfigFile), Group.class);
 
             broadcastUpdate(idFrom, groupID);
 
