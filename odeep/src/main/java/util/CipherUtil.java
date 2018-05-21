@@ -274,6 +274,12 @@ public class CipherUtil {
         return dataWithoutPadding;
     }
 
+    /**
+     * Efface tout les caracteres a la fin d'un string jusqu'a rencontrer le caractere de debut de padding
+     * @param s String paddée
+     * @param pad caractère de debut de padding
+     * @return un tableau contenant les données sans padding
+     */
     public static String erasePadding(String s, int pad){
         if(s == null){
             throw new NullPointerException();
@@ -295,6 +301,11 @@ public class CipherUtil {
         return dataWithoutPadding;
     }
 
+    /**
+     * efface les zeros present à la fin d'un tableau de byte
+     * @param input
+     * @return
+     */
     public static byte[] eraseZero(byte[] input){
         int index = input.length-1;
         int numberOfZero = 0;
