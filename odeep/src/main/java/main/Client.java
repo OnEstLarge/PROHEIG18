@@ -524,7 +524,7 @@ public class Client extends Application {
 
         // Restore existing groups
         for(String groupID : scanGroups()) {
-            downloadJSON(groupID, false);
+            downloadJSON(groupID);
 
             // Read config file
             try {
@@ -734,7 +734,7 @@ public class Client extends Application {
     }
 
     private static Object o = new Object();
-    public static synchronized void downloadJSON(String groupID, boolean invitation) {
+    public static synchronized void downloadJSON(String groupID) {
 
         int id;
         //synchronized (o) {
@@ -742,7 +742,7 @@ public class Client extends Application {
 
             mutex.put(id, true);
             System.out.println("count -------------------------------- " + id);
-            PeerMessage downloadMessage = new PeerMessage(MessageType.DOWN, groupID, myUsername, myUsername, ("" + invitation).getBytes());
+            PeerMessage downloadMessage = new PeerMessage(MessageType.DOWN, groupID, myUsername, myUsername, ("").getBytes());
             //waitingJsonFromServer = true;
             try {
                 System.out.println("I want to download");
@@ -971,5 +971,9 @@ public class Client extends Application {
                 e.printStackTrace();
             }
         }
+    }
+
+    private static void requestFile(String filename, String group) {
+        n.requestFile(filename, group);
     }
 }
