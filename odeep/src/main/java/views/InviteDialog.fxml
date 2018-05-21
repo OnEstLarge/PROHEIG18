@@ -6,13 +6,13 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="123.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="views.InviteDialogController">
+<AnchorPane prefHeight="123.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="views.InviteDialogController">
     <children>
-        <Label layoutX="38.0" layoutY="45.0" text="User pseudo" AnchorPane.leftAnchor="38.0" AnchorPane.topAnchor="45.0" />
-        <TextField fx:id="newUserPseudoField" layoutX="126.0" layoutY="41.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="41.0" />
-        <Button defaultButton="true" layoutX="148.0" layoutY="61.0" mnemonicParsing="false" onAction="#handleOk" prefHeight="25.0" prefWidth="52.0" text="OK" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="100.0" />
-        <Button cancelButton="true" layoutX="214.0" layoutY="61.0" mnemonicParsing="false" onAction="#handleCancel" text="Cancel" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="34.0" />
-        <Label layoutX="38.0" layoutY="14.0" text="Groupe id" />
-      <ComboBox fx:id="comboBox" layoutX="126.0" layoutY="10.0" prefWidth="150.0" />
+        <Label layoutX="38.0" layoutY="45.0" text="Nom de l'utilisateur" AnchorPane.leftAnchor="38.0" AnchorPane.topAnchor="45.0" />
+        <TextField fx:id="newUserPseudoField" layoutX="185.0" layoutY="41.0" AnchorPane.leftAnchor="185.0" AnchorPane.topAnchor="41.0" />
+        <Button defaultButton="true" layoutX="200.0" layoutY="85.0" mnemonicParsing="false" onAction="#handleOk" prefHeight="25.0" prefWidth="52.0" text="OK" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="85.0" />
+        <Button cancelButton="true" layoutX="267.0" layoutY="85.0" mnemonicParsing="false" onAction="#handleCancel" text="Annuler" AnchorPane.leftAnchor="267.0" AnchorPane.topAnchor="85.0" />
+        <Label layoutX="38.0" layoutY="14.0" text="Nom du goupe" AnchorPane.leftAnchor="38.0" AnchorPane.topAnchor="14.0" />
+      <ComboBox fx:id="comboBox" layoutX="185.0" layoutY="10.0" prefWidth="150.0" AnchorPane.leftAnchor="185.0" AnchorPane.topAnchor="10.0" />
     </children>
 </AnchorPane>
