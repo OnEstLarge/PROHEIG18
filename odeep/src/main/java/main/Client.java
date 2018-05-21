@@ -763,18 +763,15 @@ public class Client extends Application {
     }
 
     private static void saveReceivedJson(PeerMessage pm) {
-        String[] content = new String(pm.getMessageContent()).split("-");
-        int size = Integer.parseInt(content[1]);
-        byte[] buffer = new byte[size];
-        int c;
+        byte[] buffer = pm.getMessageContent();
+        int size = pm.getMessageContent().length;
+        System.out.println(size);
         FileOutputStream fout = null;
         try {
             System.out.println("I download");
             fout = new FileOutputStream(new File("./shared_files/" + pm.getIdGroup() + "/config.json"));
-            c = in.read(buffer);
-            fout.write(buffer,0,c);
+            fout.write(buffer,0,size);
             fout.flush();
-
 
         } catch(IOException e) {
             e.printStackTrace();
