@@ -137,7 +137,6 @@ public class ServerPeerToPeer {
 
                         case MessageType.UPLO:
                             System.out.println("upload received from " + pm.getIdFrom());
-
                             //On récupère la taille du JSON a download
                             String s = CipherUtil.erasePadding(new String(pm.getMessageContent()), PeerMessage.PADDING_START);
                             FileOutputStream fout = new FileOutputStream(new File("./groupsConfigs/" + pm.getIdGroup()));
@@ -146,35 +145,47 @@ public class ServerPeerToPeer {
                             int byteLu;
                             byte[] bufferTest = new byte[size];
                             byteLu = in.read(bufferTest, 0, size);
-                            //System.out.println(byteLu);
                             size -= byteLu;
                             fout.write(bufferTest, 0, byteLu);
                             fout.flush();
-
+                            fout.close();
 
                             break;
 
                         case MessageType.DOWN:
-                            System.out.println("download");
-
                             RandomAccessFile json = new RandomAccessFile("./groupsConfigs/" + pm.getIdGroup(), "r");
-
+                            int sizeJSON = (int)json.length();
                             byte[] bufferJson = new byte[(int) json.length()];
                             json.readFully(bufferJson);
+                            System.out.println((double)sizeJSON/PeerMessage.BLOCK_SIZE);
+                            int nbBlock = (int)Math.ceil((double)sizeJSON/PeerMessage.BLOCK_SIZE);
+                            System.out.println(nbBlock);
+                            byte[] temp = new byte[PeerMessage.MESSAGE_CONTENT_SIZE];
+                          //  for(int i = 0; i < nbBlock;++i) {
+                            PeerMessage jsonPm = new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), bufferJson);
+                            System.out.println(new String(jsonPm.getMessageContent()) + "  " + jsonPm.getMessageContent().length);
+                            out.write(jsonPm.getFormattedMessage() );
+                            out.flush();
+                            //}
+
+                            /*
                             System.out.println("Download asked from " + pm.getIdFrom());
                             System.out.println("Download dest = " + pm.getIdTo());
                             System.out.println("PEOPLE IN SERV = ");
                             for(String p : peopleInServ.keySet()) {
                                 System.out.println(p);
                             }
-
-                            PeerMessage msg = new PeerMessage(MessageType.DOWN, pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), ("" + (int) json.length()).getBytes());
+                            System.out.println();
+                            PeerMessage msg = new PeerMessage(MessageType.DOWN, pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), (new String(pm.getMessageContent())+ "-" + (int) json.length()).getBytes());
                             out.write(msg.getFormattedMessage());
                             out.flush();
+                            Thread.sleep(100);
                             System.out.println("msg sent from server = " + new String(msg.getFormattedMessage()));
                             out.write(bufferJson);
                             out.flush();
                             System.out.println("bufferJson sent from server = " + new String(bufferJson));
+                            */
+
                             break;
 
                         default:
@@ -183,6 +194,7 @@ public class ServerPeerToPeer {
                 }
             } catch (IOException e) {
                 //System.out.println(e.getMessage());
+                e.printStackTrace();
             }
         }
 
