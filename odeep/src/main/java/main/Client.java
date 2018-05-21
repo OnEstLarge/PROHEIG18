@@ -402,7 +402,7 @@ public class Client extends Application {
             try {
 
                 int read;
-                byte[] buffer = new byte[4096];
+                byte[] buffer = new byte[PeerMessage.BLOCK_SIZE];
                 read = in.read(buffer);
                 PeerMessage pm = new PeerMessage(buffer);
                 System.out.println("Received response for username validation");
@@ -524,7 +524,7 @@ public class Client extends Application {
 
         // Restore existing groups
         for(String groupID : scanGroups()) {
-            downloadJSON(groupID);
+            downloadJSON(groupID, false);
 
             // Read config file
             try {
@@ -577,6 +577,7 @@ public class Client extends Application {
             try {
                 while ((read = in.read(buffer)) != -1) {
 
+                    System.out.println("Receiving...");
                     PeerMessage pm = new PeerMessage(buffer);
                     System.out.println("type message received = " + pm.getType());
 
@@ -589,11 +590,11 @@ public class Client extends Application {
                         waitingForGroupValidation = false;
                     } else if(pm.getType().equals(MessageType.DOWN)) {
                         System.out.println("i'm in");
-                        String[] rcv = new String(pm.getMessageContent()).split("-");
+                        //String[] rcv = new String(pm.getMessageContent()).split("-");
                         saveReceivedJson(pm);
                         //waitingJsonFromServer = false;
-                        System.out.println("count rcv ------------------------- " + rcv[0]);
-                        mutex.put(Integer.parseInt(rcv[0]), false);
+                        //System.out.println("count rcv ------------------------- " + rcv[0]);
+                        //mutex.put(Integer.parseInt(rcv[0]), false);
                         System.out.println("i'm out");
                     //} else if(pm.getType().equals(MessageType.INVI)) {
                         //
@@ -616,6 +617,7 @@ public class Client extends Application {
                 System.out.println(e.getMessage());
             } finally {
                 System.out.println("ERROR STOPPED LISTENING TO SERVER PUBLIC");
+                System.out.println(new String(buffer));
                 try {
                     clientSocketToServerPublic.close();
                     in.close();
@@ -719,7 +721,7 @@ public class Client extends Application {
                     try {
                         out.write(pm.getFormattedMessage());
                         out.flush();
-                        //Thread.sleep(100);
+                        //Thread.sleep(1000);
                     } catch (IOException e) {
                         System.out.println(e.getMessage());
                     } /*catch (InterruptedException e) {
@@ -731,32 +733,37 @@ public class Client extends Application {
         }
     }
 
-    public static void downloadJSON(String groupID) {
+    private static Object o = new Object();
+    public static synchronized void downloadJSON(String groupID, boolean invitation) {
 
-        int id = count++;
-        mutex.put(id, true);
-        System.out.println("count -------------------------------- "+id);
-        PeerMessage downloadMessage = new PeerMessage(MessageType.DOWN, groupID, myUsername, myUsername, (""+id).getBytes());
-        //waitingJsonFromServer = true;
-        try {
-            System.out.println("I want to download");
-            // Averti le serveur que le client désire avoir le fichier 'config.json'
-            out.write(downloadMessage.getFormattedMessage());
-            out.flush();
+        int id;
+        //synchronized (o) {
+            id = count++;
 
-            while(mutex.get(id)){
-                try {
-                    System.out.println("waiting download");
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            mutex.put(id, true);
+            System.out.println("count -------------------------------- " + id);
+            PeerMessage downloadMessage = new PeerMessage(MessageType.DOWN, groupID, myUsername, myUsername, ("" + invitation).getBytes());
+            //waitingJsonFromServer = true;
+            try {
+                System.out.println("I want to download");
+                // Averti le serveur que le client désire avoir le fichier 'config.json'
+                out.write(downloadMessage.getFormattedMessage());
+                out.flush();
+
+                /*while (mutex.get(id)) {
+                    try {
+                        System.out.println("waiting download");
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }*/
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        //}
+        /*
         if(groups != null){
             updateGroupsWithJson(groupID);
         }
@@ -769,7 +776,7 @@ public class Client extends Application {
             }
         });
 
-        mutex.remove(id);
+        mutex.remove(id);*/
     }
 
     private static void saveReceivedJson(PeerMessage pm) {
@@ -785,6 +792,9 @@ public class Client extends Application {
             fout.write(buffer,0,c);
             fout.flush();
 
+            if(content[0].equals("true")) {
+                updateJsonAfterInvitation(pm.getIdGroup());
+            }
 
         } catch(IOException e) {
             e.printStackTrace();
@@ -797,6 +807,17 @@ public class Client extends Application {
                 }
             }
         }
+        if(groups != null){
+            updateGroupsWithJson(pm.getIdGroup());
+        }
+
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                controller.updateGroupsAndFiles();
+            }
+        });
     }
 
     private static String[] scanGroups() {
@@ -858,7 +879,7 @@ public class Client extends Application {
         System.out.println("updateJsonAfterInvitation in");
 
         //download json du groupe
-        downloadJSON(groupID);
+        //downloadJSON(groupID);
         //ajoute le group dans sa liste groups
         System.out.println("updateJsonAfterInvitation downloaded");
 
@@ -867,6 +888,7 @@ public class Client extends Application {
             System.out.println("updateJsonAfterInvitation will read json received");
 
             configFile = new RandomAccessFile("./shared_files/"+groupID+"/config.json", "r");
+            System.out.println("COUCOU");
             byte[] configFileByte = new byte[(int) configFile.length()];
             configFile.readFully(configFileByte);
 

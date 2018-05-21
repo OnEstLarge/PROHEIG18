@@ -34,7 +34,7 @@ public class PeerConnection {
     }
 
     public PeerMessage receiveMessage() throws InvalidFormatException{
-        byte[] b = new byte[4096];
+        byte[] b = new byte[PeerMessage.BLOCK_SIZE];
         try{
             //on va juste lire le premier message reçu, si d'autre message arrive, c'est le handler qui gère.
             is.read(b);
