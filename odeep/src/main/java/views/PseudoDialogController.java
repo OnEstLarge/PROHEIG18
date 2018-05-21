@@ -4,6 +4,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import main.Client;
@@ -31,8 +32,9 @@ public class PseudoDialogController {
      *
      * @param dialogStage
      */
-    public void setDialogStage(Stage dialogStage) {
+    public void setDialogStage(Stage dialogStage, Image image) {
         this.dialogStage = dialogStage;
+        this.dialogStage.getIcons().add(image);
         dialogStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             public void handle(WindowEvent we) {
                 System.exit(0);
@@ -80,7 +82,7 @@ public class PseudoDialogController {
         String pseudo = userPseudoField.getText();
 
         if(!PeerMessage.isValidIdFormat(pseudo, PeerMessage.ID_MIN_LENGTH, PeerMessage.ID_MAX_LENGTH) || !Client.usernameValidation(pseudo)){
-            errorMessage += "Pseudo format invalid. It must be between " + PeerMessage.ID_MIN_LENGTH + " and " + PeerMessage.ID_MAX_LENGTH + " characters long.\n";
+            errorMessage += "Nom d'utilisateur invalide. Il doit contenir entre " + PeerMessage.ID_MIN_LENGTH + " et " + PeerMessage.ID_MAX_LENGTH + " caractères.\n";
         }
 
         if (errorMessage.length() == 0) {
@@ -88,8 +90,8 @@ public class PseudoDialogController {
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.initOwner(dialogStage);
-            alert.setTitle("Invalid Fields");
-            alert.setHeaderText("Please correct invalid fields");
+            alert.setTitle("Champ invalide");
+            alert.setHeaderText("Veuillez corriger les champs invalides!");
             alert.setContentText(errorMessage);
 
             alert.showAndWait();

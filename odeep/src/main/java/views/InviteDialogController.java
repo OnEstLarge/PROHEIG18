@@ -3,6 +3,7 @@ package views;
 import User.Person;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import main.Client;
@@ -29,8 +30,9 @@ public class InviteDialogController {
      *
      * @param dialogStage
      */
-    public void setDialogStage(Stage dialogStage) {
+    public void setDialogStage(Stage dialogStage, Image image) {
         this.dialogStage = dialogStage;
+        this.dialogStage.getIcons().add(image);
     }
 
     /**
@@ -76,12 +78,12 @@ public class InviteDialogController {
 
     private boolean isInputValid() {
         if (!PeerMessage.isValidIdFormat(newUserPseudoField.getText(), PeerMessage.ID_MIN_LENGTH, PeerMessage.ID_MAX_LENGTH)) {
-            String errorMessage = "Pseudo invalid format. Pseudo must be between " + PeerMessage.ID_MIN_LENGTH + " and " + PeerMessage.ID_MAX_LENGTH + "characters long.\n";
+            String errorMessage = "Nom d'utilisateur invalide. Il doit contenir entre " + PeerMessage.ID_MIN_LENGTH + " et " + PeerMessage.ID_MAX_LENGTH + " caractères.\n";
 
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.initOwner(dialogStage);
-            alert.setTitle("Invalid Fields");
-            alert.setHeaderText("Please correct invalid fields");
+            alert.setTitle("Champ invalide");
+            alert.setHeaderText("Veuillez corriger les champs invalides!");
             alert.setContentText(errorMessage);
 
             alert.showAndWait();
