@@ -92,90 +92,72 @@ public class ServerPeerToPeer {
                     read = 0;
                     PeerMessage pm = new PeerMessage(bufferIn);
                     String type = pm.getType();
-                    switch (type) {
-                        case MessageType.HELO:
-                            greetings(pm);
-                            break;
-                        case MessageType.BYE:
-                            bye(pm);
-                            break;
-                        case MessageType.USRV:
-                            validationUsername(pm);
-                            break;
-                        case MessageType.INFO:
-                            giveInfoToSender(pm);
-                            break;
-                        case MessageType.INVI:
-                        case MessageType.INVK:
-                        case MessageType.RFIL:
-                        case MessageType.DHR1:
-                        case MessageType.DHS2:
-                        case MessageType.DHS1:
-                        case MessageType.SFIL:
-                        case MessageType.SMES:
-                        case MessageType.UPDT:
-                            //System.out.println("Message reçu " + pm.getType());
-                            redirectBuffer = bufferIn.clone();
-                            redirect(pm);
-                            break;
+                    if (MessageType.HELO.equals(type)) {
+                        greetings(pm);
 
-                        case MessageType.NEWG:
+                    } else if (MessageType.BYE.equals(type)) {
+                        bye(pm);
 
-                            int ajout = DatabaseUtil.addGroupIfNotExists(pm.getIdGroup());
-                            //System.out.println("Test : ajout " + ajout);
-                            if (ajout == 1) {
-                                //System.out.println("envoi du true");
-                                out.write((new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "true".getBytes())).getFormattedMessage());
-                                out.flush();
-                            } else {
-                                //System.out.println("envoi du false");
-                                out.write((new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "false".getBytes())).getFormattedMessage());
-                                out.flush();
-                            }
+                    } else if (MessageType.USRV.equals(type)) {
+                        validationUsername(pm);
 
-                            break;
+                    } else if (MessageType.INFO.equals(type)) {
+                        giveInfoToSender(pm);
 
-                        case MessageType.UPLO:
-                            //On récupère la taille du JSON a download
-                            String s = CipherUtil.erasePadding(new String(pm.getMessageContent()), PeerMessage.PADDING_START);
-                            FileOutputStream fout = new FileOutputStream(new File("./groupsConfigs/" + pm.getIdGroup()));
-                            int size = Integer.parseInt(s);
-                            //System.out.println("Size =" + size);
-                            int byteLu;
-                            byte[] bufferTest = new byte[size];
-                            byteLu = in.read(bufferTest, 0, size);
-                            //System.out.println(byteLu);
-                            size -= byteLu;
-                            fout.write(bufferTest, 0, byteLu);
-                            fout.flush();
+                    } else if (MessageType.INVI.equals(type) || MessageType.INVK.equals(type) || MessageType.RFIL.equals(type) || MessageType.DHR1.equals(type) || MessageType.DHS2.equals(type) || MessageType.DHS1.equals(type) || MessageType.SFIL.equals(type) || MessageType.SMES.equals(type) || MessageType.UPDT.equals(type)) {//System.out.println("Message reçu " + pm.getType());
+                        redirectBuffer = bufferIn.clone();
+                        redirect(pm);
 
-
-                            break;
-
-                        case MessageType.DOWN:
-                            System.out.println("download");
-                            RandomAccessFile json = new RandomAccessFile("./groupsConfigs/" + pm.getIdGroup(), "r");
-
-                            byte[] bufferJson = new byte[(int) json.length()];
-                            json.readFully(bufferJson);
-                            System.out.println("Download asked from " + pm.getIdFrom());
-                            System.out.println("Download dest = " + pm.getIdTo());
-                            System.out.println("PEOPLE IN SERV = ");
-                            for(String p : peopleInServ.keySet()) {
-                                System.out.println(p);
-                            }
-
-                            PeerMessage msg = new PeerMessage(MessageType.DOWN, pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), ("" + (int) json.length()).getBytes());
-                            out.write(msg.getFormattedMessage());
+                    } else if (MessageType.NEWG.equals(type)) {
+                        int ajout = DatabaseUtil.addGroupIfNotExists(pm.getIdGroup());
+                        //System.out.println("Test : ajout " + ajout);
+                        if (ajout == 1) {
+                            //System.out.println("envoi du true");
+                            out.write((new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "true".getBytes())).getFormattedMessage());
                             out.flush();
-                            System.out.println("msg sent from server = " + new String(msg.getFormattedMessage()));
-                            out.write(bufferJson);
+                        } else {
+                            //System.out.println("envoi du false");
+                            out.write((new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "false".getBytes())).getFormattedMessage());
                             out.flush();
-                            System.out.println("bufferJson sent from server = " + new String(bufferJson));
-                            break;
+                        }
 
-                        default:
-                            break;
+
+                    } else if (MessageType.UPLO.equals(type)) {//On récupère la taille du JSON a download
+                        String s = CipherUtil.erasePadding(new String(pm.getMessageContent()), PeerMessage.PADDING_START);
+                        FileOutputStream fout = new FileOutputStream(new File("./groupsConfigs/" + pm.getIdGroup()));
+                        int size = Integer.parseInt(s);
+                        //System.out.println("Size =" + size);
+                        int byteLu;
+                        byte[] bufferTest = new byte[size];
+                        byteLu = in.read(bufferTest, 0, size);
+                        //System.out.println(byteLu);
+                        size -= byteLu;
+                        fout.write(bufferTest, 0, byteLu);
+                        fout.flush();
+
+
+                    } else if (MessageType.DOWN.equals(type)) {
+                        System.out.println("download");
+                        RandomAccessFile json = new RandomAccessFile("./groupsConfigs/" + pm.getIdGroup(), "r");
+
+                        byte[] bufferJson = new byte[(int) json.length()];
+                        json.readFully(bufferJson);
+                        System.out.println("Download asked from " + pm.getIdFrom());
+                        System.out.println("Download dest = " + pm.getIdTo());
+                        System.out.println("PEOPLE IN SERV = ");
+                        for (String p : peopleInServ.keySet()) {
+                            System.out.println(p);
+                        }
+
+                        PeerMessage msg = new PeerMessage(MessageType.DOWN, pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), ("" + (int) json.length()).getBytes());
+                        out.write(msg.getFormattedMessage());
+                        out.flush();
+                        System.out.println("msg sent from server = " + new String(msg.getFormattedMessage()));
+                        out.write(bufferJson);
+                        out.flush();
+                        System.out.println("bufferJson sent from server = " + new String(bufferJson));
+
+                    } else {
                     }
                 }
             } catch (IOException e) {
