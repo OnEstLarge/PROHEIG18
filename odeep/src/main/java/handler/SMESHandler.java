@@ -1,5 +1,6 @@
 package handler;
 
+
 import message.MessageHandler;
 import peer.PeerConnection;
 import peer.PeerMessage;
@@ -8,6 +9,9 @@ import Node.Node;
 
 import java.io.IOException;
 
+/**
+ * Classe permettant le traitement d'un message de type SMES
+ */
 public class SMESHandler implements MessageHandler{
 
     public void handleMessage(Node n, PeerConnection c, PeerMessage m){

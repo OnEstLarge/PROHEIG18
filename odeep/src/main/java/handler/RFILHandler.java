@@ -1,5 +1,15 @@
 package handler;
 
+/*
+ -----------------------------------------------------------------------------------
+ Odeep
+ Fichier     : handler.RFILHandler.java
+ Auteur(s)   : Kopp Olivier
+ Date        : 10.05.2018
+ Compilateur : jdk 1.8.0_144
+ -----------------------------------------------------------------------------------
+*/
+
 import message.MessageHandler;
 import message.MessageType;
 import org.bouncycastle.crypto.InvalidCipherTextException;
@@ -14,6 +24,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+/**
+ * Classe permettant le traitement d'un message de type RFIL
+ */
 public class RFILHandler implements MessageHandler{
 
     @Override
