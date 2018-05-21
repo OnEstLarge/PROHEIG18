@@ -19,7 +19,7 @@ public class INVKHandler implements MessageHandler{
         final String groupId = m.getIdGroup();
         final String toSendTo = m.getIdFrom();
 
-        n.setKey(CipherUtil.generateKey(), groupId);
+        //n.setKey(CipherUtil.generateKey(), groupId);
 
         RSAHandler RSA = new RSAHandler();
         try {
