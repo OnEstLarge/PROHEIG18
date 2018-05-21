@@ -262,50 +262,54 @@ public class PeerMessage {
      * @return peer.PeerMessage formatté
      */
     public synchronized byte[] getFormattedMessage() {
-        byte[] toSend = null;
-        do {
-            toSend = new byte[HEADER_SIZE + MESSAGE_WITH_PAD_SIZE];
-            int index = 0;
+        synchronized (toSend) {
+            do {
+                toSend = new byte[HEADER_SIZE + MESSAGE_WITH_PAD_SIZE];
+                int index = 0;
 
-            for (int i = 0; i < TYPE_LENGTH; i++) {
-                toSend[index++] = type.getBytes()[i];
+                for (int i = 0; i < TYPE_LENGTH; i++) {
+                    toSend[index++] = type.getBytes()[i];
+                }
+                toSend[index++] = ",".getBytes()[0];
+
+                byte[] group = addPadding(idGroup, ID_GROUP_MAX_LENGTH, PADDING_SYMBOL).getBytes();
+                for (int i = 0; i < ID_GROUP_MAX_LENGTH; i++) {
+                    toSend[index++] = group[i];
+                }
+                toSend[index++] = ",".getBytes()[0];
+
+                byte[] from = addPadding(idFrom, ID_MAX_LENGTH, PADDING_SYMBOL).getBytes();
+                for (int i = 0; i < ID_MAX_LENGTH; i++) {
+                    toSend[index++] = from[i];
+                }
+                toSend[index++] = ",".getBytes()[0];
+
+                byte[] to = addPadding(idTo, ID_MAX_LENGTH, PADDING_SYMBOL).getBytes();
+                for (int i = 0; i < ID_MAX_LENGTH; i++) {
+                    toSend[index++] = to[i];
+                }
+                toSend[index++] = ",".getBytes()[0];
+
+                for (int i = 0; i < NO_PACKET_DIGITS; i++) {
+                    toSend[index++] = formatInt(noPacket, NO_PACKET_DIGITS).getBytes()[i];
+                }
+
+                byte[] messageWithPad = addPadding(messageContent, MESSAGE_WITH_PAD_SIZE);
+                System.out.println("message : " + new String(messageWithPad));
+
+                for (int i = 0; i < MESSAGE_WITH_PAD_SIZE; i++) {
+                    toSend[index++] = messageWithPad[i];
+                }
+                //System.out.println("\n\n\n1 " + new String(toSend).substring(0, 4) + "\n\n\n");
+                //System.out.println("\n\n\n2 " + type + "\n\n\n");
             }
-            toSend[index++] = ",".getBytes()[0];
-
-            byte[] group = addPadding(idGroup, ID_GROUP_MAX_LENGTH, PADDING_SYMBOL).getBytes();
-            for (int i = 0; i < ID_GROUP_MAX_LENGTH; i++) {
-                toSend[index++] = group[i];
-            }
-            toSend[index++] = ",".getBytes()[0];
-
-            byte[] from = addPadding(idFrom, ID_MAX_LENGTH, PADDING_SYMBOL).getBytes();
-            for (int i = 0; i < ID_MAX_LENGTH; i++) {
-                toSend[index++] = from[i];
-            }
-            toSend[index++] = ",".getBytes()[0];
-
-            byte[] to = addPadding(idTo, ID_MAX_LENGTH, PADDING_SYMBOL).getBytes();
-            for (int i = 0; i < ID_MAX_LENGTH; i++) {
-                toSend[index++] = to[i];
-            }
-            toSend[index++] = ",".getBytes()[0];
-
-            for (int i = 0; i < NO_PACKET_DIGITS; i++) {
-                toSend[index++] = formatInt(noPacket, NO_PACKET_DIGITS).getBytes()[i];
-            }
-
-            byte[] messageWithPad = addPadding(messageContent, MESSAGE_WITH_PAD_SIZE);
-            System.out.println("message : " + new String(messageWithPad));
-
-            for (int i = 0; i < MESSAGE_WITH_PAD_SIZE; i++) {
-                toSend[index++] = messageWithPad[i];
-            }
-            System.out.println("\n\n\n1 " + new String(toSend).substring(0,4) + "\n\n\n");
-            System.out.println("\n\n\n2 " + type + "\n\n\n");
+            while (!(new String(toSend).substring(0, TYPE_LENGTH).equals(type)));
+            //System.out.println("\n\n\n3 " + new String(toSend).substring(0, 4) + "      " + toSend.length + "\n\n\n");
+            //System.out.println("\n\n\n4 " + new String(toSend) + "      " + toSend.length + "\n\n\n");
+            return toSend;
         }
-        while(!(new String(toSend).substring(0,TYPE_LENGTH).equals(type)));
-        System.out.println("\n\n\n3 " + new String(toSend) + "      " + toSend.length + "\n\n\n");
-        return toSend;
     }
+
+    private static byte[] toSend = new byte[]{};
 
 }
