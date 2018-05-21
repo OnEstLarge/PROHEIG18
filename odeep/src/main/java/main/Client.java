@@ -674,6 +674,7 @@ public class Client extends Application {
             configFile.readFully(configFileByte);
 
             uploadMessage = new PeerMessage(MessageType.UPLO, groupID, idFrom, idFrom, configFileByte);
+            System.out.println("UPLOAD " + new String(uploadMessage.getFormattedMessage()));
             out.write(uploadMessage.getFormattedMessage());
             out.flush();
 
