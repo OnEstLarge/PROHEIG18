@@ -16,6 +16,7 @@ import handler.RSAInfo;
 import main.Client;
 import message.MessageHandler;
 import message.MessageType;
+import org.bouncycastle.crypto.InvalidCipherTextException;
 import peer.PeerConnection;
 import peer.PeerHandler;
 import peer.PeerInformations;
@@ -212,16 +213,20 @@ public class Node {
     public PeerInformations getFileLocation(String filename, String groupID) {
         RandomAccessFile f = null;
         byte[] payload = null;
+        byte[] plainPayload = null;
         try {
             f = new RandomAccessFile("./shared_files/" + groupID + "/config.json", "r");
             payload = new byte[(int) f.length()];
             f.readFully(payload);
+            plainPayload = CipherUtil.AESDecrypt(payload, this.getKey(groupID));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (InvalidCipherTextException e) {
+            e.printStackTrace();
         }
-        Group g = JSONUtil.parseJson(new String(payload), Group.class);
+        Group g = JSONUtil.parseJson(new String(plainPayload), Group.class);
         for (Person p : g.getMembers()) {
             for (String file : p.getFiles()) {
                 if (file.equals(filename)) {
