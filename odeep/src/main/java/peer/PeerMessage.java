@@ -42,7 +42,7 @@ public class PeerMessage {
     public static final int MESSAGE_WITH_PAD_SIZE = MESSAGE_CONTENT_SIZE + FORCE_PADDING + HMAC_SIZE + AES_PADDING;
 
 
-    public static final char PADDING_START = '_';
+    public static final char PADDING_START = '@';
     public static final char PADDING_SYMBOL = '=';
 
     /**
@@ -296,8 +296,11 @@ public class PeerMessage {
             for (int i = 0; i < MESSAGE_WITH_PAD_SIZE; i++) {
                 toSend[index++] = messageWithPad[i];
             }
+            System.out.println("\n\n\n1 " + new String(toSend).substring(0,4) + "\n\n\n");
+            System.out.println("\n\n\n2 " + type + "\n\n\n");
         }
         while(!(new String(toSend).substring(0,TYPE_LENGTH).equals(type)));
+        System.out.println("\n\n\n3 " + new String(toSend) + "      " + toSend.length + "\n\n\n");
         return toSend;
     }
 
