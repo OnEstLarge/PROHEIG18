@@ -3,7 +3,6 @@ package views;
 import User.Person;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import main.Client;
@@ -30,9 +29,8 @@ public class InviteDialogController {
      *
      * @param dialogStage
      */
-    public void setDialogStage(Stage dialogStage, Image image) {
+    public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
-        dialogStage.getIcons().add(image);
     }
 
     /**

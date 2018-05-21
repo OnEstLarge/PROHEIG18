@@ -4,7 +4,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import main.Client;
@@ -25,14 +24,15 @@ public class PseudoDialogController {
     private void initialize() {
     }
 
+
+
     /**
      * Sets the stage of this dialog.
      *
      * @param dialogStage
      */
-    public void setDialogStage(Stage dialogStage, Image image) {
+    public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
-        dialogStage.getIcons().add(image);
         dialogStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             public void handle(WindowEvent we) {
                 System.exit(0);
