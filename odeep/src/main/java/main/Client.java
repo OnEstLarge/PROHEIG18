@@ -474,9 +474,15 @@ public class Client extends Application {
         n.addMessageHandler(MessageType.DISC, new DISCHandler());
         n.addMessageHandler(MessageType.NFIL, new NFILHandler());
         n.addMessageHandler(MessageType.RFIL, new RFILHandler());
+        n.addMessageHandler(MessageType.PGET, new PGETHandler());
         n.addMessageHandler(MessageType.SFIL, new SFILHandler());
         n.addMessageHandler(MessageType.SMES, new SMESHandler());
         n.addMessageHandler(MessageType.UPDT, new UPDTHandler());
+        n.addMessageHandler(MessageType.INVK, new INVKHandler());
+        n.addMessageHandler(MessageType.DHS1, new DHS1Handler());
+        n.addMessageHandler(MessageType.DHS2, new DHS2Handler());
+        n.addMessageHandler(MessageType.DHR1, new DHR1Handler());
+
         System.out.println("Added the handlers");
     }
 
@@ -581,7 +587,14 @@ public class Client extends Application {
                         //
 
                     } else {
-                        redirectToHandler(pm, n, new PeerConnection(clientSocketToServerPublic));
+                        System.out.println("Client redirect message " + pm.getType());
+                        final PeerMessage redirectPM = pm;
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                redirectToHandler(redirectPM, n, new PeerConnection(clientSocketToServerPublic));
+                            }
+                        }).start();
                     }
 
                 }
@@ -590,6 +603,7 @@ public class Client extends Application {
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             } finally {
+                System.out.println("ERROR STOPPED LISTENING TO SERVER PUBLIC");
                 try {
                     clientSocketToServerPublic.close();
                     in.close();
@@ -714,6 +728,7 @@ public class Client extends Application {
 
             while(waitingJsonFromServer){
                 try {
+                    System.out.println("waiting download");
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -723,6 +738,14 @@ public class Client extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                controller.updateGroupsAndFiles();
+            }
+        });
     }
 
     private static void saveReceivedJson(PeerMessage pm) {
@@ -787,6 +810,79 @@ public class Client extends Application {
         try {
             System.out.println("I accept an invitation for user " + usernameFrom + " in group " + groupID);
             out.write(acceptInvitePM.getFormattedMessage());
+            out.flush();
+
+            // Crée le groupe localement
+            String dir = "./shared_files/" + groupID;
+            File file = new File(dir);
+            if (!file.exists() || !file.isDirectory()) {
+                file.mkdirs();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void updateJsonAfterInvitation(String groupID) {
+
+
+        System.out.println("updateJsonAfterInvitation in");
+
+        //download json du groupe
+        downloadJSON(groupID);
+        //ajoute le group dans sa liste groups
+        System.out.println("updateJsonAfterInvitation downloaded");
+
+        RandomAccessFile configFile = null;
+        try {
+            System.out.println("updateJsonAfterInvitation will read json received");
+
+            configFile = new RandomAccessFile("./shared_files/"+groupID+"/config.json", "r");
+            byte[] configFileByte = new byte[(int) configFile.length()];
+            configFile.readFully(configFileByte);
+
+            byte[] plainConfig = CipherUtil.AESDecrypt(configFileByte, n.getKey(groupID));
+
+            Group group = JSONUtil.parseJson(new String(plainConfig), Group.class);
+            group.addMember(myself);
+            groups.add(group);
+
+            System.out.println("updateJsonAfterInvitation Group member, should have added myself ");
+            for(Person p : group.getMembers())
+                System.out.println(p.getID());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InvalidCipherTextException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("updateJsonAfterInvitation update config");
+
+        //update le json en s'ajoutant dans le groupe
+        JSONUtil.updateConfig(Client.getGroupById(groupID));
+
+        System.out.println("updateJsonAfterInvitation updated, uploading");
+
+        //upload le nouveau json sur le serv
+        Client.uploadJSON("./shared_files/" + groupID + "/config.json", groupID, myUsername);
+
+        System.out.println("updateJsonAfterInvitation uploaded");
+
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                controller.updateGroupsAndFiles();
+            }
+        });
+    }
+
+    public static void sendPM(PeerMessage pm) {
+        try {
+            out.write(pm.getFormattedMessage());
             out.flush();
 
         } catch (IOException e) {

@@ -1,5 +1,6 @@
 package handler;
 
+import main.Client;
 import message.MessageHandler;
 import message.MessageType;
 import peer.PeerConnection;
@@ -14,13 +15,17 @@ import java.security.NoSuchProviderException;
 public class DHS1Handler implements MessageHandler {
     @Override
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
+
         try {
             RSAHandler RSA = new RSAHandler();
             RSA.setKeys();
             n.setTempRSAInfo(RSA);
 
             PeerMessage response = new PeerMessage(MessageType.DHR1, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), RSA.getPublicKey());
-            PeerInformations pi = null;
+            System.out.println("envoie reponse dhs1");
+            Client.sendPM(response);
+            System.out.println("envoyé");
+            /*PeerInformations pi = null;
             for (PeerInformations p : n.getKnownPeers()) {
                 if (p.getID().equals(m.getIdFrom())) {
                     pi = p;
@@ -37,7 +42,7 @@ public class DHS1Handler implements MessageHandler {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
+            }*/
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (NoSuchProviderException e) {
