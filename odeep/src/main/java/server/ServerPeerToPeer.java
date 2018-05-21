@@ -164,10 +164,11 @@ public class ServerPeerToPeer {
                             for(String p : peopleInServ.keySet()) {
                                 System.out.println(p);
                             }
-
-                            PeerMessage msg = new PeerMessage(MessageType.DOWN, pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), ("" + (int) json.length()).getBytes());
+                            System.out.println();
+                            PeerMessage msg = new PeerMessage(MessageType.DOWN, pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), (new String(pm.getMessageContent())+ "-" + (int) json.length()).getBytes());
                             out.write(msg.getFormattedMessage());
                             out.flush();
+                            Thread.sleep(100);
                             System.out.println("msg sent from server = " + new String(msg.getFormattedMessage()));
                             out.write(bufferJson);
                             out.flush();
@@ -180,6 +181,8 @@ public class ServerPeerToPeer {
                 }
             } catch (IOException e) {
                 //System.out.println(e.getMessage());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
 
