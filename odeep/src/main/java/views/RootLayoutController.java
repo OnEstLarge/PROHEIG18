@@ -199,6 +199,7 @@ public class RootLayoutController implements Initializable {
 
     @FXML
     private void handleQuit() {
+        System.out.println("QUIT");
         System.exit(1);
     }
 
