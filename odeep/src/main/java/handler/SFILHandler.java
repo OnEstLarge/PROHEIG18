@@ -58,6 +58,7 @@ public class SFILHandler implements MessageHandler {
             }
         }
 
+        //cas du premier paquet : le paquet contient uniquement le nom et la taille du fichier
         if (m.getNoPacket() == 0) {
             String[] fileInfo = new String(rcv).split(":");
             n.filesizeDownloaded = Integer.parseInt(fileInfo[1]);
@@ -71,7 +72,9 @@ public class SFILHandler implements MessageHandler {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else {
+        }
+        //on stocke les autres paquets dans le fichier de sortie
+        else {
             try {
                 RandomAccessFile raf = new RandomAccessFile("./shared_files/" + m.getIdGroup() + "/" + n.filenameDownloaded, "rw");
                 raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * (m.getNoPacket() - 1));
