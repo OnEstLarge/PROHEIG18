@@ -57,7 +57,7 @@ public class RootLayoutController implements Initializable {
     private void handleCreateButtonAction() {
         String errorMsg = "";
         if (!Client.createGroup(groupNameField.getText()) ) {
-            errorMsg += "Group name must be between " + PeerMessage.ID_GROUP_MIN_LENGTH + " and " + PeerMessage.ID_GROUP_MAX_LENGTH + " characters long.\n";
+            errorMsg += "Le nom de groupe doit contenir entre " + PeerMessage.ID_GROUP_MIN_LENGTH + " et " + PeerMessage.ID_GROUP_MAX_LENGTH + " caractères.\n";
         } else {
             TitledPane pane = new TitledPane();
             final ListView view = new ListView();
@@ -92,8 +92,8 @@ public class RootLayoutController implements Initializable {
         if (errorMsg.length() != 0) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.initOwner(dialogStage);
-            alert.setTitle("Invalid Fields");
-            alert.setHeaderText("Please correct invalid fields");
+            alert.setTitle("Champ invalide");
+            alert.setHeaderText("Veuillez corriger les champs invalides!");
             alert.setContentText(errorMsg);
 
             alert.showAndWait();
