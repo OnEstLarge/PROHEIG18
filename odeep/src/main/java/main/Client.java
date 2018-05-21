@@ -77,6 +77,9 @@ public class Client extends Application {
         initRootLayout();
     }
 
+    public static RootLayoutController getController(){
+        return controller;
+    }
 
     /**
      * Vérifie dans le fichier '.userInfo' si l'utilisateur possède déjà un pseudo.
@@ -286,10 +289,6 @@ public class Client extends Application {
      */
     public Stage getPrimaryStage() {
         return primaryStage;
-    }
-
-    public String getUserPseudo() {
-        return myUsername;
     }
 
     public void setUserPseudo(String pseudo) {
@@ -893,6 +892,7 @@ public class Client extends Application {
 
             @Override
             public void run() {
+                controller.enableButtons();
                 controller.updateGroupsAndFiles();
             }
         });
