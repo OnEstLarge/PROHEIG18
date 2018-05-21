@@ -57,7 +57,7 @@ public class DHR1Handler implements MessageHandler{
             }*/
            //fin du protocole DH on efface les info RSA
             n.setTempRSAInfo(null);
-
+            Client.getController().enableButtons();
         }
     }
 }

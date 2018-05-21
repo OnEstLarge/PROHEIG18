@@ -23,7 +23,6 @@ import Node.Node;
 public class DHS1Handler implements MessageHandler {
     @Override
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
-
         //création d'info RSA stockant la pair de clé
         RSAInfo RSA = new RSAInfo();
         //génération de clé RSA

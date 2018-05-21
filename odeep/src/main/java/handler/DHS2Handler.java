@@ -30,5 +30,7 @@ public class DHS2Handler implements MessageHandler {
 
         Client.updateJsonAfterInvitation(m.getIdGroup());
         //Client.downloadJSON(m.getIdGroup());
+
+        Client.getController().enableButtons();
     }
 }

@@ -49,6 +49,7 @@ public class InviteDialogController {
      */
     @FXML
     private void handleCancel() {
+        Client.getController().enableButtons();
         dialogStage.close();
     }
 
