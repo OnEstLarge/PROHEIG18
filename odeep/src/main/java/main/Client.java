@@ -48,6 +48,10 @@ public class Client extends Application {
     private static RootLayoutController controller;
     private Image image = new Image(getClass().getResourceAsStream("logo.png"));
 
+    /**
+     * Lance l'affichage de la fenêtre initiale et défini le nom de la fenêtre.
+     * @param primaryStage
+     */
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -144,27 +148,33 @@ public class Client extends Application {
         }
     }
 
+    /**
+     * Initialise puis affiche la fenêtre initiale.
+     * Si jamais le fichier .userInfo n'est pas trouvé, affiche la fenêtre demandant un nom d'utilisateur puis
+     * crée le fichier .userInfo avec le nom reçu.
+     */
     public void initRootLayout() {
         if ((myUsername = usernameExists()) == null) {
             boolean ok = showPseudoDialog();
-            while (!ok) { // Ask for a pseudo until a valid one is entered.
+            while (!ok) { // Demande un nom jusqu'à ce qu'il soit correct
                 ok = showPseudoDialog();
             }
-            //write file .userInfo with the valid username
+
+            // Ecrit le fichier .userInfo avec le bon nom d'utilisateur
             writeToFile(new File("./.userInfo"), myUsername);
         }
         try {
-            // Load root layout from fxml file.
+            // Charge l'interface initiale depuis un fichier .fxml
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Client.class.getResource("/views/RootLayout.fxml"));
             rootLayout = loader.load();
 
-            // Show the scene containing the root layout.
+            // Montre la scene contenant l'interface initiale
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
             primaryStage.getIcons().add(image);
 
-            // Give the controller access to the main app.
+            // Donne au controller accès à l'application principale
             controller = loader.getController();
             controller.setMainApp(this);
 
@@ -184,14 +194,18 @@ public class Client extends Application {
         }
     }
 
+    /**
+     * Affiche la fenêtre d'invitation.
+     * @return true si jamais le bouton OK a été appuyé, false sinon
+     */
     public boolean showInviteDialog() {
         try {
-            // Load the FXML filer and create a new stage for the popup dialog.
+            // Charge le fichier .fxml et crée la nouvelle scene pour la fenêtre d'invitation
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Client.class.getResource("/views/InviteDialog.fxml"));
             AnchorPane page = loader.load();
 
-            // Create the dialog Stage.
+            // Crée la scène de dialogue
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Inviter un membre");
             dialogStage.initModality(Modality.WINDOW_MODAL);
@@ -199,16 +213,16 @@ public class Client extends Application {
             Scene scene = new Scene(page);
             dialogStage.setScene(scene);
 
-            // Set the invite controller
+            // Défini le controleur d'invitation
             InviteDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage, image);
 
-            // Clear comboBox and put groups name
+            // Vide le menu déroulant et le rempli avec les noms corrects
             controller.clearCombo();
             for (Group g : groups) {
                 controller.addGroupNameToCombo(g.getID());
             }
-            // Show the dialog and wait  until the user closes it
+            // Affiche la fenêtre et attend qu'elle se ferme
             dialogStage.showAndWait();
 
             return controller.isOkClicked();
@@ -218,14 +232,18 @@ public class Client extends Application {
         }
     }
 
+    /**
+     * Affiche la fenêtre demandant à l'utilisateur de choisir un nom d'utilisateur
+     * @return true si jamais le nom est correct, false sinon
+     */
     public boolean showPseudoDialog() {
         try {
-            // Load the FXML filer and create a new stage for the popup dialog.
+            // Charge le fichier .fxml et crée la nouvelle scene pour la fenêtre d'invitation
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Client.class.getResource("/views/PseudoDialog.fxml"));
             AnchorPane page = loader.load();
 
-            // Create the dialog Stage.
+            // Crée la scène de dialogue
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Choisissez votre nom");
             dialogStage.initModality(Modality.WINDOW_MODAL);
@@ -233,12 +251,12 @@ public class Client extends Application {
             Scene scene = new Scene(page);
             dialogStage.setScene(scene);
 
-            // Set the invite controller
+            // Défini le controleur de la fenêtre pseudo
             PseudoDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage, image);
             controller.setMainApp(this);
 
-            // Show the dialog and wait  until the user closes it
+            // Affiche la fenêtre et attend qu'elle se ferme
             dialogStage.showAndWait();
 
             return controller.isNameOK();
@@ -248,15 +266,20 @@ public class Client extends Application {
         }
     }
 
-
+    /**
+     * Affiche un message lorsqu'une invitation à rejoindre un groupe est reçue
+     * @param idFrom    Le nom de l'utilisateur étant à la source de l'invitation
+     * @param groupName Le nom du groupe dans lequel on a été invité
+     * @return true si jamais la fenêtre le bouton OK a été appuyé, false sinon
+     */
     public static boolean showAcceptInviteDialog(String idFrom, String groupName) {
         try {
-            // Load the FXML filer and create a new stage for the popup dialog.
+            // Charge le fichier .fxml et crée la nouvelle scene pour la fenêtre d'invitation
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Client.class.getResource("/views/AcceptInviteDialog.fxml"));
             AnchorPane page = loader.load();
 
-            // Create the dialog Stage.
+            // Crée la scène de dialogue
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Invitation dans un groupe");
             dialogStage.initModality(Modality.WINDOW_MODAL);
@@ -264,7 +287,7 @@ public class Client extends Application {
             Scene scene = new Scene(page);
             dialogStage.setScene(scene);
 
-            // Set the invite controller
+            // Défini le controleur de la fenêtre pour accépter l'invitation
             AcceptInviteDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage);
             controller.getMessageLabel().setText("Vous avez été invité dans le groupe " + groupName);
@@ -272,7 +295,7 @@ public class Client extends Application {
             controller.setGroupID(groupName);
             controller.setIdFrom(idFrom);
 
-            // Show the dialog and wait  until the user closes it
+            // Affiche la fenêtre et attend qu'elle se ferme
             dialogStage.showAndWait();
 
             return controller.isOkClicked();
@@ -283,11 +306,6 @@ public class Client extends Application {
 
     }
 
-    /**
-     * Returns the main stage.
-     *
-     * @return
-     */
     public Stage getPrimaryStage() {
         return primaryStage;
     }
@@ -570,13 +588,19 @@ public class Client extends Application {
     //Classe permettant de threader la lecture des packets server
     private static class ReadFromServer implements Runnable {
         public void run() {
-            int read;
+            //int read;
             byte[] buffer = new byte[4096];
 
             System.out.println("Start reading in main.Client.ReadFromServer");
             try {
                 synchronized (in) {
-                    while ((read = in.read(buffer, 0, 4096)) != -1) {
+                    while(true) {
+                        int read = 0;
+                        while(read != PeerMessage.BLOCK_SIZE) {
+                            read += in.read(buffer, read, buffer.length - read);
+                        }
+                        //}
+                        //while ((read = in.read(buffer, 0, 4096)) != -1) {
 
                         PeerMessage pm = new PeerMessage(buffer);
                         if (read != 4096)
@@ -610,8 +634,9 @@ public class Client extends Application {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
+                        //}
                     }
-                    System.out.println("End of reading in main.Client.ReadFromServer");
+                    //System.out.println("End of reading in main.Client.ReadFromServer");
 
                 }
             }catch (IOException e) {
