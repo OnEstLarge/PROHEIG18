@@ -102,6 +102,6 @@ public class SFILHandler implements MessageHandler {
                 ex.printStackTrace();
             }
         }
-        Client.updateDownloadBar((double) n.numberPacketCurrent / n.numberPacketDownloaded)
+        Client.updateDownloadBar((double) n.numberPacketCurrent / n.numberPacketDownloaded);
     }
 }
