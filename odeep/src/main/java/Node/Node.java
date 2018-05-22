@@ -130,6 +130,7 @@ public class Node {
             return; //A gerer
         } finally {
             // close clientSocket
+            System.out.println("CLEANUP");
             cleanup(null, null, clientSocket, serverSocket);
         }
     }
