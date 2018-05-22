@@ -574,6 +574,8 @@ public class Client extends Application {
                 while ((read = in.read(buffer, 0, 4096)) != -1) {
 
                     PeerMessage pm = new PeerMessage(buffer);
+                    if(read != 4096)
+                        System.out.println(read);
                     //System.out.println("type message received = " + pm.getType());
 
                     if (pm.getType().equals(MessageType.INFO)) {
@@ -599,7 +601,7 @@ public class Client extends Application {
                         }).start();
                     }
                     try {
-                        Thread.sleep(10);
+                        Thread.sleep(1);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -725,18 +727,22 @@ public class Client extends Application {
         System.out.println("Download JSON");
         PeerMessage downloadMessage = new PeerMessage(MessageType.DOWN, groupID, myUsername, myUsername, "".getBytes());
         try {
-            System.out.println("I want to download");
-            // Averti le serveur que le client désire avoir le fichier 'config.json'
-            out.write(downloadMessage.getFormattedMessage());
-            out.flush();
             waitingJsonFromServer = true;
+            while(waitingJsonFromServer) {
+                System.out.println("I want to download");
+                // Averti le serveur que le client désire avoir le fichier 'config.json'
+                out.write(downloadMessage.getFormattedMessage());
+                out.flush();
+                int count = 0;
 
-            while (waitingJsonFromServer) {
-                try {
-                    System.out.println("waiting download");
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                while (waitingJsonFromServer && count < 20) {
+                    try {
+                        System.out.println("waiting download");
+                        Thread.sleep(100);
+                        count++;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
