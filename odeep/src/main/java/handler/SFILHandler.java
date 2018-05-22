@@ -73,6 +73,7 @@ public class SFILHandler implements MessageHandler {
             try {
                 RandomAccessFile emptyFile = new RandomAccessFile("./shared_files/" + m.getIdGroup() + "/" + n.filenameDownloaded, "rw");
                 emptyFile.setLength(n.filesizeDownloaded);
+                emptyFile.close();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {

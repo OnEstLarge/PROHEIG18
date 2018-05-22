@@ -270,8 +270,16 @@ public class ServerPeerToPeer {
         void bye(PeerMessage pm) {
             if (peopleInServ.containsKey(pm.getIdFrom())) {
                 peopleInServ.remove(pm.getIdFrom());
-                if (clientIPPrivee.containsKey(pm.getIdFrom()))
+                if (clientIPPrivee.containsKey(pm.getIdFrom())) {
                     clientIPPrivee.remove(pm.getIdFrom());
+                }
+            }
+            try {
+                out.close();
+                in.close();
+                clientToSever.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
 
