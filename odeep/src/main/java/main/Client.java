@@ -931,7 +931,6 @@ public class Client extends Application {
         System.out.println("updateJsonAfterInvitation uploaded");
 
         Platform.runLater(new Runnable() {
-
             @Override
             public void run() {
                 controller.enableButtons();
@@ -990,16 +989,36 @@ public class Client extends Application {
     }
 
     public static void updateDownloadBar(double value) {
-        controller.updateDownloadBar(value);
+        final double v = value;
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                controller.updateDownloadBar(v);
+                if(Math.abs(v - 1.0) < 0.001) {
+                    controller.enableDownLoad();
+                }
+            }
+        });
+
     }
 
     public static void updateUploadBar(double value) {
-        controller.updateUploadBar(value);
+        final double v = value;
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                controller.updateUploadBar(v);
+            }
+        });
     }
 
     public static void clearUploadBar() {
-        controller.clearUploadBar();
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                controller.clearUploadBar();
+            }
+        });
     }
-
 
 }

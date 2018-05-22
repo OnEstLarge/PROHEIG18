@@ -72,13 +72,16 @@ public class SFILHandler implements MessageHandler {
             n.filenameDownloaded = fileInfo[0];
             n.numberPacketDownloaded = n.filesizeDownloaded / PeerMessage.MESSAGE_CONTENT_SIZE + 2;
             n.numberPacketCurrent = 0;
-            n.listPacket = new ArrayList<>(n.numberPacketDownloaded);
+            n.listPacket.clear();
+            for(int i = 0; i < n.numberPacketDownloaded; i++){
+                n.listPacket.add(false);
+            }
             System.out.println("Receiving " + fileInfo[0]);
             try {
                 RandomAccessFile emptyFile = new RandomAccessFile("./shared_files/" + m.getIdGroup() + "/" + n.filenameDownloaded, "rw");
                 emptyFile.setLength(n.filesizeDownloaded);
                 emptyFile.close();
-                n.listPacket.set(0, true);
+                n.listPacket.set(0,true);
                 n.numberPacketCurrent++;
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
