@@ -69,6 +69,22 @@ public class RootLayoutController implements Initializable {
         removeButton.setDisable(false);
     }
 
+    /**
+     * Désactive les boutons download et remove
+     */
+    public void disableDownloadRemove(){
+        downloadButton.setDisable(true);
+        removeButton.setDisable(true);
+    }
+
+    /**
+     * Réactive les boutons download et remove
+     */
+    public void enableDownLoad(){
+        downloadButton.setDisable(false);
+        removeButton.setDisable(false);
+    }
+
     public void setMainApp(Client mainApp) {
         this.mainApp = mainApp;
     }
@@ -250,10 +266,12 @@ public class RootLayoutController implements Initializable {
 
     /**
      * Handler appellé lorsque le bouton Télecharger est appuyé.
+     * Désactive les boutons Télécharger et Supprimer.
      * Envoie un message à la première personne du groupe demandant le fichier selectionné.
      */
     @FXML
     private void handleDownload(){
+        disableDownloadRemove();
         List<String> file =  middleList.getSelectionModel().getSelectedItems();
         String filename = file.get(0);
         File fileToDownload = new File("./shared_files/" + selectedGroup + "/" + filename);
