@@ -590,7 +590,7 @@ public class Client extends Application {
                         System.out.println("i'm out");
                     } else {
                         //System.out.println("Client redirect message " + pm.getType());
-                        final PeerMessage redirectPM = pm;
+                        final PeerMessage redirectPM = new PeerMessage(pm);
                         new Thread(new Runnable() {
                             @Override
                             public void run() {

@@ -128,6 +128,10 @@ public class PeerMessage {
         }
     }
 
+    public PeerMessage(PeerMessage pm) {
+        this(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), pm.getNoPacket(), pm.getMessageContent());
+    }
+
     /**
      * Vérifie que le format du type de message passé en argument soit correct.
      *
