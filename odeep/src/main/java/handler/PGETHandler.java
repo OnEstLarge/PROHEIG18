@@ -31,6 +31,7 @@ public class PGETHandler implements MessageHandler {
 
     @Override
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
+        System.out.println("PGET OMG");
         RandomAccessFile f = null;
         byte[] key = null;
         try {
