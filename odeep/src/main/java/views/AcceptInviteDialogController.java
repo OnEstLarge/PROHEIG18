@@ -50,10 +50,9 @@ public class AcceptInviteDialogController {
     }
 
     /**
-     * Désactive les boutons de la fenêtre initiale et renvoie true si jamais l'utilisateur
-     * a appuyé sur OK, false sinon.
+     * Désactive les boutons de la fenêtre initiale.
      *
-     * @return
+     * @return true si jamais le bouton OK a été appuyé, false sinon.
      */
     public boolean isOkClicked() {
         Client.getController().disableButtons();
