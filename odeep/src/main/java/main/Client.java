@@ -60,7 +60,6 @@ public class Client extends Application {
 
                     @Override
                     public void run() {
-                        System.out.println("Application Closed by click to Close Button(X)");
                         System.exit(0);
                     }
                 });
