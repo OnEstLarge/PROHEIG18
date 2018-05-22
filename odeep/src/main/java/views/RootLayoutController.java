@@ -324,7 +324,7 @@ public class RootLayoutController implements Initializable {
      */
     public void updateUploadBar(double value){
         uploadBar.setProgress(value);
-        uploadLabel.setText(String.valueOf(value * 10000 %1 / 100))
+        uploadLabel.setText(String.valueOf(value * 10000 % 1 / 100));
     }
 
     public void initialize(URL url, ResourceBundle rb) {}
