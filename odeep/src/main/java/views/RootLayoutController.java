@@ -308,6 +308,9 @@ public class RootLayoutController implements Initializable {
      */
     public void clearUploadBar(){
         uploadBar.setProgress(0);
+        downloadLabel.setText("0%");
+        uploadLabel.setText("0%");
+
     }
     /**
      * Met à jour la barre de progression pour le téléchargement du fichier
@@ -315,7 +318,7 @@ public class RootLayoutController implements Initializable {
      */
     public void updateDownloadBar(double value){
         downloadBar.setProgress(value);
-        downloadLabel.setText(String.valueOf(value * 10000 %1 / 100));
+        downloadLabel.setText(String.valueOf(value * 10000 %1 / 100) + "%");
     }
 
     /**
@@ -324,7 +327,7 @@ public class RootLayoutController implements Initializable {
      */
     public void updateUploadBar(double value){
         uploadBar.setProgress(value);
-        uploadLabel.setText(String.valueOf(value * 10000 %1 / 100))
+        uploadLabel.setText(String.valueOf(value * 10000 %1 / 100) + "%");
     }
 
     public void initialize(URL url, ResourceBundle rb) {}
