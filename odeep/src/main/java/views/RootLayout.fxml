@@ -58,10 +58,12 @@
    <bottom>
       <AnchorPane prefHeight="72.0" prefWidth="738.0" BorderPane.alignment="CENTER">
          <children>
-            <ProgressBar fx:id="downloadBar" layoutX="179.0" layoutY="48.0" prefHeight="20.0" prefWidth="556.0" progress="0.0" />
+            <ProgressBar fx:id="uploadBar" layoutX="179.0" layoutY="48.0" prefHeight="20.0" prefWidth="556.0" progress="0.0" />
             <Label layoutX="15.0" layoutY="25.0" text="Téléchargement" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="25.0" />
-            <ProgressBar fx:id="uploadBar" layoutX="179.0" layoutY="24.0" prefHeight="20.0" prefWidth="556.0" progress="0.0" AnchorPane.leftAnchor="179.0" AnchorPane.topAnchor="24.0" />
+            <ProgressBar fx:id="downloadBar" layoutX="179.0" layoutY="24.0" prefHeight="20.0" prefWidth="556.0" progress="0.0" AnchorPane.leftAnchor="179.0" AnchorPane.topAnchor="24.0" />
             <Label layoutX="15.0" layoutY="49.0" text="Upload" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="49.0" />
+            <Label fx:id="downloadPercent" layoutX="423.0" layoutY="25.0" text="0%" AnchorPane.leftAnchor="423.0" AnchorPane.topAnchor="25.0" />
+            <Label fx:id="uploadPercent" layoutX="423.0" layoutY="49.0" text="0%" AnchorPane.leftAnchor="423.0" AnchorPane.topAnchor="49.0" />
          </children>
       </AnchorPane>
    </bottom>
