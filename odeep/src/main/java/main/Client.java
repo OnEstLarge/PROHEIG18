@@ -588,13 +588,19 @@ public class Client extends Application {
     //Classe permettant de threader la lecture des packets server
     private static class ReadFromServer implements Runnable {
         public void run() {
-            int read;
+            //int read;
             byte[] buffer = new byte[4096];
 
             System.out.println("Start reading in main.Client.ReadFromServer");
             try {
                 synchronized (in) {
-                    while ((read = in.read(buffer, 0, 4096)) != -1) {
+                    while(true) {
+                        int read = 0;
+                        while(read != PeerMessage.BLOCK_SIZE) {
+                            read += in.read(buffer, read, buffer.length - read);
+                        }
+                        //}
+                        //while ((read = in.read(buffer, 0, 4096)) != -1) {
 
                         PeerMessage pm = new PeerMessage(buffer);
                         if (read != 4096)
@@ -624,12 +630,13 @@ public class Client extends Application {
                             }).start();
                         }
                         try {
-                            Thread.sleep(1);
+                            Thread.sleep(10);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
+                        //}
                     }
-                    System.out.println("End of reading in main.Client.ReadFromServer");
+                    //System.out.println("End of reading in main.Client.ReadFromServer");
 
                 }
             }catch (IOException e) {
