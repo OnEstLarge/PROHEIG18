@@ -991,6 +991,9 @@ public class Client extends Application {
 
     public static void updateDownloadBar(double value) {
         controller.updateDownloadBar(value);
+        if(Math.abs(value - 1.0) < 0.001) {
+            controller.enableDownLoad();
+        }
     }
 
     public static void updateUploadBar(double value) {
@@ -1000,6 +1003,5 @@ public class Client extends Application {
     public static void clearUploadBar() {
         controller.clearUploadBar();
     }
-
 
 }
