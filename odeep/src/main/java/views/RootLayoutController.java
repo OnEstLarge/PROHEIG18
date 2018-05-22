@@ -47,6 +47,12 @@ public class RootLayoutController implements Initializable {
     @FXML
     private Button removeButton;
 
+    @FXML
+    private ProgressBar downloadBar;
+
+    @FXML
+    private ProgressBar uploadBar;
+
     /**
      * Désactive tous les boutons de l'interface.
      */
@@ -281,6 +287,35 @@ public class RootLayoutController implements Initializable {
         else{
             mainApp.requestFile(filename, selectedGroup);
         }
+    }
+
+    /**
+     * Remet la barre de progression pour le téléchargement à 0
+     */
+    public void clearDownloadBar(){
+        downloadBar.setProgress(0);
+    }
+
+    /**
+     * Remet la barre de progression pour l'upload à 0
+     */
+    public void clearUploadBar(){
+        uploadBar.setProgress(0);
+    }
+    /**
+     * Met à jour la barre de progression pour le téléchargement du fichier
+     * @param value la progression du téléchargement
+     */
+    public void updateDownloadBar(double value){
+        downloadBar.setProgress(value);
+    }
+
+    /**
+     * Met à jour la barre de progression pour l'upload du fichier
+     * @param value la progression de l'upload
+     */
+    public void updateUploadBar(double value){
+        uploadBar.setProgress(value);
     }
 
     public void initialize(URL url, ResourceBundle rb) {}
