@@ -162,6 +162,8 @@ public class Node {
             String fileInfo = filename + ":" + Long.toString(fileSize);
             byte[] cipherFileInfo = CipherUtil.AESEncrypt(fileInfo.getBytes(), key);
 
+            Client.clearUploadBar();
+
             Client.sendPM(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherFileInfo));
             //this.createTempConnection(pi, new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherFileInfo));
 
@@ -183,6 +185,7 @@ public class Node {
                 byte[] cipherMes = CipherUtil.AESEncrypt(newMes, key);
                 PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
                 System.out.println("sending : " + filename + " : " + 100.0 * i / (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE) + "%");
+                Client.updateUploadBar(i / (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE));
                 Client.sendPM(p);
                 //this.createTempConnection(pi, p);
                 try {
@@ -200,6 +203,9 @@ public class Node {
             byte[] cipherMes = CipherUtil.AESEncrypt(lastMes, key);
             PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
             Client.sendPM(p);
+            PeerMessage pm = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, 99999999, cipherMes);
+            Client.sendPM(pm);
+            Client.updateUploadBar(1.0);
             //this.createTempConnection(pi, p);
         //}
     }
