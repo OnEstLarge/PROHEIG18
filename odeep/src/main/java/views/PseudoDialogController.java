@@ -22,13 +22,13 @@ public class PseudoDialogController {
     private TextField userPseudoField;
 
     @FXML
-    private void initialize() {
-    }
-
-
+    private void initialize() {}
 
     /**
-     * Sets the stage of this dialog.
+     * Défini la scene de cette fenête de dialogue et ajoute le logo de l'application
+     * à la fenêtre.
+     * Change le fonctionnement de la fenêtre pour quitter l'application en cas de fermeture de la
+     * fenêtre.
      *
      * @param dialogStage
      */
@@ -47,16 +47,18 @@ public class PseudoDialogController {
     }
 
     /**
-     * Returns true if the user clicked OK, false otherwise.
-     *
-     * @return
+     * @return true si jamais le nom est correct, false sinon.
      */
     public boolean isNameOK() {
         return nameOK;
     }
 
     /**
-     * Called when the user clicks ok.
+     * Handler appellé quand l'utilisateur appuye sur le boutton OK.
+     * Vérifie si jamais le nom de l'utilisateur est correct en appellant la fonction isInputValid().
+     * Si jamais elles sont correctes, récupere le nom d'utilisateur, crée l'arborésence si
+     * jamais elle n'existe pas et ferme la fenêtre.
+     *
      */
     @FXML
     private void handleOk() {
@@ -68,7 +70,6 @@ public class PseudoDialogController {
 
         dialogStage.close();
 
-        // TODO: créer les dossiers nécessaire
         String dir = "./shared_files";
         File file = new File(dir);
 
@@ -77,6 +78,12 @@ public class PseudoDialogController {
         }
     }
 
+    /**
+     * Vérifie si le nom de l'utilisateur est correct. La longueur de celui-ci est défini dans PeerMessage.
+     * Si jamais le nom n'est pas valide, affiche une fenêtre d'erreur.
+     *
+     * @return true si jamais le nom est correct, false sinon.
+     */
     private boolean isInputValid(){
         String errorMessage = "";
         String pseudo = userPseudoField.getText();
