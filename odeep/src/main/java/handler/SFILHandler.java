@@ -21,6 +21,7 @@ import util.CipherUtil;
 import Node.Node;
 
 import java.io.*;
+import java.util.ArrayList;
 
 /**
  * Classe permettant le traitement d'un message de type SFIL
@@ -69,16 +70,24 @@ public class SFILHandler implements MessageHandler {
             String[] fileInfo = new String(rcv).split(":");
             n.filesizeDownloaded = Integer.parseInt(fileInfo[1]);
             n.filenameDownloaded = fileInfo[0];
+            n.numberPacketDownloaded = n.filesizeDownloaded / PeerMessage.MESSAGE_CONTENT_SIZE + 2;
+            n.numberPacketCurrent = 0;
+            n.listPacket = new ArrayList<>(n.numberPacketDownloaded);
             System.out.println("Receiving " + fileInfo[0]);
             try {
                 RandomAccessFile emptyFile = new RandomAccessFile("./shared_files/" + m.getIdGroup() + "/" + n.filenameDownloaded, "rw");
                 emptyFile.setLength(n.filesizeDownloaded);
                 emptyFile.close();
+                n.listPacket.set(0, true);
+                n.numberPacketCurrent++;
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+        else if(m.getNoPacket() == 99999999){
+            n.checkPacket(m);
         }
         //on stocke les autres paquets dans le fichier de sortie
         else {
@@ -87,9 +96,12 @@ public class SFILHandler implements MessageHandler {
                 raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * (m.getNoPacket() - 1));
                 raf.write(rcv);
                 raf.close();
+                n.listPacket.set(m.getNoPacket(), true);
+                n.numberPacketCurrent++;
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
+        Client.updateDownloadBar((double) n.numberPacketCurrent / n.numberPacketDownloaded)
     }
 }
