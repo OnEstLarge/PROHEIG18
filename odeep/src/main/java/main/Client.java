@@ -989,5 +989,17 @@ public class Client extends Application {
         n.requestFile(file, group);
     }
 
+    public static void updateDownloadBar(double value) {
+        controller.updateDownloadBar(value);
+    }
+
+    public static void updateUploadBar(double value) {
+        controller.updateUploadBar(value);
+    }
+
+    public static void clearUploadBar() {
+        controller.clearUploadBar();
+    }
+
 
 }
