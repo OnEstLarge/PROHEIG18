@@ -54,10 +54,10 @@ public class RootLayoutController implements Initializable {
     private ProgressBar uploadBar;
 
     @FXML
-    private Label downloadLabel;
+    private Label downloadPercent;
 
     @FXML
-    private Label uploadLabel;
+    private Label uploadPercent;
 
     /**
      * Désactive tous les boutons de l'interface.
@@ -308,6 +308,9 @@ public class RootLayoutController implements Initializable {
      */
     public void clearUploadBar(){
         uploadBar.setProgress(0);
+        downloadPercent.setText("0%");
+        uploadPercent.setText("0%");
+
     }
     /**
      * Met à jour la barre de progression pour le téléchargement du fichier
@@ -315,7 +318,7 @@ public class RootLayoutController implements Initializable {
      */
     public void updateDownloadBar(double value){
         downloadBar.setProgress(value);
-        downloadLabel.setText(String.valueOf(value * 10000 %1 / 100));
+        downloadPercent.setText(String.valueOf(((value * 10000) %1) / 100.0) + "%");
     }
 
     /**
@@ -324,7 +327,8 @@ public class RootLayoutController implements Initializable {
      */
     public void updateUploadBar(double value){
         uploadBar.setProgress(value);
-        uploadLabel.setText(String.valueOf(value * 10000 % 1 / 100));
+
+        uploadPercent.setText(String.valueOf(((value * 10000) %1) / 100.0) + "%");
     }
 
     public void initialize(URL url, ResourceBundle rb) {}
