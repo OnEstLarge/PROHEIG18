@@ -282,10 +282,16 @@ public class Node {
             }
         }
         if(!allPacketOk){
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             checkPacket(pm);
         }
         else{
-            Client.updateDownloadBar(1);
+            Client.updateDownloadBar(1.0);
+            System.out.println("STOP");
         }
     }
 
