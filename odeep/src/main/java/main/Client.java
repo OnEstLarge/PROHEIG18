@@ -387,8 +387,10 @@ public class Client extends Application {
         PeerMessage availaibleUsername = new PeerMessage(MessageType.USRV, "XXXXXX", username, "XXXXXX", 0, "".getBytes());
 
         try {
-            out.write(availaibleUsername.getFormattedMessage());
-            out.flush();
+            synchronized (out) {
+                out.write(availaibleUsername.getFormattedMessage());
+                out.flush();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -422,8 +424,10 @@ public class Client extends Application {
         PeerMessage availaibleGroupID = new PeerMessage(MessageType.NEWG, groupID, myUsername, "XXXXXX", 0, "".getBytes());
 
         try {
-            out.write(availaibleGroupID.getFormattedMessage());
-            out.flush();
+            synchronized (out) {
+                out.write(availaibleGroupID.getFormattedMessage());
+                out.flush();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -491,8 +495,9 @@ public class Client extends Application {
             clientSocketToServerPublic = new Socket(ip, port);
             System.out.println("Connected to server");
             in = new BufferedInputStream(clientSocketToServerPublic.getInputStream());
-            out = new BufferedOutputStream(clientSocketToServerPublic.getOutputStream());
-
+            synchronized (out) {
+                out = new BufferedOutputStream(clientSocketToServerPublic.getOutputStream());
+            }
             communicationReady = true;
             //we have a pseudo after this
             System.out.println("get pseudo");
@@ -502,8 +507,10 @@ public class Client extends Application {
             //Greetings to server, receivinig response
             System.out.println("aaaa" + localIP);
             PeerMessage greetings = new PeerMessage(MessageType.HELO, "XXXXXX", myUsername, "XXXXXX", 0, localIP.getBytes());
-            out.write(greetings.getFormattedMessage());
-            out.flush();
+            synchronized (out) {
+                out.write(greetings.getFormattedMessage());
+                out.flush();
+            }
 
 
         } catch (IOException e) {
@@ -635,8 +642,10 @@ public class Client extends Application {
     private static String askForInfos(String pseudo) {
         PeerMessage askInfo = new PeerMessage(MessageType.INFO, "XXXXXX", myUsername, myUsername, "".getBytes());
         try {
-            out.write(askInfo.getFormattedMessage());
-            out.flush();
+            synchronized (out) {
+                out.write(askInfo.getFormattedMessage());
+                out.flush();
+            }
             while (response == null) {
                 try {
                     Thread.sleep(100);
@@ -680,8 +689,10 @@ public class Client extends Application {
             System.out.println("UPLOADING did read file");
             uploadMessage = new PeerMessage(MessageType.UPLO, groupID, idFrom, idFrom, configFileByte);
             System.out.println("UPLOAD " + new String(uploadMessage.getFormattedMessage()));
-            out.write(uploadMessage.getFormattedMessage());
-            out.flush();
+            synchronized (out) {
+                out.write(uploadMessage.getFormattedMessage());
+                out.flush();
+            }
 
             broadcastUpdate(idFrom, groupID);
 
@@ -708,8 +719,10 @@ public class Client extends Application {
                     System.out.println("FUCK YOU " + person.getID() + person.getID().length() + "  " + myUsername + myUsername.length());
                     PeerMessage pm = new PeerMessage(MessageType.UPDT, group.getID(), idFrom, person.getID(), "".getBytes());
                     try {
-                        out.write(pm.getFormattedMessage());
-                        out.flush();
+                        synchronized (out) {
+                            out.write(pm.getFormattedMessage());
+                            out.flush();
+                        }
                         //Thread.sleep(100);
                     } catch (IOException e) {
                         System.out.println(e.getMessage());
@@ -731,8 +744,10 @@ public class Client extends Application {
             while(waitingJsonFromServer) {
                 System.out.println("I want to download");
                 // Averti le serveur que le client désire avoir le fichier 'config.json'
-                out.write(downloadMessage.getFormattedMessage());
-                out.flush();
+                synchronized (out) {
+                    out.write(downloadMessage.getFormattedMessage());
+                    out.flush();
+                }
                 int count = 0;
 
                 while (waitingJsonFromServer && count < 20) {
@@ -811,8 +826,10 @@ public class Client extends Application {
 
             try {
                 System.out.println("I send an invitation for user " + username + " in group " + groupID);
-                out.write(invitePM.getFormattedMessage());
-                out.flush();
+                synchronized (out) {
+                    out.write(invitePM.getFormattedMessage());
+                    out.flush();
+                }
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -825,8 +842,10 @@ public class Client extends Application {
 
         try {
             System.out.println("I accept an invitation for user " + usernameFrom + " in group " + groupID);
-            out.write(acceptInvitePM.getFormattedMessage());
-            out.flush();
+            synchronized (out) {
+                out.write(acceptInvitePM.getFormattedMessage());
+                out.flush();
+            }
 
             // Crée le groupe localement
             String dir = "./shared_files/" + groupID;
@@ -899,8 +918,10 @@ public class Client extends Application {
 
     public static void sendPM(PeerMessage pm) {
         try {
-            out.write(pm.getFormattedMessage());
-            out.flush();
+            synchronized (out) {
+                out.write(pm.getFormattedMessage());
+                out.flush();
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
