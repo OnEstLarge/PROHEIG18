@@ -84,11 +84,11 @@ public class ServerPeerToPeer {
 
                 while (true) {
                     int read = 0;
-                    //while (read != PeerMessage.BLOCK_SIZE) {
-                    //    int lu;
-                        /*lu = */in.read(bufferIn, 0, bufferIn.length);
-                    //    read += lu;
-                    //}
+                    while (read != PeerMessage.BLOCK_SIZE) {
+                        int lu;
+                        lu = in.read(bufferIn, 0, bufferIn.length);
+                        read += lu;
+                    }
                     read = 0;
                     PeerMessage pm = new PeerMessage(bufferIn);
                     String type = pm.getType();
@@ -125,12 +125,16 @@ public class ServerPeerToPeer {
                             //System.out.println("Test : ajout " + ajout);
                             if (ajout == 1) {
                                 //System.out.println("envoi du true");
-                                out.write((new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "true".getBytes())).getFormattedMessage());
-                                out.flush();
+                                synchronized (out) {
+                                    out.write((new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "true".getBytes())).getFormattedMessage());
+                                    out.flush();
+                                }
                             } else {
                                 //System.out.println("envoi du false");
-                                out.write((new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "false".getBytes())).getFormattedMessage());
-                                out.flush();
+                                synchronized (out) {
+                                    out.write((new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "false".getBytes())).getFormattedMessage());
+                                    out.flush();
+                                }
                             }
 
                             break;
@@ -167,8 +171,10 @@ public class ServerPeerToPeer {
                           //  for(int i = 0; i < nbBlock;++i) {
                             PeerMessage jsonPm = new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), bufferJson);
                             System.out.println(new String(jsonPm.getMessageContent()) + "  " + jsonPm.getMessageContent().length);
-                            out.write(jsonPm.getFormattedMessage() );
-                            out.flush();
+                            synchronized (out) {
+                                out.write(jsonPm.getFormattedMessage());
+                                out.flush();
+                            }
                             //}
 
                             /*
@@ -211,12 +217,14 @@ public class ServerPeerToPeer {
             int validation = DatabaseUtil.addUserIfNotExists(pm.getIdFrom());
             //System.out.println("validation ngggggg");
             try {
-                if (validation == 1) {
-                    out.write(new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "true".getBytes()).getFormattedMessage());
-                } else {
-                    out.write(new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "false".getBytes()).getFormattedMessage());
+                synchronized (out) {
+                    if (validation == 1) {
+                        out.write(new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "true".getBytes()).getFormattedMessage());
+                    } else {
+                        out.write(new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "false".getBytes()).getFormattedMessage());
+                    }
+                    out.flush();
                 }
-                out.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -233,16 +241,19 @@ public class ServerPeerToPeer {
             //System.out.println("giveInfo " + pm.getIdFrom() + " " + pm.getType());
             if (clientIPPrivee.containsKey(pm.getIdTo())) {
                 try {
-
-                    out.write(new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), clientIPPrivee.get(pm.getIdTo()).getBytes()).getFormattedMessage());
-                    out.flush();
+                    synchronized (out) {
+                        out.write(new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), clientIPPrivee.get(pm.getIdTo()).getBytes()).getFormattedMessage());
+                        out.flush();
+                    }
                 } catch (IOException e) {
                     //System.out.println(e.getMessage());
                 }
             } else {
                 try {
-                    out.write(new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "".getBytes()).getFormattedMessage());
-                    out.flush();
+                    synchronized (out) {
+                        out.write(new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "".getBytes()).getFormattedMessage());
+                        out.flush();
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -263,8 +274,10 @@ public class ServerPeerToPeer {
             } else if (pm.getType().equals(MessageType.INVI)) {
                 try {
                     PeerMessage nok = new PeerMessage(MessageType.DISC, pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), ("").getBytes());
-                    out.write(nok.getFormattedMessage());
-                    out.flush();
+                    synchronized (out) {
+                        out.write(nok.getFormattedMessage());
+                        out.flush();
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

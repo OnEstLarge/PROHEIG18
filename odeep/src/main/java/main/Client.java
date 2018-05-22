@@ -576,44 +576,46 @@ public class Client extends Application {
 
             System.out.println("Start reading in main.Client.ReadFromServer");
             try {
-                while ((read = in.read(buffer, 0, 4096)) != -1) {
+                synchronized (in) {
+                    while ((read = in.read(buffer, 0, 4096)) != -1) {
 
-                    PeerMessage pm = new PeerMessage(buffer);
-                    if(read != 4096)
-                        System.out.println(read);
-                    //System.out.println("type message received = " + pm.getType());
+                        PeerMessage pm = new PeerMessage(buffer);
+                        if (read != 4096)
+                            System.out.println(read);
+                        //System.out.println("type message received = " + pm.getType());
 
-                    if (pm.getType().equals(MessageType.INFO)) {
-                        System.out.println("Received info, writing in response static");
-                        response = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
-                    } else if (pm.getType().equals(MessageType.NEWG)) {
-                        String resp = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
-                        validationGroup = resp.equals("true") ? true : false;
-                        waitingForGroupValidation = false;
-                    } else if (pm.getType().equals(MessageType.DOWN)) {
-                        System.out.println("i'm in");
-                        saveReceivedJson(pm);
-                        waitingJsonFromServer = false;
-                        System.out.println("i'm out");
-                    } else {
-                        //System.out.println("Client redirect message " + pm.getType());
-                        final PeerMessage redirectPM = new PeerMessage(pm);
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                redirectToHandler(redirectPM, n, new PeerConnection(clientSocketToServerPublic));
-                            }
-                        }).start();
+                        if (pm.getType().equals(MessageType.INFO)) {
+                            System.out.println("Received info, writing in response static");
+                            response = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
+                        } else if (pm.getType().equals(MessageType.NEWG)) {
+                            String resp = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
+                            validationGroup = resp.equals("true") ? true : false;
+                            waitingForGroupValidation = false;
+                        } else if (pm.getType().equals(MessageType.DOWN)) {
+                            System.out.println("i'm in");
+                            saveReceivedJson(pm);
+                            waitingJsonFromServer = false;
+                            System.out.println("i'm out");
+                        } else {
+                            //System.out.println("Client redirect message " + pm.getType());
+                            final PeerMessage redirectPM = new PeerMessage(pm);
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    redirectToHandler(redirectPM, n, new PeerConnection(clientSocketToServerPublic));
+                                }
+                            }).start();
+                        }
+                        try {
+                            Thread.sleep(1);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
-                    try {
-                        Thread.sleep(1);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    System.out.println("End of reading in main.Client.ReadFromServer");
+
                 }
-                System.out.println("End of reading in main.Client.ReadFromServer");
-
-            } catch (IOException e) {
+            }catch (IOException e) {
                 System.out.println(e.getMessage());
             } finally {
                 System.out.println("ERROR STOPPED LISTENING TO SERVER PUBLIC");
