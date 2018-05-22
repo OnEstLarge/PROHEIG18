@@ -1,6 +1,5 @@
 package views;
 
-import User.Person;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -8,7 +7,6 @@ import javafx.stage.Stage;
 
 import main.Client;
 import peer.PeerMessage;
-import sun.dc.path.PathError;
 
 public class InviteDialogController {
 
@@ -22,11 +20,11 @@ public class InviteDialogController {
     private TextField newUserPseudoField;
 
     @FXML
-    private void initialize() {
-    }
+    private void initialize() {}
 
     /**
-     * Sets the stage of this dialog.
+     * Défini la scene de cette fenête de dialogue et ajoute le logo de l'application
+     * à la fenêtre.
      *
      * @param dialogStage
      */
@@ -36,16 +34,15 @@ public class InviteDialogController {
     }
 
     /**
-     * Returns true if the user clicked OK, false otherwise.
-     *
-     * @return
+     * @return true si jamais le bouton OK a été pressé, false sinon.
      */
     public boolean isOkClicked() {
         return okClicked;
     }
 
     /**
-     * Called when the user clicks cancel.
+     * Handler appellé quand l'utilisateur appuye sur Annuler. Réactive les boutons et
+     * ferme la fenêtre.
      */
     @FXML
     private void handleCancel() {
@@ -53,18 +50,30 @@ public class InviteDialogController {
         dialogStage.close();
     }
 
+    /**
+     * Permet d'ajouter le groupe au menu déroulant.
+     *
+     * @param name le nom du groupe à ajouter
+     */
     @FXML
     public void addGroupNameToCombo(String name) {
         comboBox.getItems().add(name);
     }
 
+    /**
+     * Efface tout le contenu du menu déroulant
+     */
     @FXML
     public void clearCombo() {
         comboBox.getItems().clear();
     }
 
     /**
-     * Called when the user clicks ok.
+     * Handler appelé si jamais l'utilisateur appuie sur le bouton OK.
+     * Appelle la fonction isInputValid() pour vérifier les entrées utilisateur.
+     * Si elles sont correctes, envoie une invitation à l'utilisateur,
+     * réactive les boutons et ferme la fenêtre.
+     * Si jamais les informations ne sont pas valides, ne fait rien.
      */
     @FXML
     private void handleOk() {
@@ -78,6 +87,12 @@ public class InviteDialogController {
         }
     }
 
+    /**
+     * Vérifie les informations entrées par l'utilisateur. Si jamais ce n'est pas le cas, affiche un message d'erreur.
+     * Le nom de l'utilisateur doit être de bonne longueur (taille définie dans PeerMessage).
+     *
+     * @return True si jamais les champs sont corrects, false sinon.
+     */
     private boolean isInputValid() {
         if (!PeerMessage.isValidIdFormat(newUserPseudoField.getText(), PeerMessage.ID_MIN_LENGTH, PeerMessage.ID_MAX_LENGTH)) {
             String errorMessage = "Nom d'utilisateur invalide. Il doit contenir entre " + PeerMessage.ID_MIN_LENGTH + " et " + PeerMessage.ID_MAX_LENGTH + " caractères.\n";

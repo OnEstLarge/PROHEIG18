@@ -12,18 +12,8 @@ public class AcceptInviteDialogController {
     private Stage dialogStage;
     private boolean okClicked = false;
 
-    public void setGroupID(String groupID) {
-        this.groupID = groupID;
-    }
-
-    public void setIdFrom(String idFrom) {
-        this.idFrom = idFrom;
-    }
-
     private String groupID;
     private String idFrom;
-
-
 
     @FXML
     private Label messageLabel;
@@ -33,11 +23,20 @@ public class AcceptInviteDialogController {
     }
 
     @FXML
-    private void initialize() {
+    private void initialize() {}
+
+    public void setGroupID(String groupID) {
+        this.groupID = groupID;
+    }
+
+    public void setIdFrom(String idFrom) {
+        this.idFrom = idFrom;
     }
 
     /**
-     * Sets the stage of this dialog.
+     * Défini la scene de cette fenête de dialogue et change le comportement
+     * de la fenêtre lors d'une demande de fermeture.Celle-ci
+     * doit lancer le handle comme si l'invitation a été refusée.
      *
      * @param dialogStage
      */
@@ -51,9 +50,9 @@ public class AcceptInviteDialogController {
     }
 
     /**
-     * Returns true if the user clicked OK, false otherwise.
+     * Désactive les boutons de la fenêtre initiale.
      *
-     * @return
+     * @return true si jamais le bouton OK a été appuyé, false sinon.
      */
     public boolean isOkClicked() {
         Client.getController().disableButtons();
@@ -61,22 +60,20 @@ public class AcceptInviteDialogController {
     }
 
     /**
-     * Called when the user clicks cancel.
+     * Handler appelé lorsque le bouton refusé est appuyé ce qui ferme la fenêtre.
      */
     @FXML
     private void handleRefuse() {
-        System.out.println("refusé");
         dialogStage.close();
     }
 
     /**
-     * Called when the user clicks ok.
+     * Appellé quand le bouton accepté est appuyé, change la valeur du boolean okClicked, notifie
+     * l'utilisateur étant à la source de l'invitation puis ferme la fenêtre.
      */
     @FXML
     private void handleOk() {
-        // TODO: ajouter le groupe sur l'interface et récuperer les fichiers.
         okClicked = true;
-        System.out.println("accepté");
         Client.acceptInvite(idFrom, groupID);
         dialogStage.close();
 
