@@ -1,17 +1,14 @@
 package views;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.*;
-
 import User.Person;
 import User.Group;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import main.Client;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -22,7 +19,6 @@ public class RootLayoutController implements Initializable {
 
     private Client mainApp;
     private static List<ListView> listView = new ArrayList();
-    private Stage dialogStage;
     private String selectedGroup;
 
     private HashMap<String, List<String>> mapFile = new HashMap<String, List<String>>();
@@ -51,6 +47,9 @@ public class RootLayoutController implements Initializable {
     @FXML
     private Button removeButton;
 
+    /**
+     * Désactive tous les boutons de l'interface.
+     */
     public void disableButtons(){
         downloadButton.setDisable(true);
         inviteButton.setDisable(true);
@@ -59,6 +58,9 @@ public class RootLayoutController implements Initializable {
         removeButton.setDisable(true);
     }
 
+    /**
+     * Réactive tous les boutons de l'interface.
+     */
     public void enableButtons(){
         downloadButton.setDisable(false);
         inviteButton.setDisable(false);
@@ -71,32 +73,40 @@ public class RootLayoutController implements Initializable {
         this.mainApp = mainApp;
     }
 
+    /**
+     * Handler appelé lorsque le bouton Créer est appuyé.
+     * Crée un groupe portant le nom entré par l'utilisateur.
+     * Si jamais le nom est incorrect, affiche une fenêtre d'erreur. La taille du nom est défini dans PeerMessage.
+     * Demande au serveur si jamais le nom est disponible. Affiche une erreur si ce n'est pas le cas.
+     * Si il est correct, ajoute le groupe à l'Accordéon sur l'interface de base et ajoute l'utilisateur au groupe.
+     * Ajoute un action listener à l'élément créé afin d'afficher la liste des fichiers du groupe dans la partie
+     * centrale de l'interface lorsque le groupe est selectionné.
+     * Met à jour les fichiers et les groupes affichés dans l'interface à la fin de la fonction.
+     *
+     */
     @FXML
     private void handleCreateButtonAction() {
         String errorMsg = "";
         if (!Client.createGroup(groupNameField.getText()) ) {
-            errorMsg += "Le nom de groupe doit contenir entre " + PeerMessage.ID_GROUP_MIN_LENGTH + " et " + PeerMessage.ID_GROUP_MAX_LENGTH + " caractères.\n";
+            errorMsg += "Le nom de groupe doit contenir entre " + PeerMessage.ID_GROUP_MIN_LENGTH + " et " + PeerMessage.ID_GROUP_MAX_LENGTH + " caractères et doit être unique.\n";
         } else {
             TitledPane pane = new TitledPane();
             final ListView view = new ListView();
 
-            // TODO: s'ajouter au groupe et mettre les fichiers dispo a jour.
             listView.add(view);
             final String groupName = groupNameField.getText();
             view.setId(groupName);
             pane.setText(groupName);
             pane.setContent(view);
             pane.setCollapsible(true);
-            mapFile.put(groupName, new ArrayList<String>()); // TODO: ajouter les fichiers de l'utilisateur.
+            mapFile.put(groupName, new ArrayList<String>());
 
-            // Display the files availables in the group in the middle pane when the group is selected.
+            // Affiche tous les fichier du groupe dans la partie centrale de l'interface quand le groupe est selectionné.
             pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
                     selectedGroup = view.getId();
                     middleList.getItems().clear();
-                    System.out.println(middleList.getItems());
-                    System.out.println(mapFile.toString());
                     if (mapFile.containsKey(groupName) && mapFile.get(groupName) != null) {
                         List<String> files = mapFile.get(groupName);
                         for (String s : files) {
@@ -109,7 +119,6 @@ public class RootLayoutController implements Initializable {
         }
         if (errorMsg.length() != 0) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.initOwner(dialogStage);
             alert.setTitle("Champ invalide");
             alert.setHeaderText("Veuillez corriger les champs invalides!");
             alert.setContentText(errorMsg);
@@ -120,6 +129,9 @@ public class RootLayoutController implements Initializable {
         updateGroupsAndFiles();
     }
 
+    /**
+     * Remplis la Map en associant un groupe à une liste fichiers.
+     */
     private void fillFileMap() {
         for (Group g : mainApp.getGroups()) {
             List<String> files = new ArrayList<String>();
@@ -134,7 +146,9 @@ public class RootLayoutController implements Initializable {
         }
     }
 
-    // On remet à jour les groupes dans le menu déroulant et les fichiers
+    /**
+     * Remet à jour les groupes et les fichiers dans l'interface graphique.
+     */
     public void updateGroupsAndFiles(){
         accordion.getPanes().clear();
         listView.clear();
@@ -156,7 +170,7 @@ public class RootLayoutController implements Initializable {
             pane.setContent(view);
             pane.setCollapsible(true);
 
-            // Display the files availables in the group in the middle pane when the group is selected.
+            // Affiche tous les fichier du groupe dans la partie centrale de l'interface quand le groupe est selectionné.
             pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
@@ -176,6 +190,10 @@ public class RootLayoutController implements Initializable {
         }
     }
 
+    /**
+     * Handler appellé lorsque le bouton Inviter est appuyé.
+     * Désactive les boutons, affiche la fenêtre d'invitation puis réactive les boutons.
+     */
     @FXML
     private void handleInvite() {
         disableButtons();
@@ -183,19 +201,23 @@ public class RootLayoutController implements Initializable {
         enableButtons();
     }
 
-
+    /**
+     * Handler appellé losque le bouton Ajouter un fichier est appuyé.
+     * Affiche un explorateur de fichier permettant de choisir le fichier à ajouter.
+     * Tous les types de fichiers sont acceptés. Ajoute le fichier dans le groupe sélectionné.
+     */
     @FXML
     private void handleAdd() {
         FileChooser fileChooser = new FileChooser();
 
-        // Set the name of the window
-        fileChooser.setTitle("Choose file to add");
+        // Défini le nom de la fenêtre
+        fileChooser.setTitle("Choississez le fichier à ajouter");
 
-        // Set extension filter
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("All", "*.*");
+        // Défini les extensions à traiter
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Tous", "*.*");
         fileChooser.getExtensionFilters().add(extFilter);
 
-        // Show open file dialog
+        // Affiche la fenêtre de dialogue
         File file = fileChooser.showOpenDialog(mainApp.getPrimaryStage());
 
         if (file != null && mapFile.containsKey(selectedGroup)) {
@@ -205,23 +227,33 @@ public class RootLayoutController implements Initializable {
         }
     }
 
+    /**
+     * Handler appellé quand le bouton Supprimer le fichier est appuyé.
+     * Supprime le fichier selectionné.
+     */
     @FXML
     private void handleRemove() {
         List<String> file =  middleList.getSelectionModel().getSelectedItems();
         if(mapFile.containsKey(selectedGroup)){
-            System.out.println("DDDDEEEELLLIIITTTIIINNNGGGG " + file.get(0));
             InterfaceUtil.removeFile(file.get(0), Client.getUsername(), Client.getGroupById(selectedGroup));
             mapFile.get(selectedGroup).remove(file.get(0));
             middleList.getItems().remove(file.get(0));
-            //InterfaceUtil.removeFile(file.get(0), Client.getUsername(), Client.getGroupById(selectedGroup));
         }
     }
 
+    /**
+     * Handler appelé quand l'utilisateur clique sur l'option Quitter.
+     * Ferme l'application.
+     */
     @FXML
     private void handleQuit() {
         System.exit(1);
     }
 
+    /**
+     * Handler appellé lorsque le bouton Télecharger est appuyé.
+     * Envoie un message à la première personne du groupe demandant le fichier selectionné.
+     */
     @FXML
     private void handleDownload(){
         List<String> file =  middleList.getSelectionModel().getSelectedItems();
@@ -235,6 +267,5 @@ public class RootLayoutController implements Initializable {
         }
     }
 
-    public void initialize(URL url, ResourceBundle rb) {
-    }
+    public void initialize(URL url, ResourceBundle rb) {}
 }
