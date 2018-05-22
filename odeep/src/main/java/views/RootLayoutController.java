@@ -176,8 +176,6 @@ public class RootLayoutController implements Initializable {
                 public void handle(MouseEvent event) {
                     selectedGroup = view.getId();
                     middleList.getItems().clear();
-                    System.out.println(middleList.getItems());
-                    System.out.println(mapFile.toString());
                     if (mapFile.containsKey(g.getID()) && mapFile.get(g.getID()) != null) {
                         List<String> files = mapFile.get(g.getID());
                         for (String s : files) {
