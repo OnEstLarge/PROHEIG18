@@ -47,6 +47,12 @@ public class RootLayoutController implements Initializable {
     @FXML
     private Button removeButton;
 
+    @FXML
+    private ProgressBar downloadBar;
+
+    @FXML
+    private ProgressBar uploadBar;
+
     /**
      * Désactive tous les boutons de l'interface.
      */
@@ -66,6 +72,22 @@ public class RootLayoutController implements Initializable {
         inviteButton.setDisable(false);
         createButton.setDisable(false);
         addButton.setDisable(false);
+        removeButton.setDisable(false);
+    }
+
+    /**
+     * Désactive les boutons download et remove
+     */
+    public void disableDownloadRemove(){
+        downloadButton.setDisable(true);
+        removeButton.setDisable(true);
+    }
+
+    /**
+     * Réactive les boutons download et remove
+     */
+    public void enableDownLoad(){
+        downloadButton.setDisable(false);
         removeButton.setDisable(false);
     }
 
@@ -250,10 +272,12 @@ public class RootLayoutController implements Initializable {
 
     /**
      * Handler appellé lorsque le bouton Télecharger est appuyé.
+     * Désactive les boutons Télécharger et Supprimer.
      * Envoie un message à la première personne du groupe demandant le fichier selectionné.
      */
     @FXML
     private void handleDownload(){
+        disableDownloadRemove();
         List<String> file =  middleList.getSelectionModel().getSelectedItems();
         String filename = file.get(0);
         File fileToDownload = new File("./shared_files/" + selectedGroup + "/" + filename);
@@ -263,6 +287,35 @@ public class RootLayoutController implements Initializable {
         else{
             mainApp.requestFile(filename, selectedGroup);
         }
+    }
+
+    /**
+     * Remet la barre de progression pour le téléchargement à 0
+     */
+    public void clearDownloadBar(){
+        downloadBar.setProgress(0);
+    }
+
+    /**
+     * Remet la barre de progression pour l'upload à 0
+     */
+    public void clearUploadBar(){
+        uploadBar.setProgress(0);
+    }
+    /**
+     * Met à jour la barre de progression pour le téléchargement du fichier
+     * @param value la progression du téléchargement
+     */
+    public void updateDownloadBar(double value){
+        downloadBar.setProgress(value);
+    }
+
+    /**
+     * Met à jour la barre de progression pour l'upload du fichier
+     * @param value la progression de l'upload
+     */
+    public void updateUploadBar(double value){
+        uploadBar.setProgress(value);
     }
 
     public void initialize(URL url, ResourceBundle rb) {}
