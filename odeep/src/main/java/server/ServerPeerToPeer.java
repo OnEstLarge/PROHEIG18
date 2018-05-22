@@ -84,11 +84,11 @@ public class ServerPeerToPeer {
 
                 while (true) {
                     int read = 0;
-                    while (read != PeerMessage.BLOCK_SIZE) {
-                        int lu;
-                        lu = in.read(bufferIn, 0, bufferIn.length);
-                        read += lu;
-                    }
+                    //while (read != PeerMessage.BLOCK_SIZE) {
+                    //    int lu;
+                        /*lu = */in.read(bufferIn, 0, bufferIn.length);
+                    //    read += lu;
+                    //}
                     read = 0;
                     PeerMessage pm = new PeerMessage(bufferIn);
                     String type = pm.getType();
@@ -194,6 +194,11 @@ public class ServerPeerToPeer {
                         default:
                             break;
                     }
+                    try {
+                        Thread.sleep(5);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             } catch (IOException e) {
                 //System.out.println(e.getMessage());
@@ -245,8 +250,8 @@ public class ServerPeerToPeer {
         }
 
         void redirect(PeerMessage pm) {
-            System.out.println(pm.getType());
-            System.out.println(pm.getIdTo());
+            //System.out.println(pm.getType());
+            //System.out.println(pm.getIdTo());
             if (peopleInServ.containsKey(pm.getIdTo())) {
                 try {
                     BufferedOutputStream toOut = new BufferedOutputStream(peopleInServ.get(pm.getIdTo()).getOutputStream());

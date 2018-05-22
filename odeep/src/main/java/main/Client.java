@@ -495,9 +495,7 @@ public class Client extends Application {
             clientSocketToServerPublic = new Socket(ip, port);
             System.out.println("Connected to server");
             in = new BufferedInputStream(clientSocketToServerPublic.getInputStream());
-            synchronized (out) {
-                out = new BufferedOutputStream(clientSocketToServerPublic.getOutputStream());
-            }
+            out = new BufferedOutputStream(clientSocketToServerPublic.getOutputStream());
             communicationReady = true;
             //we have a pseudo after this
             System.out.println("get pseudo");
