@@ -50,10 +50,10 @@ public class AcceptInviteDialogController {
     }
 
     /**
-     * Désactive les boutons de la fenêtre initiale lorsque et retourne la valeur du boolean
-     * okClicked.
+     * Désactive les boutons de la fenêtre initiale et renvoie true si jamais l'utilisateur
+     * a appuyé sur OK, false sinon.
      *
-     * @return true si jamais le bouton OK a été pressé.
+     * @return
      */
     public boolean isOkClicked() {
         Client.getController().disableButtons();
@@ -61,7 +61,7 @@ public class AcceptInviteDialogController {
     }
 
     /**
-     * Appellé lorsque le bouton refusé est appuyé ce qui ferme la fenêtre.
+     * Handler appelé lorsque le bouton refusé est appuyé ce qui ferme la fenêtre.
      */
     @FXML
     private void handleRefuse() {
