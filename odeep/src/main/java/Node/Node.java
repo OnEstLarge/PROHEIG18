@@ -29,6 +29,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Noeud P2P.
@@ -272,6 +273,22 @@ public class Node {
         p.close();*/
     }
 
+    public void checkPacket(PeerMessage pm){
+        Boolean allPacketOk = true;
+        for(int i = 0; i < listPacket.size(); i++){
+            Boolean b = listPacket.get(i);
+            if(!b){
+                Client.sendPM(new PeerMessage(MessageType.PGET, pm.getIdGroup(), pm.getIdTo(), pm.getIdFrom(), i, new byte[]{}));
+            }
+        }
+        if(!allPacketOk){
+            checkPacket(pm);
+        }
+        else{
+            Client.updateDownloadBar(1);
+        }
+    }
+
     /**
      *
      */
@@ -376,5 +393,8 @@ public class Node {
 
     public static String filenameDownloaded = null;
     public static int filesizeDownloaded = 0;
+    public static int numberPacketDownloaded = 0;
+    public static int numberPacketCurrent = 0;
+    public List<Boolean> listPacket = null;
 
 }
