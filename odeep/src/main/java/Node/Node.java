@@ -29,6 +29,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Noeud P2P.
@@ -162,6 +163,8 @@ public class Node {
             String fileInfo = filename + ":" + Long.toString(fileSize);
             byte[] cipherFileInfo = CipherUtil.AESEncrypt(fileInfo.getBytes(), key);
 
+            Client.clearUploadBar();
+
             Client.sendPM(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherFileInfo));
             //this.createTempConnection(pi, new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherFileInfo));
 
@@ -183,6 +186,7 @@ public class Node {
                 byte[] cipherMes = CipherUtil.AESEncrypt(newMes, key);
                 PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
                 System.out.println("sending : " + filename + " : " + 100.0 * i / (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE) + "%");
+                Client.updateUploadBar(i / (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE));
                 Client.sendPM(p);
                 //this.createTempConnection(pi, p);
                 try {
@@ -200,6 +204,9 @@ public class Node {
             byte[] cipherMes = CipherUtil.AESEncrypt(lastMes, key);
             PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
             Client.sendPM(p);
+            PeerMessage pm = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, 99999999, cipherMes);
+            Client.sendPM(pm);
+            Client.updateUploadBar(1.0);
             //this.createTempConnection(pi, p);
         //}
     }
@@ -264,6 +271,22 @@ public class Node {
         }
         p.sendMessage(new PeerMessage(MessageType.RFIL, groupID, this.getNodePeer().getID(), peerHavingFile.getID(), CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));
         p.close();*/
+    }
+
+    public void checkPacket(PeerMessage pm){
+        Boolean allPacketOk = true;
+        for(int i = 0; i < listPacket.size(); i++){
+            Boolean b = listPacket.get(i);
+            if(!b){
+                Client.sendPM(new PeerMessage(MessageType.PGET, pm.getIdGroup(), pm.getIdTo(), pm.getIdFrom(), i, new byte[]{}));
+            }
+        }
+        if(!allPacketOk){
+            checkPacket(pm);
+        }
+        else{
+            Client.updateDownloadBar(1);
+        }
     }
 
     /**
@@ -371,5 +394,8 @@ public class Node {
 
     public static String filenameDownloaded = null;
     public static int filesizeDownloaded = 0;
+    public static int numberPacketDownloaded = 0;
+    public static int numberPacketCurrent = 0;
+    public List<Boolean> listPacket = null;
 
 }
