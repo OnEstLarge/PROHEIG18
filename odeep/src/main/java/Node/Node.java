@@ -169,7 +169,7 @@ public class Node {
             //this.createTempConnection(pi, new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherFileInfo));
 
             try {
-                Thread.sleep(100);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -395,6 +395,6 @@ public class Node {
     public static int filesizeDownloaded = 0;
     public static int numberPacketDownloaded = 0;
     public static int numberPacketCurrent = 0;
-    public List<Boolean> listPacket = null;
+    public List<Boolean> listPacket = new ArrayList<>();
 
 }
