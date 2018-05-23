@@ -661,8 +661,11 @@ public class Client extends Application {
 
     public static boolean createGroup(String groupID) {
         waitingForGroupValidation = true;
-        Group group = InterfaceUtil.createGroup(groupID, Client.getUsername(), n);
+        Group group = InterfaceUtil.createGroup(groupID, myUsername, n);
         if (group != null) {
+            if(group.getMember(myUsername) == null) {
+                group.addMember(myself);
+            }
             groups.add(group);
         }
         return group != null;
