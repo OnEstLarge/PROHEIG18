@@ -180,15 +180,18 @@ public class InterfaceUtil {
                 f.readFully(key);
                 byte[] cipherConfig = CipherUtil.AESEncrypt(JSONUtil.toJson(group).getBytes(), key);
 
-                InterfaceUtil.printConfig(group.getID(), key);
+                //InterfaceUtil.printConfig(group.getID(), key);
 
                 JSONUtil.updateConfig(group.getID(), cipherConfig);
 
-                InterfaceUtil.printConfig(group.getID(), key);
+                //InterfaceUtil.printConfig(group.getID(), key);
 
                 Client.uploadJSON(Constant.ROOT_GROUPS_DIRECTORY + "/" + group.getID() + "/" + Constant.CONFIG_FILENAME, group.getID(), userID);
 
                 //remove local file - additional feature not implemented
+                System.out.println(Constant.ROOT_GROUPS_DIRECTORY + "/" + group.getID() + "/" + Constant.CONFIG_FILENAME + "/" + filename);
+                File file = new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + group.getID() + "/" + Constant.CONFIG_FILENAME + "/" + filename);
+                file.delete();
 
                 Client.refresh();
             }
