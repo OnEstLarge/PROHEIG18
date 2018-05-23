@@ -19,6 +19,7 @@ import peer.PeerInformations;
 import peer.PeerMessage;
 import util.CipherUtil;
 import Node.Node;
+import util.Constant;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class SFILHandler implements MessageHandler {
         RandomAccessFile f = null;
         byte[] key = null;
         try {
-            f = new RandomAccessFile("./shared_files/" + m.getIdGroup() + "/key", "r");
+            f = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + m.getIdGroup() + "/" + Constant.KEY_FILENAME, "r");
             key = new byte[(int) f.length()];
             f.readFully(key);
         } catch (FileNotFoundException e) {
@@ -78,7 +79,7 @@ public class SFILHandler implements MessageHandler {
             }
             System.out.println("Receiving " + fileInfo[0]);
             try {
-                RandomAccessFile emptyFile = new RandomAccessFile("./shared_files/" + m.getIdGroup() + "/" + n.filenameDownloaded, "rw");
+                RandomAccessFile emptyFile = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + m.getIdGroup() + "/" + n.filenameDownloaded, "rw");
                 emptyFile.setLength(n.filesizeDownloaded);
                 emptyFile.close();
                 n.listPacket.set(0,true);
@@ -95,7 +96,7 @@ public class SFILHandler implements MessageHandler {
         //on stocke les autres paquets dans le fichier de sortie
         else {
             try {
-                RandomAccessFile raf = new RandomAccessFile("./shared_files/" + m.getIdGroup() + "/" + n.filenameDownloaded, "rw");
+                RandomAccessFile raf = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + m.getIdGroup() + "/" + n.filenameDownloaded, "rw");
                 raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * (m.getNoPacket() - 1));
                 raf.write(rcv);
                 raf.close();
