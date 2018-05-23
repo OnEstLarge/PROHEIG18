@@ -417,8 +417,10 @@ public class Node {
 
     public static void createTempConnection(PeerConnection peer, PeerMessage message) {
         PeerConnection p = null;
+        PeerInformations temp = peer.getPeer();
+        peer.close();
         try {
-            p = new PeerConnection(peer.getPeer(), true);
+            p = new PeerConnection(temp, true);
         } catch (IOException e) {
             e.printStackTrace();
         }
