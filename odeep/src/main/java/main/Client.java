@@ -587,6 +587,10 @@ public class Client extends Application {
             JSONUtil.updateConfig(group);
             uploadJSON("./shared_files/" + group.getID() + "/config.json", group.getID(), myUsername);
         }
+        if(!connectMyself) {
+            PeerMessage bye = new PeerMessage(MessageType.BYE, "XXXXXX", myUsername, myUsername, "".getBytes());
+            sendPM(bye);
+        }
     }
 
     //Classe permettant de threader la lecture des packets server
