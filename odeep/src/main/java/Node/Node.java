@@ -169,7 +169,7 @@ public class Node {
         Client.clearUploadBar();
         if(pc.isLocal()){
             System.out.println("LOCAL");
-            createTempConnection(pc.getPeer(),  new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherFileInfo));
+            createTempConnection(pc,  new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherFileInfo));
         }
         else {
             PeerMessage toSend = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherFileInfo);
@@ -196,7 +196,7 @@ public class Node {
             System.out.println("sending : " + filename + " : " + 100.0 * i / (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE) + "%");
             Client.updateUploadBar(((double) i) / (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE));
             if(pc.isLocal()){
-                createTempConnection(pc.getPeer(), p);
+                createTempConnection(pc, p);
             }
             else {
                 pc.sendMessage(p);
@@ -217,14 +217,14 @@ public class Node {
         byte[] cipherMes = CipherUtil.AESEncrypt(lastMes, key);
         PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
         if(pc.isLocal()){
-            createTempConnection(pc.getPeer(), p);
+            createTempConnection(pc, p);
         }
         else {
             pc.sendMessage(p);
         }
         p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, 99999999, cipherMes);
         if(pc.isLocal()){
-            createTempConnection(pc.getPeer(), p);
+            createTempConnection(pc, p);
         }
         else {
             pc.sendMessage(p);
@@ -296,7 +296,7 @@ public class Node {
         }
         if(isLocal){
             System.out.println("LOCAL");
-            createTempConnection(pc.getPeer(), new PeerMessage(MessageType.RFIL, groupID, this.getNodePeer().getID(), peerHavingFile, CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));
+            createTempConnection(pc, new PeerMessage(MessageType.RFIL, groupID, this.getNodePeer().getID(), peerHavingFile, CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));
         }
         else {
             Client.sendPM(new PeerMessage(MessageType.RFIL, groupID, this.getNodePeer().getID(), peerHavingFile, CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));
@@ -319,7 +319,7 @@ public class Node {
             if (!b) {
                 PeerMessage response = new PeerMessage(MessageType.PGET, pm.getIdGroup(), pm.getIdTo(), pm.getIdFrom(), i, new byte[]{});
                 if(pc.isLocal()){
-                    Node.createTempConnection(pc.getPeer(), response);
+                    Node.createTempConnection(pc, response);
                 }
                 else {
                     pc.sendMessage(response);
@@ -415,10 +415,10 @@ public class Node {
         return key;
     }
 
-    public static void createTempConnection(PeerInformations peer, PeerMessage message) {
+    public static void createTempConnection(PeerConnection peer, PeerMessage message) {
         PeerConnection p = null;
         try {
-            p = new PeerConnection(peer, true);
+            p = new PeerConnection(peer.getPeer(), true);
         } catch (IOException e) {
             e.printStackTrace();
         }

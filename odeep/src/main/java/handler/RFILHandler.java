@@ -77,7 +77,7 @@ public class RFILHandler implements MessageHandler {
             */
             PeerMessage response = new PeerMessage(MessageType.NFIL, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getMessageContent());
             if (c.isLocal()) {
-                Node.createTempConnection(c.getPeer(), response);
+                Node.createTempConnection(c, response);
             } else {
                 c.sendMessage(response);
             }

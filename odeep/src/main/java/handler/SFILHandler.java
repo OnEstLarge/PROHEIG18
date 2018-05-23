@@ -64,7 +64,7 @@ public class SFILHandler implements MessageHandler {
             System.out.println("FAIL");
             PeerMessage response = new PeerMessage(MessageType.PGET, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getNoPacket(), new byte[]{});
             if(c.isLocal()){
-                Node.createTempConnection(c.getPeer(), response);
+                Node.createTempConnection(c, response);
             }
             c.sendMessage(response);
             //Client.sendPM(new PeerMessage(MessageType.PGET, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getNoPacket(), new byte[]{}));
