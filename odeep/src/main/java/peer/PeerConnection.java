@@ -12,12 +12,14 @@ public class PeerConnection {
     private BufferedInputStream is;
     private BufferedOutputStream os;
     private PeerInformations peer;
+    private boolean isLocal;
 
     public InputStream getIs() {return is;}
     public OutputStream getOs() {return os;}
 
-    public PeerConnection(Socket socket) {
+    public PeerConnection(Socket socket, boolean isLocal) {
 
+        this.isLocal = isLocal;
         clientSocket = socket; //vérification sur socket?
         try {
             os = new BufferedOutputStream(clientSocket.getOutputStream());
@@ -25,8 +27,9 @@ public class PeerConnection {
         }catch(IOException e) { System.out.println("problem peerconnection");}
     }
 
-    public PeerConnection(PeerInformations peer) throws IOException{
+    public PeerConnection(PeerInformations peer, boolean isLocal) throws IOException{
         this.peer = peer;
+        this.isLocal = isLocal;
 
         clientSocket = new Socket(peer.getAddress(), peer.getPort());
         os = new BufferedOutputStream(clientSocket.getOutputStream());
@@ -56,6 +59,10 @@ public class PeerConnection {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean isLocal(){
+        return isLocal;
     }
 
     public void close() {

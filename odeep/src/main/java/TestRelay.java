@@ -70,7 +70,7 @@ public class TestRelay {
                         try {
                             System.out.println("trying...");
                             Socket client = new Socket(ip, port);
-                            PeerConnection c = new PeerConnection(client);
+                            PeerConnection c = new PeerConnection(client, false);
                             PeerMessage m = new PeerMessage("SMES", "AAAAAAAA", "schurch", pseudo, "JE TE PUNCH".getBytes());
                             c.sendMessage(m);
                             c.close();

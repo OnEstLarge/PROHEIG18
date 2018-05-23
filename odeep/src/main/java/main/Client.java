@@ -399,7 +399,7 @@ public class Client extends Application {
                 read = in.read(buffer);
                 PeerMessage pm = new PeerMessage(buffer);
                 System.out.println("Received response for username validation");
-                String resp = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
+                String resp = new String(pm.getMessageContent());
                 isUsernameAvailaible = resp.equals("true") ? 1 : 0;
                 if (isUsernameAvailaible != 1) {
                     Thread.sleep(1000);
@@ -585,9 +585,9 @@ public class Client extends Application {
 
                         if (pm.getType().equals(MessageType.INFO)) {
                             System.out.println("Received info, writing in response static");
-                            response = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
+                            response = new String(pm.getMessageContent());
                         } else if (pm.getType().equals(MessageType.NEWG)) {
-                            String resp = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
+                            String resp = new String(pm.getMessageContent());
                             validationGroup = resp.equals("true") ? true : false;
                             waitingForGroupValidation = false;
                         } else if (pm.getType().equals(MessageType.DOWN)) {
@@ -597,7 +597,7 @@ public class Client extends Application {
                             System.out.println("i'm out");
                         } else {
                             final PeerMessage redirectPM = new PeerMessage(pm);
-                            new Thread(() -> redirectToHandler(redirectPM, n, new PeerConnection(clientSocketToServerPublic))).start();
+                            new Thread(() -> redirectToHandler(redirectPM, n, new PeerConnection(clientSocketToServerPublic, false))).start();
                         }
                         try {
                             Thread.sleep(10);
@@ -633,7 +633,7 @@ public class Client extends Application {
         }
     }
 
-    private static String askForInfos(String username) {
+    public static String askForInfos(String username) {
         PeerMessage askInfo = new PeerMessage(MessageType.INFO, "XXXXXX", myUsername, myUsername, "".getBytes());
         try {
             synchronized (out) {

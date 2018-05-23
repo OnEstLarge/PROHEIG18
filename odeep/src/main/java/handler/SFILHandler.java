@@ -62,7 +62,8 @@ public class SFILHandler implements MessageHandler {
             }
             */
             System.out.println("FAIL");
-            Client.sendPM(new PeerMessage(MessageType.PGET, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getNoPacket(), new byte[]{}));
+            c.sendMessage(new PeerMessage(MessageType.PGET, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getNoPacket(), new byte[]{}));
+            //Client.sendPM(new PeerMessage(MessageType.PGET, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getNoPacket(), new byte[]{}));
             return;
         }
 
@@ -92,7 +93,7 @@ public class SFILHandler implements MessageHandler {
             }
         }
         else if(m.getNoPacket() == 99999999){
-            n.checkPacket(m);
+            n.checkPacket(m, c);
         }
         //on stocke les autres paquets dans le fichier de sortie
         else {

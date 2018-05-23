@@ -55,7 +55,7 @@ public class RFILHandler implements MessageHandler{
         if(fileAsked.exists() && !fileAsked.isDirectory()) {
             n.filenameUploaded = fileAsked.getName();
             try {
-                n.sendFileToPeer(fileAsked, m.getIdGroup(), m.getIdFrom());
+                n.sendFileToPeer(fileAsked, m.getIdGroup(), m.getIdFrom(), c);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -77,7 +77,7 @@ public class RFILHandler implements MessageHandler{
                 n.createTempConnection(pi,new PeerMessage(MessageType.NFIL, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getMessageContent()) );
             }
             */
-            Client.sendPM(new PeerMessage(MessageType.NFIL, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getMessageContent()));
+            c.sendMessage(new PeerMessage(MessageType.NFIL, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getMessageContent()));
         }
     }
 }

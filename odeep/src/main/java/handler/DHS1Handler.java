@@ -32,7 +32,8 @@ public class DHS1Handler implements MessageHandler {
 
         PeerMessage response = new PeerMessage(MessageType.DHR1, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), RSA.getPublicKey());
         System.out.println("envoie reponse dhs1");
-        Client.sendPM(response);
+        //Client.sendPM(response);
+        c.sendMessage(response);
         System.out.println("envoyé");
             /*PeerInformations pi = null;
             for (PeerInformations p : n.getKnownPeers()) {

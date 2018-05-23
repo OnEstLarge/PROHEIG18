@@ -78,6 +78,6 @@ public class PGETHandler implements MessageHandler {
             n.createTempConnection(pi, response);
         }
         */
-        Client.sendPM(response);
+        c.sendMessage(response);
     }
 }

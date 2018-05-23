@@ -27,6 +27,7 @@ import util.InterfaceUtil;
 import util.JSONUtil;
 
 import java.io.*;
+import java.net.ConnectException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -146,7 +147,7 @@ public class Node {
      * @param destination
      * @throws IOException
      */
-    public void sendFileToPeer(File file, String groupID, String destination) throws IOException {
+    public void sendFileToPeer(File file, String groupID, String destination, PeerConnection pc) throws IOException {
         byte[] key = this.getKey(groupID);
         int index = 0;
         /*
@@ -160,56 +161,57 @@ public class Node {
         if (pi == null) {
             throw new NullPointerException();
         } else {*/
-            String filename = file.getName();
-            long fileSize = file.length();
-            String fileInfo = filename + ":" + Long.toString(fileSize);
-            byte[] cipherFileInfo = CipherUtil.AESEncrypt(fileInfo.getBytes(), key);
+        String filename = file.getName();
+        long fileSize = file.length();
+        String fileInfo = filename + ":" + Long.toString(fileSize);
+        byte[] cipherFileInfo = CipherUtil.AESEncrypt(fileInfo.getBytes(), key);
 
-            Client.clearUploadBar();
+        Client.clearUploadBar();
 
-            Client.sendPM(new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherFileInfo));
-            //this.createTempConnection(pi, new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherFileInfo));
+        PeerMessage toSend = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherFileInfo);
+        pc.sendMessage(toSend);
 
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        index++;
+        byte[] mes = new byte[PeerMessage.MESSAGE_CONTENT_SIZE];
+
+        for (int i = 0; i < (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE); i++, index++) {
+            RandomAccessFile raf = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "/" + filename, "rw");
+            raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * i);
+            raf.read(mes, 0, mes.length);
+            byte[] newMes = CipherUtil.eraseZero(mes);
+            raf.close();
+            byte[] cipherMes = CipherUtil.AESEncrypt(newMes, key);
+            PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
+            System.out.println("sending : " + filename + " : " + 100.0 * i / (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE) + "%");
+            Client.updateUploadBar(((double) i) / (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE));
+            pc.sendMessage(p);
+
+            //this.createTempConnection(pi, p);
             try {
-                Thread.sleep(1000);
+                Thread.sleep(5);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
 
-            index++;
-            byte[] mes = new byte[PeerMessage.MESSAGE_CONTENT_SIZE];
-
-            for (int i = 0; i < (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE); i++, index++) {
-                RandomAccessFile raf = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "/" + filename, "rw");
-                raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * i);
-                raf.read(mes, 0, mes.length);
-                byte[] newMes = CipherUtil.eraseZero(mes);
-                raf.close();
-                byte[] cipherMes = CipherUtil.AESEncrypt(newMes, key);
-                PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
-                System.out.println("sending : " + filename + " : " + 100.0 * i / (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE) + "%");
-                Client.updateUploadBar(( (double)i ) / (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE));
-                Client.sendPM(p);
-                //this.createTempConnection(pi, p);
-                try {
-                    Thread.sleep(5);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            byte[] lastMes = new byte[(int) (fileSize % PeerMessage.MESSAGE_CONTENT_SIZE)];
-            RandomAccessFile raf = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "/" + filename, "rw");
-            raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE));
-            raf.read(lastMes, 0, lastMes.length);
-            raf.close();
-            byte[] cipherMes = CipherUtil.AESEncrypt(lastMes, key);
-            PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
-            Client.sendPM(p);
-            PeerMessage pm = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, 99999999, cipherMes);
-            Client.sendPM(pm);
-            Client.updateUploadBar(1.0);
-            //this.createTempConnection(pi, p);
+        byte[] lastMes = new byte[(int) (fileSize % PeerMessage.MESSAGE_CONTENT_SIZE)];
+        RandomAccessFile raf = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "/" + filename, "rw");
+        raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE));
+        raf.read(lastMes, 0, lastMes.length);
+        raf.close();
+        byte[] cipherMes = CipherUtil.AESEncrypt(lastMes, key);
+        PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
+        pc.sendMessage(p);
+        p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, 99999999, cipherMes);
+        pc.sendMessage(p);
+        Client.updateUploadBar(1.0);
+        //this.createTempConnection(pi, p);
         //}
     }
 
@@ -261,9 +263,22 @@ public class Node {
         }
         byte[] buffer = filename.getBytes();
         String peerHavingFile = getFileLocation(filename, groupID);
-
-        Client.sendPM(new PeerMessage(MessageType.RFIL, groupID, this.getNodePeer().getID(), peerHavingFile, CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));
-        /*
+        boolean isLocal = false;
+        PeerInformations pi = new PeerInformations(peerHavingFile, Client.askForInfos(peerHavingFile), 4444);
+        PeerConnection pc = null;
+        try {
+            pc = new PeerConnection(pi, true);
+            isLocal = true;
+        } catch (ConnectException e) {
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(isLocal){
+            pc.sendMessage(new PeerMessage(MessageType.RFIL, groupID, this.getNodePeer().getID(), peerHavingFile, CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));
+        }
+        else {
+            Client.sendPM(new PeerMessage(MessageType.RFIL, groupID, this.getNodePeer().getID(), peerHavingFile, CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));
+        }/*
 
         PeerConnection p = null;
         try {
@@ -275,23 +290,26 @@ public class Node {
         p.close();*/
     }
 
-    public void checkPacket(PeerMessage pm){
+    public void checkPacket(PeerMessage pm, PeerConnection pc) {
         Boolean allPacketOk = true;
-        for(int i = 0; i < listPacket.size(); i++){
+        for (int i = 0; i < listPacket.size(); i++) {
             Boolean b = listPacket.get(i);
-            if(!b){
-                Client.sendPM(new PeerMessage(MessageType.PGET, pm.getIdGroup(), pm.getIdTo(), pm.getIdFrom(), i, new byte[]{}));
+            if (!b) {
+                pc.sendMessage(new PeerMessage(MessageType.PGET, pm.getIdGroup(), pm.getIdTo(), pm.getIdFrom(), i, new byte[]{}));
+                //Client.sendPM(new PeerMessage(MessageType.PGET, pm.getIdGroup(), pm.getIdTo(), pm.getIdFrom(), i, new byte[]{}));
             }
         }
-        if(!allPacketOk){
+        if (!allPacketOk) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            checkPacket(pm);
-        }
-        else{
+            checkPacket(pm, pc);
+        } else {
+            if(pc.isLocal()){
+                pc.close();
+            }
             Client.updateDownloadBar(1.0);
             InterfaceUtil.addFile(new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + pm.getIdGroup() + "/" + filenameDownloaded), Client.getUsername(), Client.getGroupById(pm.getIdGroup()));
             System.out.println("STOP");
@@ -375,7 +393,7 @@ public class Node {
     public static void createTempConnection(PeerInformations peer, PeerMessage message) {
         PeerConnection p = null;
         try {
-            p = new PeerConnection(peer);
+            p = new PeerConnection(peer, true);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -30,7 +30,7 @@ public class PeerHandler implements Runnable {
 
     public void run() {
 
-        PeerConnection connection = new PeerConnection(clientSocket);
+        PeerConnection connection = new PeerConnection(clientSocket, true);
 
         PeerMessage message = null;
         try {

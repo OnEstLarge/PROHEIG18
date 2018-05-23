@@ -129,7 +129,7 @@ public class Test {
                             //ICI on crée le peerInfo avec ce que nous renvoie le serveur relay
                             //ça sera tout le temps fait dans le client j'imagine
 
-                            PeerConnection p = new PeerConnection(users.get(pseudo));
+                            PeerConnection p = new PeerConnection(users.get(pseudo), false);
                             p.sendMessage(m);
                             p.close();
                         } catch (IOException e) {
@@ -137,10 +137,7 @@ public class Test {
                         }
                     } else if (type.equals(MessageType.SFIL)) {
                         File file = new File(content);
-                        try {
-                            n.sendFileToPeer(file, idGroup, users.get(pseudo).getID());
-                        } catch (IOException e) {
-                        }
+                        
                     } else if (type.equals(MessageType.DHS1)) {
                         try {
                             n.setKey(CipherUtil.generateKey(), group);
@@ -152,7 +149,7 @@ public class Test {
                             System.out.println("key is : " + new String(n.getKey(group)));
 
 
-                            PeerConnection p = new PeerConnection(users.get(pseudo));
+                            PeerConnection p = new PeerConnection(users.get(pseudo), false);
                             p.sendMessage(new PeerMessage(type, idGroup, myInfo.getID(), pseudo, n.getTempRSAInfo().getPublicKey()));
                             p.close();
                         } catch (IOException e) {

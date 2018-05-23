@@ -35,7 +35,8 @@ public class DHR1Handler implements MessageHandler{
             //envoie de la clé AES chiffrée grâce à la clé public du destinataire
             PeerMessage response = new PeerMessage(MessageType.DHS2, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), encryptedKey);
             System.out.println("j'envoie la réponse dhr1");
-            Client.sendPM(response);
+            //Client.sendPM(response);
+            c.sendMessage(response);
             System.out.println("envoyé dhr1");
            /* PeerInformations pi = null;
             for (PeerInformations p : n.getKnownPeers()) {

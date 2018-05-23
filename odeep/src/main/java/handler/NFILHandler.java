@@ -26,6 +26,6 @@ public class NFILHandler implements MessageHandler {
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
 
         Client.downloadJSON(m.getIdGroup());
-        InterfaceUtil.askFile(m.getIdGroup(), new String(m.getMessageContent()));
+        Client.requestFile(new String(m.getMessageContent()), m.getIdGroup());
     }
 }
