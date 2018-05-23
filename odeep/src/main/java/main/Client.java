@@ -5,7 +5,6 @@ import User.Person;
 import handler.*;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -15,30 +14,30 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.*;
-import java.lang.reflect.Member;
 import java.net.Inet4Address;
 import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 
-import javafx.stage.WindowEvent;
 import message.MessageType;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import peer.PeerConnection;
 import peer.PeerInformations;
 import peer.PeerMessage;
 import util.CipherUtil;
+import util.Constant;
 import util.InterfaceUtil;
 import util.JSONUtil;
 import views.AcceptInviteDialogController;
 import views.InviteDialogController;
-import views.PseudoDialogController;
+import views.UsernameDialogController;
 import views.RootLayoutController;
 import User.Group;
+
+import static java.lang.System.exit;
 
 
 public class Client extends Application {
@@ -56,27 +55,11 @@ public class Client extends Application {
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("Odeep");
-        this.primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-
-            @Override
-            public void handle(WindowEvent event) {
-                Platform.runLater(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        System.exit(0);
-                    }
-                });
-            }
-        });
-       /* Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-
-                System.out.println("xxxxXXXxxxxx");
-                showAcceptInviteDialog("a");
-            }
-        });*/
+        this.primaryStage.setOnCloseRequest(event -> Platform.runLater(() ->
+        {
+            connectMyself(false);
+            exit(0);
+        }));
         initRootLayout();
     }
 
@@ -85,10 +68,10 @@ public class Client extends Application {
     }
 
     /**
-     * Vérifie dans le fichier '.userInfo' si l'utilisateur possède déjà un pseudo.
+     * Vérifie dans le fichier '.userInfo' si l'utilisateur possède déjà un nom d'utilisateur.
      *
-     * @return le pseudo de l'utilisateur.
-     * null, si l'utilisateur ne possède pas encorede pseudo.
+     * @return le nom de l'utilisateur.
+     * null, si l'utilisateur ne possède pas encore de nom.
      */
     private static String usernameExists() {
         String username = null;
@@ -155,9 +138,9 @@ public class Client extends Application {
      */
     public void initRootLayout() {
         if ((myUsername = usernameExists()) == null) {
-            boolean ok = showPseudoDialog();
+            boolean ok = showUsernameDialog();
             while (!ok) { // Demande un nom jusqu'à ce qu'il soit correct
-                ok = showPseudoDialog();
+                ok = showUsernameDialog();
             }
 
             // Ecrit le fichier .userInfo avec le bon nom d'utilisateur
@@ -236,11 +219,11 @@ public class Client extends Application {
      * Affiche la fenêtre demandant à l'utilisateur de choisir un nom d'utilisateur
      * @return true si jamais le nom est correct, false sinon
      */
-    public boolean showPseudoDialog() {
+    public boolean showUsernameDialog() {
         try {
             // Charge le fichier .fxml et crée la nouvelle scene pour la fenêtre d'invitation
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(Client.class.getResource("/views/PseudoDialog.fxml"));
+            loader.setLocation(Client.class.getResource("/views/UsernameDialog.fxml"));
             AnchorPane page = loader.load();
 
             // Crée la scène de dialogue
@@ -251,8 +234,8 @@ public class Client extends Application {
             Scene scene = new Scene(page);
             dialogStage.setScene(scene);
 
-            // Défini le controleur de la fenêtre pseudo
-            PseudoDialogController controller = loader.getController();
+            // Défini le controleur de la fenêtre username
+            UsernameDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage, image);
             controller.setMainApp(this);
 
@@ -310,8 +293,8 @@ public class Client extends Application {
         return primaryStage;
     }
 
-    public void setUserPseudo(String pseudo) {
-        myUsername = pseudo;
+    public void setUsername(String username) {
+        myUsername = username;
     }
 
     public List<Group> getGroups() {
@@ -320,7 +303,9 @@ public class Client extends Application {
 
 
 
-    private static final String IP_SERVER = "192.168.0.46";//"206.189.49.105";
+
+    private static final String IP_SERVER = "206.189.49.105";
+
     private static final int PORT_SERVER = 8080;
     private static final int LOCAL_PORT = 4444;
 
@@ -335,45 +320,39 @@ public class Client extends Application {
     private static boolean groupsNotInialized = true;
 
     private static Node n;
-    private static boolean nodeIsRunning = true;
     private static String myUsername = null;
     private static String localIP;
 
     private static String response = null;
 
     private static List<Group> groups = new ArrayList();
-    public static Person myself;//set in getPseudo
-
-    private static int count = 0;
-    private static HashMap<Integer, Boolean> mutex = new HashMap();
-
+    public static Person myself;// Initialisé dans getUsername
 
     public static void main(String[] args) {
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                getLocalIP();
-                System.out.println("Connecting to server");
-                //initconnection connect to serv, get pseudo, connect with pseudo
-                initConnections(IP_SERVER, PORT_SERVER);
-                //for(Group g : groups)
-                // InterfaceUtil.printConfig(g.getID(), n.getKey(g.getID()));
-                //listening for incoming connections
-                System.out.println("Launching node listening");
+        new Thread(() -> {
+            getLocalIP();
+            System.out.println("Connecting to server");
+            // initConnections établie la connexion avec le serveur, récupere le nom de l'utilisateur et se connecte avec
+            initConnections(IP_SERVER, PORT_SERVER);
+
+            // Se met à l'écoute de connexions
+            System.out.println("Launching node listening");
+            try {
                 n.acceptingConnections();
-
-
+            } catch (NullPointerException e) {
+                //Le server n'est pas actif
+                exit(0);
             }
+
         }).start();
 
         launch(args);
     }
 
 
-    private static void getPseudo() {
+    private static void waitForUsername() {
 
-        //Sinon, on peut le pseudo dans le fichier de config
         while (myUsername == null) {
             try {
                 Thread.sleep(100);
@@ -385,7 +364,7 @@ public class Client extends Application {
         myself.connect();
     }
 
-    //ask the server if the entered username is available
+    // Demande au serveur si le nom entré est libre
     public static boolean usernameValidation(String username) {
 
         isUsernameAvailaible = -1;
@@ -398,7 +377,7 @@ public class Client extends Application {
                 e.printStackTrace();
             }
         }
-        //une fois que la connection avec le serveur est établit, il faut demander si le pseudo entré est déjà utilisé
+        //une fois que la connection avec le serveur est établie, il faut demander si le pseudo entré est déjà utilisé
         //retourne true si le pseudo est libre, false si il est déjà utilisé
 
         PeerMessage availaibleUsername = new PeerMessage(MessageType.USRV, "XXXXXX", username, "XXXXXX", 0, "".getBytes());
@@ -459,7 +438,7 @@ public class Client extends Application {
     }
 
     private static void getLocalIP() {
-        //Get local IP used
+        // Récupération de l'adresse Ip locale utilisée
         localIP = null;
         try {
             Enumeration e = NetworkInterface.getNetworkInterfaces();
@@ -467,7 +446,7 @@ public class Client extends Application {
                 NetworkInterface n = (NetworkInterface) e.nextElement();
                 Enumeration ee = n.getInetAddresses();
                 while (ee.hasMoreElements()) {
-                    Inet4Address i = null;
+                    Inet4Address i;
                     try {
                         i = (Inet4Address) ee.nextElement();
                         if (!i.getHostAddress().endsWith(".1") && !i.getHostAddress().endsWith(".255")) {
@@ -488,7 +467,7 @@ public class Client extends Application {
         System.out.println("Created myInfos");
         n = new Node(myInfos);
         System.out.println("Created the node");
-        //Ajouter tous les handlers
+        // Ajouter tous les handlers
         n.addMessageHandler(MessageType.INVI, new INVIHandler());
         n.addMessageHandler(MessageType.DISC, new DISCHandler());
         n.addMessageHandler(MessageType.NFIL, new NFILHandler());
@@ -505,21 +484,20 @@ public class Client extends Application {
         System.out.println("Added the handlers");
     }
 
-    //initialise la connection avec le serveur et de lancer le server d'écoute du client
+    // Initialise la connection avec le serveur et lance le server d'écoute du client
     public static void initConnections(String ip, int port) {
         try {
-            //clientSocketToServerPublic = new PeerConnection(new Socket(ip,port));
             clientSocketToServerPublic = new Socket(ip, port);
             System.out.println("Connected to server");
             in = new BufferedInputStream(clientSocketToServerPublic.getInputStream());
             out = new BufferedOutputStream(clientSocketToServerPublic.getOutputStream());
             communicationReady = true;
-            //we have a pseudo after this
+            // Nous avons le pseudo après ça
             System.out.println("get pseudo");
-            getPseudo();
+            waitForUsername();
             System.out.println("we got the pseudo");
 
-            //Greetings to server, receivinig response
+            // Salutation au serveur, reception de la réponse
             System.out.println("aaaa" + localIP);
             PeerMessage greetings = new PeerMessage(MessageType.HELO, "XXXXXX", myUsername, "XXXXXX", 0, localIP.getBytes());
             synchronized (out) {
@@ -537,21 +515,21 @@ public class Client extends Application {
         new Thread(new ReadFromServer()).start();
 
 
-        // Initialize the client node
+        // Initialise le noeud du client
         initNode();
 
-        // Restore existing groups
+        // Restore les groupes existants
         for (String groupID : scanGroups()) {
             downloadJSON(groupID);
 
-            // Read config file
+            // Lecture du fichier de configuration
             try {
-                RandomAccessFile configFile = new RandomAccessFile("./shared_files/" + groupID + "/config.json", "r");
+                RandomAccessFile configFile = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "/" + Constant.CONFIG_FILENAME, "r");
                 byte[] configFileByte = new byte[(int) configFile.length()];
                 configFile.readFully(configFileByte);
                 String configJson = new String(CipherUtil.AESDecrypt(configFileByte, n.getKey(groupID)));
 
-                groups.add((Group) JSONUtil.parseJson(configJson, Group.class));
+                groups.add(JSONUtil.parseJson(configJson, Group.class));
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -560,32 +538,33 @@ public class Client extends Application {
             }
         }
 
-        for (Group group : groups) {
-            System.out.println("-----------------------------------------------------------------------------------------------------" + myself.isConnected());
-            for (Person p : group.getMembers()) {
-                System.out.println(p.getID() + "   bnbnbnbnb   " + p.isConnected());
-                if (p.getID().equals(myUsername)) {
-                    p.connect();
-                }
-                System.out.println(p.getID() + "   bnbnbnbnb   " + p.isConnected());
-            }
-            System.out.println("upddateeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
-            JSONUtil.updateConfig(group);
-            uploadJSON("./shared_files/" + group.getID() + "/config.json", group.getID(), myUsername);
-        }
+        connectMyself(true);
 
         groupsNotInialized = false;
-        //controller.updateGroupsAndFiles();
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                controller.updateGroupsAndFiles();
-            }
-        });
+        Platform.runLater(() -> controller.updateGroupsAndFiles());
     }
 
-    //Classe permettant de threader la lecture des packets server
+    public static void connectMyself(boolean connectMyself) {
+        for (Group group : groups) {
+            for (Person p : group.getMembers()) {
+                if (p.getID().equals(myUsername)) {
+                    if(connectMyself){
+                        p.connect();
+                    } else {
+                        p.disconnect();
+                    }
+                }
+            }
+            JSONUtil.updateConfig(group);
+            uploadJSON(Constant.ROOT_GROUPS_DIRECTORY + "/" + group.getID() + "/" + Constant.CONFIG_FILENAME, group.getID(), myUsername);
+        }
+        if(!connectMyself) {
+            PeerMessage bye = new PeerMessage(MessageType.EXIT, "XXXXXX", myUsername, myUsername, "".getBytes());
+            sendPM(bye);
+        }
+    }
+
+    // Classe permettant de threader la lecture des packets server
     private static class ReadFromServer implements Runnable {
         public void run() {
             //int read;
@@ -599,13 +578,10 @@ public class Client extends Application {
                         while(read != PeerMessage.BLOCK_SIZE) {
                             read += in.read(buffer, read, buffer.length - read);
                         }
-                        //}
-                        //while ((read = in.read(buffer, 0, 4096)) != -1) {
 
                         PeerMessage pm = new PeerMessage(buffer);
                         if (read != 4096)
                             System.out.println(read);
-                        //System.out.println("type message received = " + pm.getType());
 
                         if (pm.getType().equals(MessageType.INFO)) {
                             System.out.println("Received info, writing in response static");
@@ -620,23 +596,16 @@ public class Client extends Application {
                             waitingJsonFromServer = false;
                             System.out.println("i'm out");
                         } else {
-                            //System.out.println("Client redirect message " + pm.getType());
                             final PeerMessage redirectPM = new PeerMessage(pm);
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    redirectToHandler(redirectPM, n, new PeerConnection(clientSocketToServerPublic));
-                                }
-                            }).start();
+                            new Thread(() -> redirectToHandler(redirectPM, n, new PeerConnection(clientSocketToServerPublic))).start();
                         }
                         try {
                             Thread.sleep(10);
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            System.out.println(e.getMessage());
+                            //e.printStackTrace();
                         }
-                        //}
                     }
-                    //System.out.println("End of reading in main.Client.ReadFromServer");
 
                 }
             }catch (IOException e) {
@@ -655,16 +624,16 @@ public class Client extends Application {
     }
 
     private static void redirectToHandler(PeerMessage message, Node node, PeerConnection connection) {
-        //handle message
+        // handle message
         try {
-            node.getMapMessage().get(message.getType()).handleMessage(node, connection, message); //gerer erreur possible
+            node.getMapMessage().get(message.getType()).handleMessage(node, connection, message); // Gerer erreur possible
         } catch (NullPointerException e) {
             System.out.println("ERREUR");
             System.out.println("type : " + message.getType() + "\ngroupe : " + message.getIdGroup() + "\nfrom : " + message.getIdFrom() + "\nto : " + message.getIdTo() + "\nNo : " + message.getNoPacket());
         }
     }
 
-    private static String askForInfos(String pseudo) {
+    private static String askForInfos(String username) {
         PeerMessage askInfo = new PeerMessage(MessageType.INFO, "XXXXXX", myUsername, myUsername, "".getBytes());
         try {
             synchronized (out) {
@@ -701,13 +670,11 @@ public class Client extends Application {
 
 
     public static void uploadJSON(String filenameJSON, String groupID, String idFrom) {
-        //TODO tester validité des paramètres
-
-        PeerMessage uploadMessage = null;
+        PeerMessage uploadMessage;
 
         try {
             System.out.println("UPLOADING will read file");
-            // Récupère et chiffre de fichier config.json
+            // Récupère et chiffre de fichier config
             RandomAccessFile configFile = new RandomAccessFile(filenameJSON, "r");
             byte[] configFileByte = new byte[(int) configFile.length()];
             configFile.readFully(configFileByte);
@@ -748,12 +715,9 @@ public class Client extends Application {
                             out.write(pm.getFormattedMessage());
                             out.flush();
                         }
-                        //Thread.sleep(100);
                     } catch (IOException e) {
                         System.out.println(e.getMessage());
-                    } /*catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }*/
+                    }
                 }
 
             }
@@ -768,7 +732,7 @@ public class Client extends Application {
             waitingJsonFromServer = true;
             while(waitingJsonFromServer) {
                 System.out.println("I want to download");
-                // Averti le serveur que le client désire avoir le fichier 'config.json'
+                // Averti le serveur que le client désire avoir le fichier 'config'
                 synchronized (out) {
                     out.write(downloadMessage.getFormattedMessage());
                     out.flush();
@@ -794,32 +758,27 @@ public class Client extends Application {
             updateGroupsWithJson(groupID);
         }
 
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                controller.updateGroupsAndFiles();
-            }
-        });
+        Platform.runLater(() -> controller.updateGroupsAndFiles());
     }
 
     private static void saveReceivedJson(PeerMessage pm) {
         byte[] buffer = pm.getMessageContent();
         int size = pm.getMessageContent().length;
         System.out.println(size);
-        FileOutputStream fout = null;
+        FileOutputStream fOut = null;
         try {
             System.out.println("I download");
-            fout = new FileOutputStream(new File("./shared_files/" + pm.getIdGroup() + "/config.json"));
-            fout.write(buffer, 0, size);
-            fout.flush();
+
+            fOut = new FileOutputStream(new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + pm.getIdGroup() + "/" + Constant.CONFIG_FILENAME));
+            fOut.write(buffer, 0, size);
+            fOut.flush();
 
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (fout != null) {
+            if (fOut != null) {
                 try {
-                    fout.close();
+                    fOut.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -828,14 +787,8 @@ public class Client extends Application {
     }
 
     private static String[] scanGroups() {
-        File directory = new File("./shared_files");
-        String[] groups = directory.list(new FilenameFilter() {
-
-            @Override
-            public boolean accept(File file, String name) {
-                return new File(file, name).isDirectory();
-            }
-        });
+        File directory = new File(Constant.ROOT_GROUPS_DIRECTORY);
+        String[] groups = directory.list((file, name) -> new File(file, name).isDirectory());
 
         for (String group : groups) {
             System.out.println(group);
@@ -873,7 +826,7 @@ public class Client extends Application {
             }
 
             // Crée le groupe localement
-            String dir = "./shared_files/" + groupID;
+            String dir = Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID;
             File file = new File(dir);
             if (!file.exists() || !file.isDirectory()) {
                 file.mkdirs();
@@ -885,20 +838,18 @@ public class Client extends Application {
     }
 
     public static void updateJsonAfterInvitation(String groupID) {
-
-
         System.out.println("updateJsonAfterInvitation in");
 
-        //download json du groupe
+        //Téléchargement json du groupe
         downloadJSON(groupID);
-        //ajoute le group dans sa liste groups
+        // Ajoute le group dans sa liste groupe
         System.out.println("updateJsonAfterInvitation downloaded");
 
-        RandomAccessFile configFile = null;
+        RandomAccessFile configFile;
         try {
             System.out.println("updateJsonAfterInvitation will read json received");
 
-            configFile = new RandomAccessFile("./shared_files/" + groupID + "/config.json", "r");
+            configFile = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "/" + Constant.CONFIG_FILENAME, "r");
             byte[] configFileByte = new byte[(int) configFile.length()];
             configFile.readFully(configFileByte);
 
@@ -921,22 +872,20 @@ public class Client extends Application {
 
         System.out.println("updateJsonAfterInvitation update config");
 
-        //update le json en s'ajoutant dans le groupe
+        // Update le json en s'ajoutant dans le groupe
         JSONUtil.updateConfig(Client.getGroupById(groupID));
 
         System.out.println("updateJsonAfterInvitation updated, uploading");
 
-        //upload le nouveau json sur le serv
-        Client.uploadJSON("./shared_files/" + groupID + "/config.json", groupID, myUsername);
+
+        // Upload le nouveau json sur le serveur
+        Client.uploadJSON(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "/" + Constant.CONFIG_FILENAME, groupID, myUsername);
 
         System.out.println("updateJsonAfterInvitation uploaded");
 
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                controller.enableButtons();
-                controller.updateGroupsAndFiles();
-            }
+        Platform.runLater(() -> {
+            controller.enableButtons();
+            controller.updateGroupsAndFiles();
         });
     }
 
@@ -953,20 +902,15 @@ public class Client extends Application {
     }
 
     public static void refresh() {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                controller.updateGroupsAndFiles();
-            }
-        });
+        Platform.runLater(() -> controller.updateGroupsAndFiles());
     }
 
     private static void updateGroupsWithJson(String groupID) {
         int index = groups.indexOf(getGroupById(groupID));
         if (index >= 0) {
-            RandomAccessFile configFile = null;
+            RandomAccessFile configFile;
             try {
-                configFile = new RandomAccessFile("./shared_files/" + groupID + "/config.json", "r");
+                configFile = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "/" + Constant.CONFIG_FILENAME, "r");
                 byte[] configFileByte = new byte[(int) configFile.length()];
                 configFile.readFully(configFileByte);
 
@@ -991,13 +935,10 @@ public class Client extends Application {
 
     public static void updateDownloadBar(double value) {
         final double v = value;
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                controller.updateDownloadBar(v);
-                if(Math.abs(v - 1.0) < 0.001) {
-                    controller.enableDownLoad();
-                }
+        Platform.runLater(() -> {
+            controller.updateDownloadBar(v);
+            if(Math.abs(v - 1.0) < 0.001) {
+                controller.enableDownLoad();
             }
         });
 
@@ -1005,21 +946,10 @@ public class Client extends Application {
 
     public static void updateUploadBar(double value) {
         final double v = value;
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                controller.updateUploadBar(v);
-            }
-        });
+        Platform.runLater(() -> controller.updateUploadBar(v));
     }
 
     public static void clearUploadBar() {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                controller.clearUploadBar();
-            }
-        });
+        Platform.runLater(() -> controller.clearUploadBar());
     }
-
 }

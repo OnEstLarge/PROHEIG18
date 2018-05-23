@@ -1,25 +1,23 @@
 package views;
 
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import main.Client;
 import peer.PeerMessage;
 
 import java.io.File;
 
-public class PseudoDialogController {
+public class UsernameDialogController {
 
     private Stage dialogStage;
     private boolean nameOK = false;
     private Client mainApp;
 
     @FXML
-    private TextField userPseudoField;
+    private TextField usernameField;
 
     @FXML
     private void initialize() {}
@@ -35,11 +33,7 @@ public class PseudoDialogController {
     public void setDialogStage(Stage dialogStage, Image image) {
         this.dialogStage = dialogStage;
         this.dialogStage.getIcons().add(image);
-        dialogStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            public void handle(WindowEvent we) {
-                System.exit(0);
-            }
-        });
+        dialogStage.setOnCloseRequest(we -> System.exit(0));
     }
 
     public void setMainApp(Client mainApp) {
@@ -64,7 +58,7 @@ public class PseudoDialogController {
     private void handleOk() {
 
         if(isInputValid()){
-            mainApp.setUserPseudo(userPseudoField.getText());
+            mainApp.setUsername(usernameField.getText());
             nameOK = true;
         }
 
@@ -86,9 +80,9 @@ public class PseudoDialogController {
      */
     private boolean isInputValid(){
         String errorMessage = "";
-        String pseudo = userPseudoField.getText();
+        String username = usernameField.getText();
 
-        if(!PeerMessage.isValidIdFormat(pseudo, PeerMessage.ID_MIN_LENGTH, PeerMessage.ID_MAX_LENGTH) || !Client.usernameValidation(pseudo)){
+        if(!PeerMessage.isValidIdFormat(username, PeerMessage.ID_MIN_LENGTH, PeerMessage.ID_MAX_LENGTH) || !Client.usernameValidation(username)){
             errorMessage += "Nom d'utilisateur invalide. Il doit contenir entre " + PeerMessage.ID_MIN_LENGTH + " et " + PeerMessage.ID_MAX_LENGTH + " caractères.\n";
         }
 

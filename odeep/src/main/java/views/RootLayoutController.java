@@ -3,6 +3,7 @@ package views;
 import java.io.File;
 import java.net.URL;
 import java.util.*;
+
 import User.Person;
 import User.Group;
 import javafx.event.EventHandler;
@@ -13,6 +14,7 @@ import main.Client;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import peer.PeerMessage;
+import util.Constant;
 import util.InterfaceUtil;
 
 public class RootLayoutController implements Initializable {
@@ -62,7 +64,7 @@ public class RootLayoutController implements Initializable {
     /**
      * Désactive tous les boutons de l'interface.
      */
-    public void disableButtons(){
+    public void disableButtons() {
         downloadButton.setDisable(true);
         inviteButton.setDisable(true);
         createButton.setDisable(true);
@@ -73,7 +75,7 @@ public class RootLayoutController implements Initializable {
     /**
      * Réactive tous les boutons de l'interface.
      */
-    public void enableButtons(){
+    public void enableButtons() {
         downloadButton.setDisable(false);
         inviteButton.setDisable(false);
         createButton.setDisable(false);
@@ -84,7 +86,7 @@ public class RootLayoutController implements Initializable {
     /**
      * Désactive les boutons download et remove
      */
-    public void disableDownloadRemove(){
+    public void disableDownloadRemove() {
         downloadButton.setDisable(true);
         removeButton.setDisable(true);
     }
@@ -92,7 +94,7 @@ public class RootLayoutController implements Initializable {
     /**
      * Réactive les boutons download et remove
      */
-    public void enableDownLoad(){
+    public void enableDownLoad() {
         downloadButton.setDisable(false);
         removeButton.setDisable(false);
     }
@@ -110,12 +112,11 @@ public class RootLayoutController implements Initializable {
      * Ajoute un action listener à l'élément créé afin d'afficher la liste des fichiers du groupe dans la partie
      * centrale de l'interface lorsque le groupe est selectionné.
      * Met à jour les fichiers et les groupes affichés dans l'interface à la fin de la fonction.
-     *
      */
     @FXML
     private void handleCreateButtonAction() {
         String errorMsg = "";
-        if (!Client.createGroup(groupNameField.getText()) ) {
+        if (!Client.createGroup(groupNameField.getText())) {
             errorMsg += "Le nom de groupe doit contenir entre " + PeerMessage.ID_GROUP_MIN_LENGTH + " et " + PeerMessage.ID_GROUP_MAX_LENGTH + " caractères et doit être unique.\n";
         } else {
             TitledPane pane = new TitledPane();
@@ -130,16 +131,13 @@ public class RootLayoutController implements Initializable {
             mapFile.put(groupName, new ArrayList<String>());
 
             // Affiche tous les fichier du groupe dans la partie centrale de l'interface quand le groupe est selectionné.
-            pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
-                    selectedGroup = view.getId();
-                    middleList.getItems().clear();
-                    if (mapFile.containsKey(groupName) && mapFile.get(groupName) != null) {
-                        List<String> files = mapFile.get(groupName);
-                        for (String s : files) {
-                            middleList.getItems().add(s);
-                        }
+            pane.setOnMouseClicked(event -> {
+                selectedGroup = view.getId();
+                middleList.getItems().clear();
+                if (mapFile.containsKey(groupName) && mapFile.get(groupName) != null) {
+                    List<String> files = mapFile.get(groupName);
+                    for (String s : files) {
+                        middleList.getItems().add(s);
                     }
                 }
             });
@@ -158,15 +156,17 @@ public class RootLayoutController implements Initializable {
     }
 
     /**
-     * Remplis la Map en associant un groupe à une liste fichiers.
+     * Remplis la map en associant un groupe à une liste fichiers.
      */
     private void fillFileMap() {
         for (Group g : mainApp.getGroups()) {
             List<String> files = new ArrayList<String>();
             for (Person p : g.getMembers()) {
-                for (String s : p.getFiles()) {
-                    if (!files.contains(s)) {
-                        files.add(s);
+                if (p.isConnected()) {
+                    for (String s : p.getFiles()) {
+                        if (!files.contains(s)) {
+                            files.add(s);
+                        }
                     }
                 }
             }
@@ -177,19 +177,21 @@ public class RootLayoutController implements Initializable {
     /**
      * Remet à jour les groupes et les fichiers dans l'interface graphique.
      */
-    public void updateGroupsAndFiles(){
+    public void updateGroupsAndFiles() {
         accordion.getPanes().clear();
         listView.clear();
 
         // Update the list of files
         fillFileMap();
 
-        for(final Group g: mainApp.getGroups()){
+        for (final Group g : mainApp.getGroups()) {
             TitledPane pane = new TitledPane();
             final ListView view = new ListView();
 
-            for(Person p : g.getMembers()){
-                view.getItems().add(p.getID());
+            for (Person p : g.getMembers()) {
+                if (p.isConnected()) {
+                    view.getItems().add(p.getID());
+                }
             }
 
             listView.add(view);
@@ -259,8 +261,8 @@ public class RootLayoutController implements Initializable {
      */
     @FXML
     private void handleRemove() {
-        List<String> file =  middleList.getSelectionModel().getSelectedItems();
-        if(mapFile.containsKey(selectedGroup)){
+        List<String> file = middleList.getSelectionModel().getSelectedItems();
+        if (mapFile.containsKey(selectedGroup)) {
             InterfaceUtil.removeFile(file.get(0), Client.getUsername(), Client.getGroupById(selectedGroup));
             mapFile.get(selectedGroup).remove(file.get(0));
             middleList.getItems().remove(file.get(0));
@@ -274,6 +276,7 @@ public class RootLayoutController implements Initializable {
     @FXML
     private void handleQuit() {
         System.out.println("QUIT");
+        Client.connectMyself(false);
         System.exit(1);
     }
 
@@ -283,15 +286,14 @@ public class RootLayoutController implements Initializable {
      * Envoie un message à la première personne du groupe demandant le fichier selectionné.
      */
     @FXML
-    private void handleDownload(){
+    private void handleDownload() {
         disableDownloadRemove();
-        List<String> file =  middleList.getSelectionModel().getSelectedItems();
+        List<String> file = middleList.getSelectionModel().getSelectedItems();
         String filename = file.get(0);
-        File fileToDownload = new File("./shared_files/" + selectedGroup + "/" + filename);
-        if(fileToDownload.exists()){
+        File fileToDownload = new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + selectedGroup + "/" + filename);
+        if (fileToDownload.exists()) {
             return;
-        }
-        else{
+        } else {
             mainApp.requestFile(filename, selectedGroup);
             clearDownloadBar();
         }
@@ -300,37 +302,40 @@ public class RootLayoutController implements Initializable {
     /**
      * Remet la barre de progression pour le téléchargement à 0
      */
-    public void clearDownloadBar(){
+    public void clearDownloadBar() {
         downloadBar.setProgress(0);
     }
 
     /**
      * Remet la barre de progression pour l'upload à 0
      */
-    public void clearUploadBar(){
+    public void clearUploadBar() {
         uploadBar.setProgress(0);
         downloadPercent.setText("0%");
         uploadPercent.setText("0%");
 
     }
+
     /**
      * Met à jour la barre de progression pour le téléchargement du fichier
+     *
      * @param value la progression du téléchargement
      */
-    public void updateDownloadBar(double value){
+    public void updateDownloadBar(double value) {
         downloadBar.setProgress(value);
-        downloadPercent.setText(String.valueOf(((int)(value * 10000)) / 100.0) + "%");
+        downloadPercent.setText((((int) (value * 10000)) / 100.0) + "%");
     }
 
     /**
      * Met à jour la barre de progression pour l'upload du fichier
+     *
      * @param value la progression de l'upload
      */
-    public void updateUploadBar(double value){
+    public void updateUploadBar(double value) {
         uploadBar.setProgress(value);
-
-        uploadPercent.setText(String.valueOf(((int)(value * 10000)) / 100.0) + "%");
+        uploadPercent.setText((((int) (value * 10000)) / 100.0) + "%");
     }
 
-    public void initialize(URL url, ResourceBundle rb) {}
+    public void initialize(URL url, ResourceBundle rb) {
+    }
 }

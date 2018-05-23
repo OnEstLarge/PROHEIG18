@@ -22,8 +22,6 @@ import java.lang.reflect.Type;
  */
 public class JSONUtil {
 
-    private static String CONFIG_FILE_NAME = "config.json";
-
     public static <T extends Serializable> String toJson(T object){
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         return gson.toJson(object);
@@ -35,7 +33,7 @@ public class JSONUtil {
 
     public static void updateConfig(Group group) {
         try {
-            RandomAccessFile f = new RandomAccessFile("./shared_files/" + group.getID() + "/key", "r");
+            RandomAccessFile f = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + group.getID() + "/" + Constant.KEY_FILENAME, "r");
 
             byte[] key = new byte[(int) f.length()];
             f.readFully(key);
@@ -53,7 +51,7 @@ public class JSONUtil {
     public static void updateConfig(String groupID, byte[] data) {
         FileOutputStream fout = null;
         try {
-            fout = new FileOutputStream(new File("./shared_files/" + groupID + "/config.json"));
+            fout = new FileOutputStream(new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "/" + Constant.CONFIG_FILENAME));
             fout.write(data);
             fout.flush();
         } catch(IOException e) {
