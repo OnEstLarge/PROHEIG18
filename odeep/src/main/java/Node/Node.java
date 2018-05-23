@@ -290,10 +290,7 @@ public class Node {
         try {
             pc = new PeerConnection(pi, true);
             isLocal = true;
-        } catch (ConnectException e) {
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) {}
         if(isLocal){
             System.out.println("LOCAL");
             createTempConnection(pc, new PeerMessage(MessageType.RFIL, groupID, this.getNodePeer().getID(), peerHavingFile, CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));

@@ -3,6 +3,7 @@ package peer;
 import com.sun.media.sound.InvalidFormatException;
 
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -31,7 +32,13 @@ public class PeerConnection {
         this.peer = peer;
         this.isLocal = isLocal;
 
-        clientSocket = new Socket(peer.getAddress(), peer.getPort());
+        if(isLocal){
+            clientSocket = new Socket()
+            clientSocket.connect(new InetSocketAddress(peer.getAddress(), peer.getPort()), 1000);
+        }
+        else {
+            clientSocket = new Socket(peer.getAddress(), peer.getPort());
+        }
         os = new BufferedOutputStream(clientSocket.getOutputStream());
         is = new BufferedInputStream(clientSocket.getInputStream());
     }
