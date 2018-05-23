@@ -33,7 +33,7 @@ public class PeerConnection {
         this.isLocal = isLocal;
 
         if(isLocal){
-            clientSocket = new Socket()
+            clientSocket = new Socket();
             clientSocket.connect(new InetSocketAddress(peer.getAddress(), peer.getPort()), 1000);
         }
         else {
@@ -47,7 +47,10 @@ public class PeerConnection {
         byte[] b = new byte[PeerMessage.BLOCK_SIZE];
         try{
             //on va juste lire le premier message reçu, si d'autre message arrive, c'est le handler qui gère.
-            is.read(b);
+            int read = 0;
+            while (read != PeerMessage.BLOCK_SIZE) {
+                read += is.read(b, read, b.length-read);
+            }
 
         } catch(IOException e) {
 
