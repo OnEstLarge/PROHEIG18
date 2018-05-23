@@ -10,8 +10,8 @@ import java.net.UnknownHostException;
 public class PeerConnection {
 
     private Socket clientSocket;
-    private BufferedInputStream is;
-    private BufferedOutputStream os;
+    private static BufferedInputStream is;
+    private static BufferedOutputStream os;
     private PeerInformations peer;
     private boolean isLocal;
 
