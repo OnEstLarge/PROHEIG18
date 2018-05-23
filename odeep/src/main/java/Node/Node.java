@@ -22,6 +22,7 @@ import peer.PeerHandler;
 import peer.PeerInformations;
 import peer.PeerMessage;
 import util.CipherUtil;
+import util.Constant;
 import util.JSONUtil;
 
 import java.io.*;
@@ -178,7 +179,7 @@ public class Node {
             byte[] mes = new byte[PeerMessage.MESSAGE_CONTENT_SIZE];
 
             for (int i = 0; i < (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE); i++, index++) {
-                RandomAccessFile raf = new RandomAccessFile("./shared_files/" + groupID + "/" + filename, "rw");
+                RandomAccessFile raf = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "/" + filename, "rw");
                 raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * i);
                 raf.read(mes, 0, mes.length);
                 byte[] newMes = CipherUtil.eraseZero(mes);
@@ -197,7 +198,7 @@ public class Node {
             }
 
             byte[] lastMes = new byte[(int) (fileSize % PeerMessage.MESSAGE_CONTENT_SIZE)];
-            RandomAccessFile raf = new RandomAccessFile("./shared_files/" + groupID + "/" + filename, "rw");
+            RandomAccessFile raf = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "/" + filename, "rw");
             raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE));
             raf.read(lastMes, 0, lastMes.length);
             raf.close();
@@ -223,7 +224,7 @@ public class Node {
         byte[] payload = null;
         byte[] plainPayload = null;
         try {
-            f = new RandomAccessFile("./shared_files/" + groupID + "/config.json", "r");
+            f = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "/" + Constant.CONFIG_FILENAME, "r");
             payload = new byte[(int) f.length()];
             f.readFully(payload);
             plainPayload = CipherUtil.AESDecrypt(payload, this.getKey(groupID));
@@ -341,7 +342,7 @@ public class Node {
     }
 
     public void setKey(byte[] key, String group) {
-        File keyFile = new File("./shared_files/" + group + "/key");
+        File keyFile = new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + group + "/" + Constant.KEY_FILENAME);
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(keyFile);
@@ -357,7 +358,7 @@ public class Node {
         RandomAccessFile f = null;
         byte[] key = null;
         try {
-            f = new RandomAccessFile("./shared_files/" + group + "/key", "r");
+            f = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + group + "/" + Constant.KEY_FILENAME, "r");
             key = new byte[(int) f.length()];
             f.readFully(key);
         } catch (FileNotFoundException e) {

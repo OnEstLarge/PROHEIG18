@@ -19,6 +19,7 @@ import peer.PeerInformations;
 import peer.PeerMessage;
 import util.CipherUtil;
 import Node.Node;
+import util.Constant;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -38,7 +39,7 @@ public class PGETHandler implements MessageHandler {
         RandomAccessFile f = null;
         byte[] key = null;
         try {
-            f = new RandomAccessFile("./shared_files/" + m.getIdGroup() + "/key", "r");
+            f = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + m.getIdGroup() + "/" + Constant.KEY_FILENAME, "r");
             key = new byte[(int) f.length()];
             f.readFully(key);
         } catch (FileNotFoundException e) {
@@ -50,7 +51,7 @@ public class PGETHandler implements MessageHandler {
 
         RandomAccessFile raf = null;
         try {
-            raf = new RandomAccessFile("./shared_files/" + m.getIdGroup() + "/" + n.filenameUploaded, "rw");
+            raf = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + m.getIdGroup() + "/" + n.filenameUploaded, "rw");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

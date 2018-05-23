@@ -19,6 +19,7 @@ import peer.PeerInformations;
 import peer.PeerMessage;
 import util.CipherUtil;
 import Node.Node;
+import util.Constant;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -35,7 +36,7 @@ public class RFILHandler implements MessageHandler{
         RandomAccessFile f = null;
         byte[] key = null;
         try {
-            f = new RandomAccessFile("./shared_files/" + m.getIdGroup() + "/key", "r");
+            f = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + m.getIdGroup() + "/" + Constant.KEY_FILENAME, "r");
             key = new byte[(int)f.length()];
             f.readFully(key);
         } catch (FileNotFoundException e) {
@@ -46,7 +47,7 @@ public class RFILHandler implements MessageHandler{
         }
         File fileAsked = null;
         try {
-            fileAsked = new File("./shared_files/" + m.getIdGroup() + "/" + new String(CipherUtil.AESDecrypt(m.getMessageContent(), key)));
+            fileAsked = new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + m.getIdGroup() + "/" + new String(CipherUtil.AESDecrypt(m.getMessageContent(), key)));
         } catch (InvalidCipherTextException e) {
             e.printStackTrace();
         }
