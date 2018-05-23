@@ -287,13 +287,13 @@ public class RootLayoutController implements Initializable {
      */
     @FXML
     private void handleDownload() {
-        disableDownloadRemove();
         List<String> file = middleList.getSelectionModel().getSelectedItems();
         String filename = file.get(0);
         File fileToDownload = new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + selectedGroup + "/" + filename);
         if (fileToDownload.exists()) {
             return;
         } else {
+            disableDownloadRemove();
             mainApp.requestFile(filename, selectedGroup);
             clearDownloadBar();
         }
