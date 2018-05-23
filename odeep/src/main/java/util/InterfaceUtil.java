@@ -190,7 +190,7 @@ public class InterfaceUtil {
 
                 //remove local file - additional feature not implemented
                 System.out.println(Constant.ROOT_GROUPS_DIRECTORY + "/" + group.getID() + "/" + Constant.CONFIG_FILENAME + "/" + filename);
-                File file = new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + group.getID() + "/" + Constant.CONFIG_FILENAME + "/" + filename);
+                File file = new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + group.getID() + "/" + filename);
                 file.delete();
 
                 Client.refresh();
