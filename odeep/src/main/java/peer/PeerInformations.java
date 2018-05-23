@@ -35,7 +35,7 @@ public class PeerInformations {
         }
         this.address = address;
 
-        if (PORT_RANGE_MIN > port && port > PORT_RANGE_MAX) {
+        if (PORT_RANGE_MIN > port || port > PORT_RANGE_MAX) {
             throw new IllegalArgumentException("Bad port");
         }
         this.port = port;
@@ -103,7 +103,7 @@ public class PeerInformations {
      *
      */
     public void setPort(int port) throws IllegalArgumentException {
-        if (PORT_RANGE_MIN > port && port > PORT_RANGE_MAX) {
+        if (PORT_RANGE_MIN > port || port > PORT_RANGE_MAX) {
             throw new IllegalArgumentException("Bad port");
         }
         this.port = port;

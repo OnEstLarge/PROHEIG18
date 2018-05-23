@@ -12,9 +12,11 @@ package handler;
 
 
 import message.MessageHandler;
+import org.bouncycastle.crypto.InvalidCipherTextException;
 import peer.PeerConnection;
 import peer.PeerMessage;
 import main.Client;
+import util.CipherUtil;
 import util.InterfaceUtil;
 import Node.Node;
 
@@ -26,6 +28,10 @@ public class NFILHandler implements MessageHandler {
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
 
         Client.downloadJSON(m.getIdGroup());
-        InterfaceUtil.askFile(m.getIdGroup(), new String(m.getMessageContent()));
+        try {
+            n.requestFile(new String(CipherUtil.AESDecrypt(m.getMessageContent(), n.getKey(m.getIdGroup()))), m.getIdGroup());
+        } catch (InvalidCipherTextException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -46,21 +46,6 @@ public class SFILHandler implements MessageHandler {
         try {
             rcv = CipherUtil.AESDecrypt(m.getMessageContent(), key);
         } catch (InvalidCipherTextException e) {
-            /*
-            PeerInformations pi = null;
-            for (PeerInformations p : n.getKnownPeers()) {
-                if (p.getID().equals(m.getIdFrom())) {
-                    pi = p;
-                    break;
-                }
-            }
-            if (pi == null) {
-                throw new NullPointerException();
-            } else {
-                n.createTempConnection(pi, new PeerMessage(MessageType.PGET, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getNoPacket(), new byte[]{}));
-                return;
-            }
-            */
             System.out.println("FAIL");
             Client.sendPM(new PeerMessage(MessageType.PGET, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getNoPacket(), new byte[]{}));
             return;

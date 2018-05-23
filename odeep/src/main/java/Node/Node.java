@@ -41,21 +41,7 @@ public class Node {
     public Node(PeerInformations myInfos) {
         this.myInfos = myInfos;
 
-        knownPeers = new ArrayList<PeerInformations>();
         mapMessage = new HashMap<String, MessageHandler>();
-    }
-
-    /**
-     * Ajoute un ou plusieurs pairs à la liste de pairs connus.
-     *
-     * @param peers nouveau(x) pair(s) à ajouter
-     */
-    public void addPeer(PeerInformations... peers) {
-        for (PeerInformations peer : peers) {
-            if (!knownPeers.contains(peer)) {
-                knownPeers.add(peer);
-            }
-        }
     }
 
     /**
@@ -71,41 +57,12 @@ public class Node {
         mapMessage.put(typeMessage, handler);
     }
 
-    /**
-     * Ferme la connexion entrante du Noeud (Node.Node).
-     */
-    public void shutdown() {
-        nodeIsRunning = false;
-    }
-
-    /**
-     * Ouvre la connexion entrante du Noeud (Node.Node).
-     */
-    public void turnOn() {
-        nodeIsRunning = true;
-    }
-
-    public ArrayList<PeerInformations> getKnownPeers() {
-        return new ArrayList<PeerInformations>(knownPeers);
-    }
-
-    /**
-     * Retire un pair de la map 'mapMessage'.
-     *
-     * @param peers pair(s) à retirer
-     */
-    public void removeKnownPeers(PeerInformations... peers) {
-        for (PeerInformations peer : peers) {
-            knownPeers.remove(peer);
-        }
-    }
-
     public PeerInformations getNodePeer() {
         return myInfos;
     }
 
     public HashMap<String, MessageHandler> getMapMessage() {
-        return new HashMap<String, MessageHandler>(mapMessage);
+        return new HashMap<>(mapMessage);
     }
 
     /**
@@ -149,17 +106,6 @@ public class Node {
     public void sendFileToPeer(File file, String groupID, String destination) throws IOException {
         byte[] key = this.getKey(groupID);
         int index = 0;
-        /*
-        PeerInformations pi = null;
-        for (PeerInformations p : this.getKnownPeers()) {
-            if (p.getID().equals(destination)) {
-                pi = p;
-                break;
-            }
-        }
-        if (pi == null) {
-            throw new NullPointerException();
-        } else {*/
             String filename = file.getName();
             long fileSize = file.length();
             String fileInfo = filename + ":" + Long.toString(fileSize);
@@ -187,10 +133,8 @@ public class Node {
                 raf.close();
                 byte[] cipherMes = CipherUtil.AESEncrypt(newMes, key);
                 PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
-                System.out.println("sending : " + filename + " : " + 100.0 * i / (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE) + "%");
                 Client.updateUploadBar(( (double)i ) / (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE));
                 Client.sendPM(p);
-                //this.createTempConnection(pi, p);
                 try {
                     Thread.sleep(5);
                 } catch (InterruptedException e) {
@@ -209,8 +153,6 @@ public class Node {
             PeerMessage pm = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, 99999999, cipherMes);
             Client.sendPM(pm);
             Client.updateUploadBar(1.0);
-            //this.createTempConnection(pi, p);
-        //}
     }
 
     /**
@@ -263,16 +205,6 @@ public class Node {
         String peerHavingFile = getFileLocation(filename, groupID);
 
         Client.sendPM(new PeerMessage(MessageType.RFIL, groupID, this.getNodePeer().getID(), peerHavingFile, CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));
-        /*
-
-        PeerConnection p = null;
-        try {
-            p = new PeerConnection(peerHavingFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        p.sendMessage(new PeerMessage(MessageType.RFIL, groupID, this.getNodePeer().getID(), peerHavingFile.getID(), CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));
-        p.close();*/
     }
 
     public void checkPacket(PeerMessage pm){
@@ -294,7 +226,6 @@ public class Node {
         else{
             Client.updateDownloadBar(1.0);
             InterfaceUtil.addFile(new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + pm.getIdGroup() + "/" + filenameDownloaded.get(pm.getIdFrom())), Client.getUsername(), Client.getGroupById(pm.getIdGroup()));
-            System.out.println("STOP");
         }
     }
 
@@ -302,7 +233,6 @@ public class Node {
      *
      */
     private void cleanup(OutputStream out, InputStream in, Socket clientSocket, ServerSocket serverSocket) {
-        System.out.println("OMG JE SUIS EN MODE CLEANUP");
         try {
             if (out != null) {
                 out.close();
@@ -372,22 +302,8 @@ public class Node {
         return key;
     }
 
-    public static void createTempConnection(PeerInformations peer, PeerMessage message) {
-        PeerConnection p = null;
-        try {
-            p = new PeerConnection(peer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        p.sendMessage(message);
-        p.close();
-    }
-
     // Informations sur le pair de ce noeud
     private PeerInformations myInfos;
-
-    // Les informations sur les pairs que ce noeud connait
-    private ArrayList<PeerInformations> knownPeers;
 
     // Association entre les types de message et leur handlers
     private HashMap<String, MessageHandler> mapMessage;
@@ -405,11 +321,4 @@ public class Node {
     public static HashMap<String,Integer> numberPacketDownloaded = new HashMap<>();
     public static HashMap<String,Integer> numberPacketCurrent = new HashMap<>();
     public static HashMap<String,List<Boolean>> listPacket = new HashMap<>();
-    /*
-    public static String filenameDownloaded = null;
-    public static int filesizeDownloaded = 0;
-    public static int numberPacketDownloaded = 0;
-    public static int numberPacketCurrent = 0;
-    public List<Boolean> listPacket = new ArrayList<>();
-*/
 }

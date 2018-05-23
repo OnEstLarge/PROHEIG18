@@ -19,7 +19,6 @@ public class PeerHandler implements Runnable {
     private Thread activity;
     Socket clientSocket;
     private Node node;
-    private RSAInfo RSA;
 
     public PeerHandler(Node node, Socket socket) {
         this.node = node;
@@ -38,13 +37,11 @@ public class PeerHandler implements Runnable {
         } catch(InvalidFormatException e) {}
 
         //handle message
-
-        //close connection
-        connection.close();
-
         node.getMapMessage().get(message.getType()).handleMessage(node,connection, message); //gerer erreur possible
 
 
+        //close connection
+        connection.close();
     }
 
 }

@@ -332,12 +332,10 @@ public class Client extends Application {
 
         new Thread(() -> {
             getLocalIP();
-            System.out.println("Connecting to server");
             // initConnections établie la connexion avec le serveur, récupere le nom de l'utilisateur et se connecte avec
             initConnections(IP_SERVER, PORT_SERVER);
 
             // Se met à l'écoute de connexions
-            System.out.println("Launching node listening");
             try {
                 n.acceptingConnections();
             } catch (NullPointerException e) {
@@ -371,7 +369,6 @@ public class Client extends Application {
 
         while (!communicationReady) {
             try {
-                System.out.println("waiting comm ready");
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -394,16 +391,13 @@ public class Client extends Application {
         while (isUsernameAvailaible == -1) {
             try {
 
-                int read;
                 byte[] buffer = new byte[PeerMessage.BLOCK_SIZE];
-                read = in.read(buffer);
+                in.read(buffer);
                 PeerMessage pm = new PeerMessage(buffer);
-                System.out.println("Received response for username validation");
                 String resp = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
                 isUsernameAvailaible = resp.equals("true") ? 1 : 0;
                 if (isUsernameAvailaible != 1) {
                     Thread.sleep(1000);
-                    System.out.println("isUsernameAvailaible " + isUsernameAvailaible);
                 }
 
             } catch (InterruptedException e) {
@@ -458,15 +452,11 @@ public class Client extends Application {
             }
         } catch (SocketException e) {
         }
-
-        System.out.println("Your local ip: " + localIP);
     }
 
     private static void initNode() {
         PeerInformations myInfos = new PeerInformations(myUsername, localIP, LOCAL_PORT);
-        System.out.println("Created myInfos");
         n = new Node(myInfos);
-        System.out.println("Created the node");
         // Ajouter tous les handlers
         n.addMessageHandler(MessageType.INVI, new INVIHandler());
         n.addMessageHandler(MessageType.DISC, new DISCHandler());
@@ -474,31 +464,25 @@ public class Client extends Application {
         n.addMessageHandler(MessageType.RFIL, new RFILHandler());
         n.addMessageHandler(MessageType.PGET, new PGETHandler());
         n.addMessageHandler(MessageType.SFIL, new SFILHandler());
-        n.addMessageHandler(MessageType.SMES, new SMESHandler());
         n.addMessageHandler(MessageType.UPDT, new UPDTHandler());
         n.addMessageHandler(MessageType.INVK, new INVKHandler());
         n.addMessageHandler(MessageType.DHS1, new DHS1Handler());
         n.addMessageHandler(MessageType.DHS2, new DHS2Handler());
         n.addMessageHandler(MessageType.DHR1, new DHR1Handler());
 
-        System.out.println("Added the handlers");
     }
 
     // Initialise la connection avec le serveur et lance le server d'écoute du client
     public static void initConnections(String ip, int port) {
         try {
             clientSocketToServerPublic = new Socket(ip, port);
-            System.out.println("Connected to server");
             in = new BufferedInputStream(clientSocketToServerPublic.getInputStream());
             out = new BufferedOutputStream(clientSocketToServerPublic.getOutputStream());
             communicationReady = true;
             // Nous avons le pseudo après ça
-            System.out.println("get pseudo");
             waitForUsername();
-            System.out.println("we got the pseudo");
 
             // Salutation au serveur, reception de la réponse
-            System.out.println("aaaa" + localIP);
             PeerMessage greetings = new PeerMessage(MessageType.HELO, "XXXXXX", myUsername, "XXXXXX", 0, localIP.getBytes());
             synchronized (out) {
                 out.write(greetings.getFormattedMessage());
@@ -570,7 +554,6 @@ public class Client extends Application {
             //int read;
             byte[] buffer = new byte[PeerMessage.BLOCK_SIZE];
 
-            System.out.println("Start reading in main.Client.ReadFromServer");
             try {
                 synchronized (in) {
                     while(true) {
@@ -584,17 +567,14 @@ public class Client extends Application {
                             System.out.println(read);
 
                         if (pm.getType().equals(MessageType.INFO)) {
-                            System.out.println("Received info, writing in response static");
                             response = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
                         } else if (pm.getType().equals(MessageType.NEWG)) {
                             String resp = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
                             validationGroup = resp.equals("true") ? true : false;
                             waitingForGroupValidation = false;
                         } else if (pm.getType().equals(MessageType.DOWN)) {
-                            System.out.println("i'm in");
                             saveReceivedJson(pm);
                             waitingJsonFromServer = false;
-                            System.out.println("i'm out");
                         } else {
                             final PeerMessage redirectPM = new PeerMessage(pm);
                             new Thread(() -> redirectToHandler(redirectPM, n, new PeerConnection(clientSocketToServerPublic))).start();
@@ -611,7 +591,7 @@ public class Client extends Application {
             }catch (IOException e) {
                 System.out.println(e.getMessage());
             } finally {
-                System.out.println("ERROR STOPPED LISTENING TO SERVER PUBLIC");
+                System.err.println("ERROR STOPPED LISTENING TO SERVER PUBLIC");
                 try {
                     clientSocketToServerPublic.close();
                     in.close();
@@ -628,8 +608,7 @@ public class Client extends Application {
         try {
             node.getMapMessage().get(message.getType()).handleMessage(node, connection, message); // Gerer erreur possible
         } catch (NullPointerException e) {
-            System.out.println("ERREUR");
-            System.out.println("type : " + message.getType() + "\ngroupe : " + message.getIdGroup() + "\nfrom : " + message.getIdFrom() + "\nto : " + message.getIdTo() + "\nNo : " + message.getNoPacket());
+            System.err.println("Altered packet, will be ignored");
         }
     }
 
@@ -676,14 +655,11 @@ public class Client extends Application {
         PeerMessage uploadMessage;
 
         try {
-            System.out.println("UPLOADING will read file");
             // Récupère et chiffre de fichier config
             RandomAccessFile configFile = new RandomAccessFile(filenameJSON, "r");
             byte[] configFileByte = new byte[(int) configFile.length()];
             configFile.readFully(configFileByte);
-            System.out.println("UPLOADING did read file");
             uploadMessage = new PeerMessage(MessageType.UPLO, groupID, idFrom, idFrom, configFileByte);
-            System.out.println("UPLOAD " + new String(uploadMessage.getFormattedMessage()));
             synchronized (out) {
                 out.write(uploadMessage.getFormattedMessage());
                 out.flush();
@@ -711,7 +687,6 @@ public class Client extends Application {
         if (group != null) {
             for (Person person : group.getMembers()) {
                 if (!person.getID().equals(myUsername)) {
-                    System.out.println("FUCK YOU " + person.getID() + person.getID().length() + "  " + myUsername + myUsername.length());
                     PeerMessage pm = new PeerMessage(MessageType.UPDT, group.getID(), idFrom, person.getID(), "".getBytes());
                     try {
                         synchronized (out) {
@@ -728,23 +703,21 @@ public class Client extends Application {
     }
 
     public static void downloadJSON(String groupID) {
-
-        System.out.println("Download JSON");
         PeerMessage downloadMessage = new PeerMessage(MessageType.DOWN, groupID, myUsername, myUsername, "".getBytes());
         try {
             waitingJsonFromServer = true;
             while(waitingJsonFromServer) {
-                System.out.println("I want to download");
                 // Averti le serveur que le client désire avoir le fichier 'config'
                 synchronized (out) {
                     out.write(downloadMessage.getFormattedMessage());
                     out.flush();
                 }
                 int count = 0;
+                int maxTry = 5;
 
-                while (waitingJsonFromServer && count < 20) {
+                //on telecharge le fichier de config, et on redemande le download toute les deux secondes
+                while (waitingJsonFromServer && count < 20 && maxTry-- > 0) {
                     try {
-                        System.out.println("waiting download");
                         Thread.sleep(100);
                         count++;
                     } catch (InterruptedException e) {
@@ -767,11 +740,8 @@ public class Client extends Application {
     private static void saveReceivedJson(PeerMessage pm) {
         byte[] buffer = pm.getMessageContent();
         int size = pm.getMessageContent().length;
-        System.out.println(size);
         FileOutputStream fOut = null;
         try {
-            System.out.println("I download");
-
             fOut = new FileOutputStream(new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + pm.getIdGroup() + "/" + Constant.CONFIG_FILENAME));
             fOut.write(buffer, 0, size);
             fOut.flush();
@@ -806,7 +776,6 @@ public class Client extends Application {
             PeerMessage invitePM = new PeerMessage(MessageType.INVI, groupID, myUsername, username, "".getBytes());
 
             try {
-                System.out.println("I send an invitation for user " + username + " in group " + groupID);
                 synchronized (out) {
                     out.write(invitePM.getFormattedMessage());
                     out.flush();
@@ -822,7 +791,6 @@ public class Client extends Application {
         PeerMessage acceptInvitePM = new PeerMessage(MessageType.INVK, groupID, myUsername, usernameFrom, "".getBytes());
 
         try {
-            System.out.println("I accept an invitation for user " + usernameFrom + " in group " + groupID);
             synchronized (out) {
                 out.write(acceptInvitePM.getFormattedMessage());
                 out.flush();
@@ -841,16 +809,12 @@ public class Client extends Application {
     }
 
     public static void updateJsonAfterInvitation(String groupID) {
-        System.out.println("updateJsonAfterInvitation in");
-
         //Téléchargement json du groupe
         downloadJSON(groupID);
         // Ajoute le group dans sa liste groupe
-        System.out.println("updateJsonAfterInvitation downloaded");
 
         RandomAccessFile configFile;
         try {
-            System.out.println("updateJsonAfterInvitation will read json received");
 
             configFile = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "/" + Constant.CONFIG_FILENAME, "r");
             byte[] configFileByte = new byte[(int) configFile.length()];
@@ -862,7 +826,6 @@ public class Client extends Application {
             group.addMember(myself);
             groups.add(group);
 
-            System.out.println("updateJsonAfterInvitation Group member, should have added myself ");
             for (Person p : group.getMembers())
                 System.out.println(p.getID());
         } catch (FileNotFoundException e) {
@@ -873,18 +836,13 @@ public class Client extends Application {
             e.printStackTrace();
         }
 
-        System.out.println("updateJsonAfterInvitation update config");
 
         // Update le json en s'ajoutant dans le groupe
         JSONUtil.updateConfig(Client.getGroupById(groupID));
 
-        System.out.println("updateJsonAfterInvitation updated, uploading");
-
 
         // Upload le nouveau json sur le serveur
         Client.uploadJSON(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "/" + Constant.CONFIG_FILENAME, groupID, myUsername);
-
-        System.out.println("updateJsonAfterInvitation uploaded");
 
         Platform.runLater(() -> {
             controller.enableButtons();

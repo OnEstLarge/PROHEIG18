@@ -15,7 +15,6 @@ import message.MessageHandler;
 import message.MessageType;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import peer.PeerConnection;
-import peer.PeerInformations;
 import peer.PeerMessage;
 import util.CipherUtil;
 import Node.Node;
@@ -66,20 +65,6 @@ public class RFILHandler implements MessageHandler{
 
         }
         else{
-            /*
-            PeerInformations pi = null;
-            for (PeerInformations p : n.getKnownPeers()) {
-                if (p.getID().equals(m.getIdFrom())) {
-                    pi = p;
-                    break;
-                }
-            }
-            if (pi == null) {
-                throw new NullPointerException();
-            } else {
-                n.createTempConnection(pi,new PeerMessage(MessageType.NFIL, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getMessageContent()) );
-            }
-            */
             Client.sendPM(new PeerMessage(MessageType.NFIL, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getMessageContent()));
         }
     }

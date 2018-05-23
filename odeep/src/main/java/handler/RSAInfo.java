@@ -32,7 +32,10 @@ public class RSAInfo {
      * génére une paire de clé RSA
      */
     public void setKeys() {
-        kp = CipherUtil.GenerateRSAKey();
+        do {
+            kp = CipherUtil.GenerateRSAKey();
+        }
+        while(kp == null);
         publicKey = CipherUtil.publicKeyToByte(kp.getPublic());
     }
 

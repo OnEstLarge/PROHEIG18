@@ -83,12 +83,10 @@ public class CipherUtil {
         byte[] cipherData = new byte[0];
         try {
             cipherData = AESProcessing(data, keys[0], true);
-            //System.out.println(cipherData.length);
         } catch (InvalidCipherTextException e) {
             e.printStackTrace();
         }
         byte[] HMAC = generateHMAC(cipherData, keys[1]);
-        //System.out.println(HMAC.length);
         return Bytes.concat(cipherData, HMAC);
     }
 
@@ -240,7 +238,6 @@ public class CipherUtil {
             index++;
         }
         byte[] expectedHMAC = generateHMAC(rawData, key);
-        //System.out.println(new String(HMAC) + " : " + new String(expectedHMAC));
         return Arrays.equals(expectedHMAC, HMAC);
     }
 
@@ -325,12 +322,14 @@ public class CipherUtil {
         KeyPairGenerator kpg = null;
         try {
             kpg = KeyPairGenerator.getInstance("RSA", "BC");
+            kpg.initialize(RSA_KEY_SIZE, new SecureRandom());
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (NoSuchProviderException e) {
             e.printStackTrace();
+        } catch (NullPointerException e ){
+            return null;
         }
-        kpg.initialize(RSA_KEY_SIZE, new SecureRandom());
         return kpg.generateKeyPair();
     }
 
@@ -339,11 +338,6 @@ public class CipherUtil {
      * @param key clé publique du destinataire
      * @param plain tableau de byte à chiffrer
      * @return
-     * @throws NoSuchPaddingException
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidKeyException
-     * @throws BadPaddingException
-     * @throws IllegalBlockSizeException
      */
     public static byte[] RSAEncrypt(PublicKey key, byte[] plain) {
         Cipher cipher = null;
@@ -375,11 +369,6 @@ public class CipherUtil {
      * @param key clé privée de l'utilisateur
      * @param cipherText donnée chiffrée
      * @return
-     * @throws NoSuchPaddingException
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidKeyException
-     * @throws BadPaddingException
-     * @throws IllegalBlockSizeException
      */
     public static byte[] RSADecrypt(PrivateKey key, byte[] cipherText) {
         Cipher cipher = null;
@@ -410,8 +399,6 @@ public class CipherUtil {
      * permet de convertir un tableau de byte en une clé publique RSA, utile lors de la reception de la clé par le réseau
      * @param b tableau de byte contenant la clé encodée
      * @return
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidKeySpecException
      */
     public static PublicKey byteToPublicKey(byte[] b) {
         String s = new String(b);

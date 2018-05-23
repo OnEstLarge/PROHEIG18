@@ -98,11 +98,4 @@ public class DatabaseUtil {
         return result;
     }
 
-    public static void uploadJSON(String filenameJSON, String group){
-    }
-
-    public static String downloadJSON(String group){
-        return null;
-    }
-
 }

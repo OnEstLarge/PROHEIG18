@@ -18,16 +18,16 @@ public class Group implements Serializable {
     private List<Person> members;
 
     public Group(){
-        members = new ArrayList<Person>();
+        members = new ArrayList<>();
     }
 
     public Group(String ID) {
         this.ID = ID;
-        members = new ArrayList<Person>();
+        members = new ArrayList<>();
     }
 
     public Group(String ID, Person... listPerson){
-        members = new ArrayList<Person>();
+        members = new ArrayList<>();
         this.ID = ID;
 
         for(Person p : listPerson){
@@ -71,7 +71,7 @@ public class Group implements Serializable {
     }
 
     public List<Person> getMembers() {
-        return new ArrayList<Person>(members);
+        return new ArrayList<>(members);
     }
 
     public String getID() {

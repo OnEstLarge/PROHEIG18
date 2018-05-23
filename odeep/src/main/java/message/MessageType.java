@@ -1,7 +1,6 @@
 package message;
 
 public class MessageType {
-    public final static String FGET = "FGET"; // demande d'envoie d'un fichier a un noeud
     public final static String PGET = "PGET"; // demande d'envoie d'un paquet a un noeud
     public final static String RFIL = "RFIL"; // demande a un noeud si celui ci possède un fichier
     public final static String SFIL = "SFIL"; // envoie d'un fichier

@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 
 /**
-    Serveur multithreadé servant de relai entre les différents clients de notre application
+ * Serveur multithreadé servant de relai entre les différents clients de notre application
  */
 public class ServerPeerToPeer {
 
@@ -70,7 +70,6 @@ public class ServerPeerToPeer {
         BufferedOutputStream out = null;
         boolean running = true;
         byte[] bufferIn = new byte[PeerMessage.BLOCK_SIZE];
-        byte[] bufferOut = new byte[PeerMessage.BLOCK_SIZE];
 
         public ServerWorker(Socket clientSocket) {
             try {
@@ -92,7 +91,7 @@ public class ServerPeerToPeer {
                     int read = 0;
                     while (read != PeerMessage.BLOCK_SIZE) {
                         //int lu;
-                        read += in.read(bufferIn, read, bufferIn.length-read);
+                        read += in.read(bufferIn, read, bufferIn.length - read);
                         //read += lu;
                     }
 
@@ -102,7 +101,7 @@ public class ServerPeerToPeer {
                     //System.out.println(new String(bufferIn) + "\n---\n\n");
                     pm = new PeerMessage(bufferIn);
                     String type = pm.getType();
-                    System.out.println("Message reçu " + pm.getType() + ", FROM: " + pm.getIdFrom()+", TO: "+pm.getIdTo() + ", Pno = " + pm.getNoPacket());
+                    System.out.println("Message reçu " + pm.getType() + ", FROM: " + pm.getIdFrom() + ", TO: " + pm.getIdTo() + ", Pno = " + pm.getNoPacket());
 
                     switch (type) {
                         case MessageType.HELO:
@@ -130,20 +129,16 @@ public class ServerPeerToPeer {
                             redirectBuffer = bufferIn.clone();
                             redirect(pm);
                             break;
-                            
-                            // Création d'un nouveau groupe
+
+                        // Création d'un nouveau groupe
                         case MessageType.NEWG:
                             System.out.println("Creation Group, FROM: " + pm.getIdFrom());
                             int ajout = DatabaseUtil.addGroupIfNotExists(pm.getIdGroup());
 
 
                             if (ajout == 1) {
-
-                                //System.out.println("envoi du true");
-                                //synchronized (out) {
-                                    out.write((new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "true".getBytes())).getFormattedMessage());
-                                    out.flush();
-                                //}
+                                out.write((new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "true".getBytes())).getFormattedMessage());
+                                out.flush();
 
                             } else {
                                 out.write((new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), "false".getBytes())).getFormattedMessage());
@@ -152,21 +147,17 @@ public class ServerPeerToPeer {
 
                             break;
 
-                            // Stocker le fichier config reçu sur le serveur
+                        // Stocker le fichier config reçu sur le serveur
                         case MessageType.UPLO:
 
                             System.out.println("Upload, FROM: " + pm.getIdFrom() + ", " + "TO: " + pm.getIdTo());
 
                             //On récupère la taille du JSON a download
 
-                            //String s = CipherUtil.erasePadding(new String(pm.getMessageContent()), PeerMessage.PADDING_START);
-
                             byte[] input = CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START);
                             FileOutputStream fout = new FileOutputStream(new File("./" + ROOT_GROUPS_DIRECTORY + "/" + pm.getIdGroup()));
 
                             int size = input.length;
-
-                            byte[] bufferTest = new byte[size];
 
                             fout.write(input, 0, size);
                             fout.flush();
@@ -174,7 +165,7 @@ public class ServerPeerToPeer {
 
                             break;
 
-                            // Envoie le fichier config à la personne voulue
+                        // Envoie le fichier config à la personne voulue
                         case MessageType.DOWN:
 
                             System.out.println("DOWN");
@@ -189,29 +180,8 @@ public class ServerPeerToPeer {
 
                             System.out.println(new String(jsonPm.getMessageContent()) + "  " + jsonPm.getMessageContent().length);
 
-                            //synchronized (out) {
-                                out.write(jsonPm.getFormattedMessage());
-                                out.flush();
-                            //}
-                            //}
-
-                            /*
-                            System.out.println("Download asked from " + pm.getIdFrom());
-                            System.out.println("Download dest = " + pm.getIdTo());
-                            System.out.println("PEOPLE IN SERV = ");
-                            for(String p : peopleInServ.keySet()) {
-                                System.out.println(p);
-                            }
-                            System.out.println();
-                            PeerMessage msg = new PeerMessage(MessageType.DOWN, pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), (new String(pm.getMessageContent())+ "-" + (int) json.length()).getBytes());
-                            out.write(msg.getFormattedMessage());
+                            out.write(jsonPm.getFormattedMessage());
                             out.flush();
-                            Thread.sleep(100);
-                            System.out.println("msg sent from server = " + new String(msg.getFormattedMessage()));
-                            out.write(bufferJson);
-
-                            out.flush();
-                            */
 
                             break;
 
@@ -233,6 +203,7 @@ public class ServerPeerToPeer {
 
         /**
          * Méthode qui teste l'unicité du nom de l'utilisateur
+         *
          * @param pm PeerMessage contant les inforamtions
          */
 
@@ -253,6 +224,7 @@ public class ServerPeerToPeer {
 
         /**
          * Méthode de qui rajoute la personne entrée dans les personnes connectées
+         *
          * @param pm PeerMessage contenant les informations
          */
         private void greetings(PeerMessage pm) {
@@ -265,7 +237,8 @@ public class ServerPeerToPeer {
         }
 
         /**
-         *  Méthode qui renvoie l'adresse IP privée d'idTo
+         * Méthode qui renvoie l'adresse IP privée d'idTo
+         *
          * @param pm PeerMessage contenant les informations
          */
         void giveInfoToSender(PeerMessage pm) {
@@ -293,6 +266,7 @@ public class ServerPeerToPeer {
 
         /**
          * Méthode qui redirige les PeerMessage
+         *
          * @param pm le PeerMessage à rediriger
          */
         void redirect(PeerMessage pm) {
@@ -323,6 +297,7 @@ public class ServerPeerToPeer {
 
         /**
          * Enlève l'utilisateur des personnes connectées au serveur
+         *
          * @param pm PeerMessage contenant les informations
          */
         void bye(PeerMessage pm) {

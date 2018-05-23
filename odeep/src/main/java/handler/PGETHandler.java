@@ -10,12 +10,10 @@ package handler;
  -----------------------------------------------------------------------------------
 */
 
-import com.sun.org.apache.bcel.internal.generic.InstructionConstants;
 import main.Client;
 import message.MessageHandler;
 import message.MessageType;
 import peer.PeerConnection;
-import peer.PeerInformations;
 import peer.PeerMessage;
 import util.CipherUtil;
 import Node.Node;
@@ -64,20 +62,6 @@ public class PGETHandler implements MessageHandler {
         }
         byte[] cipherMes = CipherUtil.AESEncrypt(mes, key);
         PeerMessage response = new PeerMessage(MessageType.SFIL, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getNoPacket(), cipherMes);
-        /*
-        PeerInformations pi = null;
-        for (PeerInformations p : n.getKnownPeers()) {
-            if (p.getID().equals(m.getIdFrom())) {
-                pi = p;
-                break;
-            }
-        }
-        if (pi == null) {
-            throw new NullPointerException();
-        } else {
-            n.createTempConnection(pi, response);
-        }
-        */
         Client.sendPM(response);
     }
 }

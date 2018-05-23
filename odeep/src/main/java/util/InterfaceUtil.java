@@ -14,7 +14,6 @@ import User.Group;
 import User.Person;
 import main.Client;
 import Node.Node;
-import message.MessageType;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import peer.PeerMessage;
 
@@ -39,7 +38,6 @@ public class InterfaceUtil {
         Group group = null;
         // Check la validité du string groupID
         if (PeerMessage.isValidIdFormat(groupID, PeerMessage.ID_GROUP_MIN_LENGTH, PeerMessage.ID_GROUP_MAX_LENGTH)) {
-            FileOutputStream out = null;
             try {
                 // Demande au serveur si le groupe existe déjà
                 if(Client.groupValidation(groupID)) {
@@ -73,14 +71,6 @@ public class InterfaceUtil {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
-                try {
-                    if(out != null) {
-                        out.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
         }
         return group;
@@ -128,11 +118,6 @@ public class InterfaceUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    // Copie le fichier dans le répertoire 'shared_files/groupID'
-    private static void copyFile(File file, Group group) {
-
     }
 
     /**
@@ -201,64 +186,4 @@ public class InterfaceUtil {
             e.printStackTrace();
         }
     }
-
-    public static void askFile(String groupID, String filename) {
-
-    }
-
-    /**
-     * Récupère un propriété d'un fichier 'properties'.
-     *
-     * @param filename fichier 'properties'
-     * @param property propriété concernée
-     * @return la valeur de la propriété 'property'
-     */
-    public static String loadProperties(String filename, String property) {
-        String result = "";
-        Properties properties = new Properties();
-        InputStream in = null;
-
-        try {
-            in = new FileInputStream(filename);
-            properties.load(in);
-            result = properties.getProperty(property);
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                in.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return result;
-    }
-
-    //TODO: pour tests uniquement
-    public static void printConfig(String groupID, byte[] key) {
-        // Récupère et chiffre de fichier config
-        RandomAccessFile configFile = null;
-        try {
-            configFile = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "\"/\" + Constant.CONFIG_FILENAME", "r");
-            byte[] configFileByte = new byte[(int) configFile.length()];
-            configFile.readFully(configFileByte);
-
-            byte[] plainConfig = CipherUtil.AESDecrypt(configFileByte, key);
-
-            System.out.println("\n\n--------CONFIG--------------");
-            System.out.println(new String(plainConfig) + "\n\n");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InvalidCipherTextException e) {
-            e.printStackTrace();
-        }
-
-    }
-
 }

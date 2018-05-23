@@ -15,11 +15,8 @@ import message.MessageHandler;
 import peer.PeerConnection;
 import peer.PeerMessage;
 import main.Client;
-import util.Constant;
 import util.JSONUtil;
 import Node.Node;
-
-import java.io.File;
 
 /**
  * Classe permettant le traitement d'un message de type DISC
@@ -28,7 +25,6 @@ public class DISCHandler implements MessageHandler{
     @Override
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
         String group = m.getIdGroup();
-        File config = new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + group + "/" + Constant.CONFIG_FILENAME);
         Group g = Client.getGroupById(group);
         for(int i = 0; i < g.getMembers().size(); i++){
             if(g.getMembers().get(i).equals(m.getIdTo())){

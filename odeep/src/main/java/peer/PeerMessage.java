@@ -52,7 +52,7 @@ public class PeerMessage {
     private String idGroup;         // nom du groupe
     private String idFrom;          // pseudo source
     private String idTo;            // pseudo destinataire
-    private int noPacket;        // numéro du paquet
+    private int noPacket;           // numéro du paquet
 
     /**
      * CONTENU DU MESSAGE
@@ -101,8 +101,6 @@ public class PeerMessage {
 
     public PeerMessage(byte[] rawData) throws InvalidFormatException {
         synchronized (this) {
-            //System.out.println(new String(rawData));
-            //System.out.flush();
             if (rawData.length < HEADER_SIZE + 1) {
                 throw new InvalidFormatException("incorrect message");
             }
@@ -120,8 +118,7 @@ public class PeerMessage {
                 this.noPacket = Integer.parseInt(new String(Arrays.copyOfRange(rawData, index, index + NO_PACKET_DIGITS)));
             }
             catch (NumberFormatException e){
-                //System.out.println(new String(rawData));
-                //System.out.flush();
+                System.err.println("altered packet, will be ignored");
             }
             index += NO_PACKET_DIGITS;
             this.messageContent = CipherUtil.erasePadding(Arrays.copyOfRange(rawData, index, rawData.length), PADDING_START);
@@ -149,8 +146,6 @@ public class PeerMessage {
      * @return true si le format du pseudo passé en argument est correct
      */
     public static boolean isValidIdFormat(String id, int minLength, int maxLength) {
-        // TODO: gérer les caractères interdits pour un pseudo (ex: $![)*# ...)
-        // => isAlphaNum()
         return id != null && id.length() >= minLength && id.length() <= maxLength;
     }
 
@@ -190,8 +185,6 @@ public class PeerMessage {
      * @return String paddé avec le nombre souhaité de zéros
      */
     public static String formatInt(int number, int numberOfDigits) {
-        // TODO: trouver un meilleur nom de méthode
-        // TODO: créer une classe utils avec ce genre de méthode ?
         StringBuilder paddingRule = new StringBuilder();
         paddingRule.append("%0").append(numberOfDigits).append("d");
 
@@ -308,17 +301,13 @@ public class PeerMessage {
                 }
 
                 byte[] messageWithPad = addPadding(messageContent, MESSAGE_WITH_PAD_SIZE);
-                //System.out.println("message : " + new String(messageWithPad));
 
                 for (int i = 0; i < MESSAGE_WITH_PAD_SIZE; i++) {
                     toSend[index++] = messageWithPad[i];
                 }
-                //System.out.println("\n\n\n1 " + new String(toSend).substring(0, 4) + "\n\n\n");
-                //System.out.println("\n\n\n2 " + type + "\n\n\n");
             }
+            //tant que le paquet est mal construit, on le reconstruit
             while (!(new String(toSend).substring(0, TYPE_LENGTH).equals(type)));
-            //System.out.println("\n\n\n3 " + new String(toSend).substring(0, 4) + "      " + toSend.length + "\n\n\n");
-            //System.out.println("\n\n\n4 " + new String(toSend) + "      " + toSend.length + "\n\n\n");
             return toSend;
         }
     }
