@@ -257,6 +257,9 @@ public class RootLayoutController implements Initializable {
     @FXML
     private void handleRemove() {
         List<String> file = middleList.getSelectionModel().getSelectedItems();
+        if(file == null){
+            return;
+        }
         if (mapFile.containsKey(selectedGroup)) {
             InterfaceUtil.removeFile(file.get(0), Client.getUsername(), Client.getGroupById(selectedGroup));
             mapFile.get(selectedGroup).remove(file.get(0));
@@ -283,6 +286,9 @@ public class RootLayoutController implements Initializable {
     @FXML
     private void handleDownload() {
         List<String> file = middleList.getSelectionModel().getSelectedItems();
+        if(file == null){
+            return;
+        }
         String filename = file.get(0);
         File fileToDownload = new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + selectedGroup + "/" + filename);
         if (fileToDownload.exists()) {
