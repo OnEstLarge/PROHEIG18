@@ -37,6 +37,8 @@ import views.UsernameDialogController;
 import views.RootLayoutController;
 import User.Group;
 
+import static java.lang.System.exit;
+
 
 public class Client extends Application {
 
@@ -53,7 +55,7 @@ public class Client extends Application {
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("Odeep");
-        this.primaryStage.setOnCloseRequest(event -> Platform.runLater(() -> System.exit(0)));
+        this.primaryStage.setOnCloseRequest(event -> Platform.runLater(() -> exit(0)));
         initRootLayout();
     }
 
@@ -330,7 +332,12 @@ public class Client extends Application {
 
             // Se met à l'écoute de connexions
             System.out.println("Launching node listening");
-            n.acceptingConnections();
+            try {
+                n.acceptingConnections();
+            } catch (NullPointerException e) {
+                //Le server n'est pas actif
+                exit(0);
+            }
 
         }).start();
 
