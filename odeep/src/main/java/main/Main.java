@@ -1,23 +1,7 @@
 package main;
 
-import User.Person;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import views.AcceptInviteDialogController;
-import views.InviteDialogController;
-import views.PseudoDialogController;
-import views.RootLayoutController;
-import User.Group;
 
 
 public class Main extends Application {
@@ -100,7 +84,7 @@ public class Main extends Application {
         try{
             // Load the FXML filer and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(Main.class.getResource("/views/PseudoDialog.fxml"));
+            loader.setLocation(Main.class.getResource("/views/UsernameDialog.fxml"));
             AnchorPane page = loader.load();
 
             // Create the dialog Stage.
@@ -112,7 +96,7 @@ public class Main extends Application {
             dialogStage.setScene(scene);
 
             // Set the invite controller
-            PseudoDialogController controller = loader.getController();
+            UsernameDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage);
             controller.setMainApp(this);
 
@@ -168,7 +152,7 @@ public class Main extends Application {
         return userPseudo;
     }
 
-    public void setUserPseudo(String pseudo) {
+    public void setUsername(String pseudo) {
         this.userPseudo = pseudo;
     }
 
