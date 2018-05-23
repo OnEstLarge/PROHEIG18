@@ -524,24 +524,33 @@ public class Client extends Application {
             }
         }
 
-        for (Group group : groups) {
-            System.out.println("-----------------------------------------------------------------------------------------------------" + myself.isConnected());
-            for (Person p : group.getMembers()) {
-                System.out.println(p.getID() + "   bnbnbnbnb   " + p.isConnected());
-                if (p.getID().equals(myUsername)) {
-                    p.connect();
-                }
-                System.out.println(p.getID() + "   bnbnbnbnb   " + p.isConnected());
-            }
-            JSONUtil.updateConfig(group);
-            uploadJSON("./shared_files/" + group.getID() + "/config.json", group.getID(), myUsername);
-        }
+        connectMyself(true);
 
         groupsNotInialized = false;
         Platform.runLater(() -> controller.updateGroupsAndFiles());
     }
 
-    // Classe permettant de threader la lecture des paquets serveur
+    private static void connectMyself(boolean connectMyself) {
+        for (Group group : groups) {
+            for (Person p : group.getMembers()) {
+                if (p.getID().equals(myUsername)) {
+                    if(connectMyself){
+                        p.connect();
+                    } else {
+                        p.disconnect();
+                    }
+                }
+            }
+            JSONUtil.updateConfig(group);
+            uploadJSON("./shared_files/" + group.getID() + "/config.json", group.getID(), myUsername);
+        }
+        if(!connectMyself) {
+            PeerMessage bye = new PeerMessage(MessageType.BYE, "XXXXXX", myUsername, myUsername, "".getBytes());
+            sendPM(bye);
+        }
+    }
+
+    //Classe permettant de threader la lecture des packets server
     private static class ReadFromServer implements Runnable {
         public void run() {
             //int read;
@@ -977,5 +986,4 @@ public class Client extends Application {
             }
         });
     }
-
 }

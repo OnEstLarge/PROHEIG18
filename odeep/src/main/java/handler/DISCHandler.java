@@ -27,12 +27,13 @@ public class DISCHandler implements MessageHandler{
     @Override
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
         String group = m.getIdGroup();
-        File config = new File("./" + group);
+        File config = new File("./shared_files/" + group + "/config.json");
         Group g = JSONUtil.parseJson(config.toString(), Group.class);
         for(int i = 0; i < g.getMembers().size(); i++){
             if(g.getMembers().get(i).equals(m.getIdTo())){
                 g.getMembers().get(i).disconnect();
-                Client.uploadJSON(JSONUtil.toJson(g),m.getIdGroup(), m.getIdTo());
+                JSONUtil.updateConfig(g);
+                Client.uploadJSON(JSONUtil.toJson(g),m.getIdGroup(), m.getIdFrom());
             }
         }
     }
