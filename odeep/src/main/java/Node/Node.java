@@ -291,12 +291,15 @@ public class Node {
             pc = new PeerConnection(pi, true);
             isLocal = true;
         } catch (IOException e) {}
+        PeerMessage request = new PeerMessage(MessageType.RFIL, groupID, this.getNodePeer().getID(), peerHavingFile, CipherUtil.AESEncrypt(buffer, this.getKey(groupID)));
+        System.out.println("type : " + request.getType() + "\n content : " + new String(request.getMessageContent()));
+        System.out.println(new String (request.getFormattedMessage()));
         if(isLocal){
             System.out.println("LOCAL");
-            createTempConnection(pc, new PeerMessage(MessageType.RFIL, groupID, this.getNodePeer().getID(), peerHavingFile, CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));
+            createTempConnection(pc, request);
         }
         else {
-            Client.sendPM(new PeerMessage(MessageType.RFIL, groupID, this.getNodePeer().getID(), peerHavingFile, CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));
+            Client.sendPM(request);
         }/*
 
         PeerConnection p = null;
@@ -421,6 +424,7 @@ public class Node {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println(new String (message.getFormattedMessage()));
         p.sendMessage(message);
         p.close();
     }

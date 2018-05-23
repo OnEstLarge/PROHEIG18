@@ -47,25 +47,27 @@ public class PeerConnection {
 
     public PeerMessage receiveMessage() throws InvalidFormatException{
         byte[] b = new byte[PeerMessage.BLOCK_SIZE];
-        try{
-            //on va juste lire le premier message reçu, si d'autre message arrive, c'est le handler qui gère.
-            int read = 0;
-            while (read != PeerMessage.BLOCK_SIZE) {
-                read += is.read(b, read, b.length-read);
+        synchronized (is) {
+            try {
+                //on va juste lire le premier message reçu, si d'autre message arrive, c'est le handler qui gère.
+                int read = 0;
+                while (read != PeerMessage.BLOCK_SIZE) {
+                    read += is.read(b, read, b.length - read);
+                }
+
+            } catch (IOException e) {
+
             }
-
-        } catch(IOException e) {
-
+            System.out.println("rcv tab: " + new String(b));
+            PeerMessage rcv = new PeerMessage(b);
+            return rcv;
         }
-        System.out.println("rcv tab: " + new String(b));
-        PeerMessage rcv = new PeerMessage(b);
-        return rcv;
     }
 
     public void sendMessage(PeerMessage message) {
         try {
             //System.out.println("TOSEND" + message.getType() + " --- " +new String(message.getMessageContent()));
-            //System.out.println("TOSEND" + message.getType() + " --- " + new String(message.getFormattedMessage()));
+            System.out.println("TOSEND" + message.getType() + " --- " + new String(message.getFormattedMessage()));
             os.write(message.getFormattedMessage());
             os.flush();
         } catch (IOException e) {

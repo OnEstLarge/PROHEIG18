@@ -92,6 +92,7 @@ public class PeerMessage {
             this.idTo = idTo;
             this.noPacket = noPacket;
             this.messageContent = messageContent;
+            System.out.println("ALLOOOOOOO          " + new String(this.getFormattedMessage()));
         }
     }
 
