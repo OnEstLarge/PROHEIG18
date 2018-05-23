@@ -634,7 +634,7 @@ public class Client extends Application {
     }
 
     public static String askForInfos(String username) {
-        PeerMessage askInfo = new PeerMessage(MessageType.INFO, "XXXXXX", myUsername, myUsername, "".getBytes());
+        PeerMessage askInfo = new PeerMessage(MessageType.INFO, "XXXXXX", myUsername, username, "".getBytes());
         try {
             synchronized (out) {
                 out.write(askInfo.getFormattedMessage());
