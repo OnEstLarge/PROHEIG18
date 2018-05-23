@@ -10,7 +10,7 @@ public class MessageType {
     public final static String DHR1 = "DHR1"; //premiere reponse du protocole DH (le destinataire nous renvoie sa clé)
     public final static String DHS2 = "DHS2"; //deuxieme envoie du protocole DH (envoie de la clé, chiffrée avec le secret partagé)
     public final static String HELO = "HELO"; //initialisation de la connexion au serveur relai
-    public final static String BYE  = "BYE"; // fin de connexion au serveur relai
+    public final static String EXIT = "EXIT"; // fin de connexion au serveur relai
     public final static String INVI = "INVI"; //invitation à un groupe
     public final static String INVK = "INVK"; //invitation acceptée
     public final static String INFO = "INFO"; //demande d'info pour le pear to pear local
