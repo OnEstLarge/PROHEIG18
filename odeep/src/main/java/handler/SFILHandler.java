@@ -96,7 +96,7 @@ public class SFILHandler implements MessageHandler {
         //on stocke les autres paquets dans le fichier de sortie
         else {
             try {
-                RandomAccessFile raf = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + m.getIdGroup() + "/" + n.filenameDownloaded, "rw");
+                RandomAccessFile raf = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + m.getIdGroup() + "/" + n.filenameDownloaded, "rw");
                 raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * (m.getNoPacket() - 1));
                 raf.write(rcv);
                 raf.close();
