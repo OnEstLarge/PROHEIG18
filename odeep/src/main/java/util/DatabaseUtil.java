@@ -6,7 +6,7 @@ public class DatabaseUtil {
 
     private static Connection connection;
     public void initConnection() throws SQLException {
-        String url = "jdbc:mysql://localhost:3306/Odeep_Database?user=root&password=root";
+        String url = "jdbc:mysql://127.0.0.1:3306/Odeep_Database?user=root&password=OdeepPRO2018";
         connection = DriverManager.getConnection(url);
     }
 

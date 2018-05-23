@@ -80,6 +80,7 @@ public class SFILHandler implements MessageHandler {
             System.out.println("Receiving " + fileInfo[0]);
             try {
                 RandomAccessFile emptyFile = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + m.getIdGroup() + "/" + n.filenameDownloaded, "rw");
+
                 emptyFile.setLength(n.filesizeDownloaded);
                 emptyFile.close();
                 n.listPacket.set(0,true);
