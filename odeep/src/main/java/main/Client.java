@@ -542,7 +542,7 @@ public class Client extends Application {
         Platform.runLater(() -> controller.updateGroupsAndFiles());
     }
 
-    private static void connectMyself(boolean connectMyself) {
+    public static void connectMyself(boolean connectMyself) {
         for (Group group : groups) {
             for (Person p : group.getMembers()) {
                 if (p.getID().equals(myUsername)) {
@@ -600,7 +600,8 @@ public class Client extends Application {
                         try {
                             Thread.sleep(10);
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            System.out.println(e.getMessage());
+                            //e.printStackTrace();
                         }
                     }
 
