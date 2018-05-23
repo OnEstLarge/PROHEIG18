@@ -65,13 +65,15 @@ public class PeerConnection {
     }
 
     public void sendMessage(PeerMessage message) {
-        try {
-            //System.out.println("TOSEND" + message.getType() + " --- " +new String(message.getMessageContent()));
-            System.out.println("TOSEND" + message.getType() + " --- " + new String(message.getFormattedMessage()));
-            os.write(message.getFormattedMessage());
-            os.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
+        synchronized (os) {
+            try {
+                //System.out.println("TOSEND" + message.getType() + " --- " +new String(message.getMessageContent()));
+                System.out.println("TOSEND" + message.getType() + " --- " + new String(message.getFormattedMessage()));
+                os.write(message.getFormattedMessage());
+                os.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
