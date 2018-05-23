@@ -28,7 +28,7 @@ public class DISCHandler implements MessageHandler{
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
         String group = m.getIdGroup();
         File config = new File("./shared_files/" + group + "/config.json");
-        Group g = JSONUtil.parseJson(config.toString(), Group.class);
+        Group g = Client.getGroupById(group);
         for(int i = 0; i < g.getMembers().size(); i++){
             if(g.getMembers().get(i).equals(m.getIdTo())){
                 g.getMembers().get(i).disconnect();
