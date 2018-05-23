@@ -23,6 +23,7 @@ import peer.PeerInformations;
 import peer.PeerMessage;
 import util.CipherUtil;
 import util.Constant;
+import util.InterfaceUtil;
 import util.JSONUtil;
 
 import java.io.*;
@@ -292,6 +293,7 @@ public class Node {
         }
         else{
             Client.updateDownloadBar(1.0);
+            InterfaceUtil.addFile(new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + pm.getIdGroup() + "/" + filenameDownloaded), Client.getUsername(), Client.getGroupById(pm.getIdGroup()));
             System.out.println("STOP");
         }
     }
