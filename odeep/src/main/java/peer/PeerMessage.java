@@ -33,7 +33,7 @@ public class PeerMessage {
     public static final int ID_MIN_LENGTH = 6;
     public static final int ID_MAX_LENGTH = 16;
     public static final int NO_PACKET_DIGITS = 8;
-    public static final int BLOCK_SIZE = 4096;
+    public static final int BLOCK_SIZE = 32768;
     public static final int FORCE_PADDING = 16;
     public static final int AES_PADDING = 16;
     public static final int HMAC_SIZE = CipherUtil.HMAC_SIZE;
