@@ -24,6 +24,7 @@ public class INVIHandler implements MessageHandler{
 
     @Override
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
+        //apparition du pop-up lors de la reception d'une invitation
         final String groupId = m.getIdGroup();
         final String idFrom = m.getIdFrom();
         Platform.runLater(new Runnable() {

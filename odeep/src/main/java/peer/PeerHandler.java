@@ -1,6 +1,5 @@
 package peer;
 import com.sun.media.sound.InvalidFormatException;
-import handler.RSAInfo;
 import Node.Node;
 /*
  -----------------------------------------------------------------------------------
@@ -14,6 +13,9 @@ import Node.Node;
 
 import java.net.Socket;
 
+/**
+ * Classe permettant la gestion des reception de message
+ */
 public class PeerHandler implements Runnable {
 
     private Thread activity;

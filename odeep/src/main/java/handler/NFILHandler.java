@@ -17,7 +17,6 @@ import peer.PeerConnection;
 import peer.PeerMessage;
 import main.Client;
 import util.CipherUtil;
-import util.InterfaceUtil;
 import Node.Node;
 
 /**
@@ -26,9 +25,11 @@ import Node.Node;
 public class NFILHandler implements MessageHandler {
     @Override
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
+        //ce message est recu lorsqu'un personne ne possède pas le fichier demandé
 
         Client.downloadJSON(m.getIdGroup());
         try {
+            //on redemande le fichier à une autre personne
             n.requestFile(new String(CipherUtil.AESDecrypt(m.getMessageContent(), n.getKey(m.getIdGroup()))), m.getIdGroup());
         } catch (InvalidCipherTextException e) {
             e.printStackTrace();

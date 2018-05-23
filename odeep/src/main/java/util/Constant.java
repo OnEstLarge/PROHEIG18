@@ -1,5 +1,8 @@
 package util;
 
+/**
+ * Classe stockant les constantes utiles pour l'arborescence des fichiers
+ */
 public class Constant {
     public final static String ROOT_GROUPS_DIRECTORY = "./shared_files";
     public final static String KEY_FILENAME = "key";

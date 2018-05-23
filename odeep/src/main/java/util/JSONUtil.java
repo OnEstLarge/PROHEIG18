@@ -22,15 +22,32 @@ import java.lang.reflect.Type;
  */
 public class JSONUtil {
 
+    /**
+     * Serialisation d'un objet
+     * @param object objet à serialiser
+     * @param <T>
+     * @return payload JSON
+     */
     public static <T extends Serializable> String toJson(T object){
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         return gson.toJson(object);
     }
 
+    /**
+     * Transforme un payload JSON en objet
+     * @param data payload JSON
+     * @param c Class de l'objet à générer
+     * @param <T>
+     * @return L'objet déserialisé
+     */
     public static <T extends Serializable> T parseJson(String data, Class c){
         return (T)(new Gson().fromJson(data, c));
     }
 
+    /**
+     * Mise à jour du fichier de config local à partir d'un objet group
+     * @param group Objet à écrire dans le fichier de config
+     */
     public static void updateConfig(Group group) {
         try {
             RandomAccessFile f = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + group.getID() + "/" + Constant.KEY_FILENAME, "r");
@@ -48,6 +65,11 @@ public class JSONUtil {
         }
     }
 
+    /**
+     * Ecriture du fichier de config localement
+     * @param groupID groupe concerné
+     * @param data données à écrire
+     */
     public static void updateConfig(String groupID, byte[] data) {
         FileOutputStream fout = null;
         try {

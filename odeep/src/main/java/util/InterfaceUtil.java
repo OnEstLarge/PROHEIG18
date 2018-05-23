@@ -14,13 +14,11 @@ import User.Group;
 import User.Person;
 import main.Client;
 import Node.Node;
-import org.bouncycastle.crypto.InvalidCipherTextException;
 import peer.PeerMessage;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Properties;
 
 /**
  * Classe utilitaire contenant les fonctions appelées depuis l'interface graphique.
@@ -77,9 +75,10 @@ public class InterfaceUtil {
     }
 
     /**
-     * @param file
-     * @param userID
-     * @param group
+     * Ajoute un fichier à un groupe
+     * @param file fichier à ajouter
+     * @param userID nom de l'utilisateur effectuant la modification
+     * @param group groupe concerné par la modification
      */
     public static void addFile(File file, String userID, Group group) {
 
@@ -102,10 +101,6 @@ public class InterfaceUtil {
                 // Copie du fichier dans le répertoire 'shared_files/groupID'
                 File fileDest = new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + group.getID() + "/" + file.getName());
 
-                System.out.println("\n\n\n-------COPY FILES--------------");
-                System.out.println("SRC PATH = " + file.toPath().toString());
-                System.out.println("DST PATH = " + fileDest.toPath().toString());
-
                 Files.copy(file.toPath(), fileDest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
                 // Envoi du fichier 'config' au serveur
@@ -121,14 +116,14 @@ public class InterfaceUtil {
     }
 
     /**
-     * @param filename
-     * @param group
-     * @return
+     * Vérifie si un fichier est présent dans un groupe
+     * @param filename fichier recherché
+     * @param group groupe concerné
+     * @return false si le fichier est déjà présent
      */
     private static boolean checkFilename(String filename, Group group) {
         for (Person person : group.getMembers()) {
             for (String f : person.getFiles()) {
-                System.out.println(filename + "     ffffffffffffffffffffffffff         " + f);
                 if (filename.equals(f)) {
                     return false;
                 }
@@ -138,9 +133,10 @@ public class InterfaceUtil {
     }
 
     /**
-     * @param filename
-     * @param userID
-     * @param group
+     * Efface un fichier localement d'un groupe
+     * @param filename nom du fichier à supprimer
+     * @param userID nom de l'utilisateur effectuant la suppression
+     * @param group groupe concerné
      */
     public static void removeFile(String filename, String userID, Group group) {
 
@@ -155,7 +151,6 @@ public class InterfaceUtil {
 
                 for(Person p: group.getMembers()) {
                     for(String s: p.getFiles()) {
-                        System.out.println("fffffffffffff      "+s);
                     }
                 }
 
@@ -165,12 +160,8 @@ public class InterfaceUtil {
                 f.readFully(key);
                 byte[] cipherConfig = CipherUtil.AESEncrypt(JSONUtil.toJson(group).getBytes(), key);
 
-                //InterfaceUtil.printConfig(group.getID(), key);
-
+                //mise à jour du fichier de config
                 JSONUtil.updateConfig(group.getID(), cipherConfig);
-
-                //InterfaceUtil.printConfig(group.getID(), key);
-
                 Client.uploadJSON(Constant.ROOT_GROUPS_DIRECTORY + "/" + group.getID() + "/" + Constant.CONFIG_FILENAME, group.getID(), userID);
 
                 //remove local file - additional feature not implemented

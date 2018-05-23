@@ -15,7 +15,6 @@ import message.MessageHandler;
 import message.MessageType;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import peer.PeerConnection;
-import peer.PeerInformations;
 import peer.PeerMessage;
 import util.CipherUtil;
 import Node.Node;
@@ -31,23 +30,12 @@ public class SFILHandler implements MessageHandler {
 
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
         RandomAccessFile f = null;
-        byte[] key = null;
-        try {
-            f = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + m.getIdGroup() + "/" + Constant.KEY_FILENAME, "r");
-            key = new byte[(int) f.length()];
-            f.readFully(key);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         byte[] rcv = new byte[0];
         try {
-            rcv = CipherUtil.AESDecrypt(m.getMessageContent(), key);
+            rcv = CipherUtil.AESDecrypt(m.getMessageContent(), n.getKey(m.getIdGroup()));
         } catch (InvalidCipherTextException e) {
-            System.out.println("FAIL");
-            Client.sendPM(new PeerMessage(MessageType.PGET, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getNoPacket(), new byte[]{}));
+            //si un paquet est faux, on l'ignore
             return;
         }
 
@@ -60,15 +48,20 @@ public class SFILHandler implements MessageHandler {
             n.numberPacketDownloaded.put(m.getIdFrom(), size);
             n.numberPacketCurrent.put(m.getIdFrom(), 0);
             n.listPacket.put(m.getIdFrom(), new ArrayList<>());
+
+
+            //on initialise la list de paquets recus.
             for(int i = 0; i < n.numberPacketDownloaded.get(m.getIdFrom()); i++){
                 n.listPacket.get(m.getIdFrom()).add(false);
             }
-            System.out.println("Receiving " + fileInfo[0]);
+
             try {
+                //allocation du fichier
                 RandomAccessFile emptyFile = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + m.getIdGroup() + "/" + n.filenameDownloaded.get(m.getIdFrom()), "rw");
 
                 emptyFile.setLength(n.filesizeDownloaded.get(m.getIdFrom()));
                 emptyFile.close();
+
                 n.listPacket.get(m.getIdFrom()).set(0,true);
                 n.numberPacketCurrent.put(m.getIdFrom(), n.numberPacketCurrent.get(m.getIdFrom()) + 1);
             } catch (FileNotFoundException e) {
@@ -77,6 +70,7 @@ public class SFILHandler implements MessageHandler {
                 e.printStackTrace();
             }
         }
+        //id du dernier paquet, indique qu'il faut commencer la verification des paquets
         else if(m.getNoPacket() == 99999999){
             n.checkPacket(m);
         }
@@ -94,10 +88,11 @@ public class SFILHandler implements MessageHandler {
             }
         }
         try {
+            //update de la bar de progression
             Client.updateDownloadBar((double) n.numberPacketCurrent.get(m.getIdFrom()) / n.numberPacketDownloaded.get(m.getIdFrom()));
         }
         catch (NullPointerException e){
-            System.out.println("BAR ERREUR");
+            System.err.println("BAR ERREUR");
         }
     }
 }

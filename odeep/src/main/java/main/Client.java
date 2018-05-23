@@ -362,7 +362,11 @@ public class Client extends Application {
         myself.connect();
     }
 
-    // Demande au serveur si le nom entré est libre
+    /**
+     * verifie la disponibilité d'un nom d'utilisateur
+     * @param username nom d'utilisateur demandé
+     * @return true si le nom est disponible, false sinon
+     */
     public static boolean usernameValidation(String username) {
 
         isUsernameAvailaible = -1;
@@ -375,8 +379,6 @@ public class Client extends Application {
             }
         }
         //une fois que la connection avec le serveur est établie, il faut demander si le pseudo entré est déjà utilisé
-        //retourne true si le pseudo est libre, false si il est déjà utilisé
-
         PeerMessage availaibleUsername = new PeerMessage(MessageType.USRV, "XXXXXX", username, "XXXXXX", 0, "".getBytes());
 
         try {
@@ -454,6 +456,9 @@ public class Client extends Application {
         }
     }
 
+    /**
+     * initialise le node, en ajoutant tous les handlers qui lui sont liés
+     */
     private static void initNode() {
         PeerInformations myInfos = new PeerInformations(myUsername, localIP, LOCAL_PORT);
         n = new Node(myInfos);
@@ -473,13 +478,19 @@ public class Client extends Application {
     }
 
     // Initialise la connection avec le serveur et lance le server d'écoute du client
+
+    /**
+     * initialisation de la connection avec le serveur et mise à l'écoute du client
+     * @param ip ip du serveur
+     * @param port port du serveur
+     */
     public static void initConnections(String ip, int port) {
         try {
             clientSocketToServerPublic = new Socket(ip, port);
             in = new BufferedInputStream(clientSocketToServerPublic.getInputStream());
             out = new BufferedOutputStream(clientSocketToServerPublic.getOutputStream());
             communicationReady = true;
-            // Nous avons le pseudo après ça
+            //récupération du pseudo
             waitForUsername();
 
             // Salutation au serveur, reception de la réponse
@@ -491,8 +502,7 @@ public class Client extends Application {
 
 
         } catch (IOException e) {
-            System.out.println(e.getMessage());
-            System.out.println("Could not connect to the server");
+            System.err.println("Could not connect to the server");
             return;
         }
 
@@ -548,10 +558,11 @@ public class Client extends Application {
         }
     }
 
-    // Classe permettant de threader la lecture des packets server
+    /**
+     * fonction qui permet de lire les messages envoyés par le serveur et de les traiter
+     */
     private static class ReadFromServer implements Runnable {
         public void run() {
-            //int read;
             byte[] buffer = new byte[PeerMessage.BLOCK_SIZE];
 
             try {
@@ -563,8 +574,6 @@ public class Client extends Application {
                         }
 
                         PeerMessage pm = new PeerMessage(buffer);
-                        if (read != PeerMessage.BLOCK_SIZE)
-                            System.out.println(read);
 
                         if (pm.getType().equals(MessageType.INFO)) {
                             response = new String(CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START));
@@ -579,17 +588,17 @@ public class Client extends Application {
                             final PeerMessage redirectPM = new PeerMessage(pm);
                             new Thread(() -> redirectToHandler(redirectPM, n, new PeerConnection(clientSocketToServerPublic))).start();
                         }
+                        //ralentissement de lecture suite à des problèmes de lecture
                         try {
                             Thread.sleep(10);
                         } catch (InterruptedException e) {
-                            System.out.println(e.getMessage());
-                            //e.printStackTrace();
+                            System.err.println(e.getMessage());
                         }
                     }
 
                 }
             }catch (IOException e) {
-                System.out.println(e.getMessage());
+                System.err.println(e.getMessage());
             } finally {
                 System.err.println("ERROR STOPPED LISTENING TO SERVER PUBLIC");
                 try {
@@ -597,12 +606,18 @@ public class Client extends Application {
                     in.close();
                     out.close();
                 } catch (IOException e) {
-                    System.out.println(e);
+                    System.err.println(e);
                 }
             }
         }
     }
 
+    /**
+     * fonction permettant de transmettre les messages aux bons handlers
+     * @param message message recu
+     * @param node noeud ayant recu le message
+     * @param connection connection depuis laquelle le message a été recu
+     */
     private static void redirectToHandler(PeerMessage message, Node node, PeerConnection connection) {
         // handle message
         try {
@@ -612,6 +627,11 @@ public class Client extends Application {
         }
     }
 
+    /**
+     * fonction utilisé pour les connections directs via un TCP pushing ou en local
+     * @param username id de la personne dont on souhaite connaitre les informations
+     * @return ip de l'utilisateur passé en paramétre
+     */
     private static String askForInfos(String username) {
         PeerMessage askInfo = new PeerMessage(MessageType.INFO, "XXXXXX", myUsername, username, "".getBytes());
         try {
@@ -638,8 +658,14 @@ public class Client extends Application {
         return myUsername;
     }
 
+    /**
+     * fonction permettant de créer un groupe
+     * @param groupID nom du groupe à créer
+     * @return true si le groupe a pu être créé, false sinon
+     */
     public static boolean createGroup(String groupID) {
         waitingForGroupValidation = true;
+        //on vérifie que ce groupe n'existe pas déjà
         Group group = InterfaceUtil.createGroup(groupID, myUsername, n);
         if (group != null) {
             if(group.getMember(myUsername) == null) {
@@ -650,12 +676,18 @@ public class Client extends Application {
         return group != null;
     }
 
-
+    /**
+     * Cette fonction permet de stocker un fichier de config sur le serveur et d'avertir les autre
+     * membre du groupe concerné que le fichier a changé
+     * @param filenameJSON nom du fichier
+     * @param groupID nom du groupe concerné
+     * @param idFrom nom de l'utilisateur effectuant la modification
+     */
     public static void uploadJSON(String filenameJSON, String groupID, String idFrom) {
         PeerMessage uploadMessage;
 
         try {
-            // Récupère et chiffre de fichier config
+            //Récupèration du fichier config chiffré
             RandomAccessFile configFile = new RandomAccessFile(filenameJSON, "r");
             byte[] configFileByte = new byte[(int) configFile.length()];
             configFile.readFully(configFileByte);
@@ -665,6 +697,7 @@ public class Client extends Application {
                 out.flush();
             }
 
+            //avertie les autres membres du groupe
             broadcastUpdate(idFrom, groupID);
 
         } catch (IOException e) {
@@ -672,6 +705,11 @@ public class Client extends Application {
         }
     }
 
+    /**
+     * permet de recuperer un groupe à partir de son nom
+     * @param id nom du group
+     * @return le groupe portant ce nom
+     */
     public static Group getGroupById(String id) {
         Group group = null;
         for (Group g : groups) {
@@ -682,6 +720,11 @@ public class Client extends Application {
         return group;
     }
 
+    /**
+     * fonction prevenant les utilisateurs d'un groupe que le fichier de configuration a changé
+     * @param idFrom nom du membre ayant effectué la modification du fichier
+     * @param groupID npm du group concerné
+     */
     public static void broadcastUpdate(String idFrom, String groupID) {
         Group group = getGroupById(groupID);
         if (group != null) {
@@ -702,6 +745,10 @@ public class Client extends Application {
         }
     }
 
+    /**
+     * fonction permettant de récuperer le fichier de configuration d'un groupe depuis le serveur
+     * @param groupID nom du groupe concerné
+     */
     public static void downloadJSON(String groupID) {
         PeerMessage downloadMessage = new PeerMessage(MessageType.DOWN, groupID, myUsername, myUsername, "".getBytes());
         try {
@@ -715,7 +762,7 @@ public class Client extends Application {
                 int count = 0;
                 int maxTry = 5;
 
-                //on telecharge le fichier de config, et on redemande le download toute les deux secondes
+                //on telecharge le fichier de config, et on redemande le download toute les deux secondes si rien n'a été envoyé
                 while (waitingJsonFromServer && count < 20 && maxTry-- > 0) {
                     try {
                         Thread.sleep(100);
@@ -759,16 +806,21 @@ public class Client extends Application {
         }
     }
 
+    /**
+     * fonction permettant de connaitre tous les groupes de l'utilisateur
+     * @return la list des groupes de l'utilisateur
+     */
     private static String[] scanGroups() {
         File directory = new File(Constant.ROOT_GROUPS_DIRECTORY);
         String[] groups = directory.list((file, name) -> new File(file, name).isDirectory());
-
-        for (String group : groups) {
-            System.out.println(group);
-        }
         return groups;
     }
 
+    /**
+     * fonction permmettant d'inviter une nouvelle personne dans un groupe
+     * @param username personne à inviter
+     * @param groupID groupe concerné
+     */
     public static void inviteNewMember(String username, String groupID) {
 
         if (getGroupById(groupID).getMember(username) == null) {
@@ -787,6 +839,11 @@ public class Client extends Application {
         }
     }
 
+    /**
+     * fonction appelé lors de l'acceptation du invitation à rejoindre un groupe
+     * @param usernameFrom nom de la personne ayant envoyé l'invitation
+     * @param groupID nom du groupe concerné
+     */
     public static void acceptInvite(String usernameFrom, String groupID) {
         PeerMessage acceptInvitePM = new PeerMessage(MessageType.INVK, groupID, myUsername, usernameFrom, "".getBytes());
 
@@ -808,11 +865,16 @@ public class Client extends Application {
         }
     }
 
+    /**
+     * fonction permettant de mettre à jour le fichier de configraion d'un groupe
+     * que l'on vient de rejoindre
+     * @param groupID groupe concerné
+     */
     public static void updateJsonAfterInvitation(String groupID) {
         //Téléchargement json du groupe
         downloadJSON(groupID);
-        // Ajoute le group dans sa liste groupe
 
+        // Ajoute le group dans sa liste groupe
         RandomAccessFile configFile;
         try {
 
@@ -850,6 +912,10 @@ public class Client extends Application {
         });
     }
 
+    /**
+     * fonction permettant d'envoyé un peerMessage au serveur relai
+     * @param pm message à envoyer
+     */
     public static void sendPM(PeerMessage pm) {
         try {
             synchronized (out) {
@@ -866,17 +932,23 @@ public class Client extends Application {
         Platform.runLater(() -> controller.updateGroupsAndFiles());
     }
 
+    /**
+     * Permet de mettre à jour un groupe à partir d'un fichier de configuration
+     * @param groupID
+     */
     private static void updateGroupsWithJson(String groupID) {
         int index = groups.indexOf(getGroupById(groupID));
         if (index >= 0) {
             RandomAccessFile configFile;
             try {
+                //récupération du fichier de configuration
                 configFile = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "/" + Constant.CONFIG_FILENAME, "r");
                 byte[] configFileByte = new byte[(int) configFile.length()];
                 configFile.readFully(configFileByte);
 
                 byte[] plainConfig = CipherUtil.AESDecrypt(configFileByte, n.getKey(groupID));
 
+                //modification du groupe
                 Group group = JSONUtil.parseJson(new String(plainConfig), Group.class);
                 groups.set(index, group);
 
@@ -890,10 +962,19 @@ public class Client extends Application {
         }
     }
 
+    /**
+     * Permet d'envoyer un requete pour obtenir un fichier
+     * @param file fichier désiré
+     * @param group groupe concerné par la requete
+     */
     public static void requestFile(String file, String group) {
         n.requestFile(file, group);
     }
 
+    /**
+     * permet de mettre à jour la barre de progression du download
+     * @param value valeur entre 0 et 1
+     */
     public static void updateDownloadBar(double value) {
         final double v = value;
         Platform.runLater(() -> {
@@ -905,11 +986,18 @@ public class Client extends Application {
 
     }
 
+    /**
+     * permet de mettre à jour la barre de progression d'upload
+     * @param value valeur entre 0 et 1
+     */
     public static void updateUploadBar(double value) {
         final double v = value;
         Platform.runLater(() -> controller.updateUploadBar(v));
     }
 
+    /**
+     * permet de reset la barre d'upload
+     */
     public static void clearUploadBar() {
         Platform.runLater(() -> controller.clearUploadBar());
     }

@@ -13,17 +13,15 @@ import org.bouncycastle.util.Arrays;
 import util.CipherUtil;
 
 /**
+ * Classe implémentant la structure définissant un message.
+ *
  * Header Format:
- * <p>
- * TYPE,idGROUP=========,idFROM==========,idTO============,noPaquet,MessageContentOn4032bytes
+ * TYPE,idGROUP=========,idFROM==========,idTO============,noPaquetMessageContent
  * TYPE         4 lettres maj
  * idGROUP      Nom du groupe, 16 chars max
  * idFROM       Source, 16 chars max
  * idTO         Dest,   16 chars max
- * noPaquet     numéro du paquet, int 8 digits (max 400Go)
- * <p>
- * bytes total header  = 4+1+16+1+16+1+8+1 = 64 bytes
- * bytes total message = 4096 - 64 = 4032 bytes
+ * noPaquet     numéro du paquet, int 8 digits
  */
 public class PeerMessage {
 
@@ -34,7 +32,9 @@ public class PeerMessage {
     public static final int ID_MAX_LENGTH = 16;
     public static final int NO_PACKET_DIGITS = 8;
     public static final int BLOCK_SIZE = 32768;
+    //evite le cas ou un message finit par le caracteres de padding
     public static final int FORCE_PADDING = 16;
+    //padding eventuellement ajouté oar AES
     public static final int AES_PADDING = 16;
     public static final int HMAC_SIZE = CipherUtil.HMAC_SIZE;
     public static final int HEADER_SIZE = TYPE_LENGTH + ID_GROUP_MAX_LENGTH + 2 * ID_MAX_LENGTH + NO_PACKET_DIGITS + 4;
@@ -42,6 +42,7 @@ public class PeerMessage {
     public static final int MESSAGE_WITH_PAD_SIZE = MESSAGE_CONTENT_SIZE + FORCE_PADDING + HMAC_SIZE + AES_PADDING;
 
 
+    //padding de la forme "message@========"
     public static final char PADDING_START = '@';
     public static final char PADDING_SYMBOL = '=';
 

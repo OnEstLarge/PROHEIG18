@@ -31,12 +31,20 @@ public class Person implements Serializable{
         }
     }
 
+    /**
+     * Ajoute un fichier à laliste de fichier
+     * @param f fichier é ajouter
+     */
     public void addFile(String f){
         if(!files.contains(f)) {
             files.add(f);
         }
     }
 
+    /**
+     * Efface un fichier de la liste des fichiers
+     * @param file fichier à supprimer
+     */
     public void removeFile(String file){
         files.remove(file);
     }

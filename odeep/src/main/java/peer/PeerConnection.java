@@ -4,8 +4,10 @@ import com.sun.media.sound.InvalidFormatException;
 
 import java.io.*;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
+/**
+ * Classe permettant la gestion des connexions entre deux entités
+ */
 public class PeerConnection {
 
     private Socket clientSocket;
@@ -33,6 +35,11 @@ public class PeerConnection {
         is = new BufferedInputStream(clientSocket.getInputStream());
     }
 
+    /**
+     * Permet de récuperer un message recu
+     * @return le PeerMessage recu
+     * @throws InvalidFormatException
+     */
     public PeerMessage receiveMessage() throws InvalidFormatException{
         byte[] b = new byte[PeerMessage.BLOCK_SIZE];
         try{
@@ -46,6 +53,10 @@ public class PeerConnection {
         return rcv;
     }
 
+    /**
+     * Permet d'envoyer un PeerMessage
+     * @param message message à envoyer
+     */
     public void sendMessage(PeerMessage message) {
         try {
             os.write(message.getFormattedMessage());
@@ -55,6 +66,9 @@ public class PeerConnection {
         }
     }
 
+    /**
+     * Permet de fermer la connection
+     */
     public void close() {
         try {
             is.close();

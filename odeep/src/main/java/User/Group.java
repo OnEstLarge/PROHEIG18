@@ -35,10 +35,19 @@ public class Group implements Serializable {
         }
     }
 
+    /**
+     * Permet d'ajouter un personne à un groupe
+     * @param p personne à ajouter
+     */
     public void addMember(Person p){
         members.add(p);
     }
 
+    /**
+     * Permet d'ajouter un fichier à un groupe
+     * @param filename nom du fichier à ajouter
+     * @param userID nom de la personne souhaitant ajouter le fichier
+     */
     public void addFile(String filename, String userID) {
         for(Person person : members) {
             if(person.getID().equals(userID)) {
@@ -48,6 +57,10 @@ public class Group implements Serializable {
         }
     }
 
+    /**
+     * Permet de supprimer une personne d'un groupe
+     * @param person nom de la personne à supprimer
+     */
     public void deleteMembers(Person person){
         int index = -1;
         for(Person p : members){

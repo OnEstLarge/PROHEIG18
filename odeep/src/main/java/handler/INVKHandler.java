@@ -24,14 +24,18 @@ public class INVKHandler implements MessageHandler{
 
     @Override
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
+        //ce message est recu lorsqu'une personne a accepté une invitation
         final String groupId = m.getIdGroup();
         final String toSendTo = m.getIdFrom();
 
+        //lorsqu'un invitation est en cours, on empeche tout action de l'utilisateur
         Client.getController().disableButtons();
 
+        //initialisation des paramétres RSA
         RSAInfo RSA = new RSAInfo();
         RSA.setKeys();
         n.setTempRSAInfo(RSA);
+        //envoie du premier message du protocole.
         PeerMessage pm = new PeerMessage(MessageType.DHS1, groupId, Client.getUsername(), toSendTo, "".getBytes());
         c.sendMessage(pm);
 
