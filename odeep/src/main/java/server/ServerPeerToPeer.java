@@ -86,16 +86,19 @@ public class ServerPeerToPeer {
                 while (true) {
                     int read = 0;
                     while (read != PeerMessage.BLOCK_SIZE) {
-                        int lu;
-                        lu = in.read(bufferIn, 0, bufferIn.length);
-                        read += lu;
+                        //int lu;
+                        read += in.read(bufferIn, read, bufferIn.length-read);
+                        //read += lu;
                     }
-                    read = 0;
-                    System.out.println("\n---\n---BufferIN = ");
-                    System.out.println(new String(bufferIn) + "\n---\n\n");
+
+
+                    //in.read(bufferIn,0, bufferIn.length);
+
+                    //System.out.println("\n---\n---BufferIN = ");
+                    //System.out.println(new String(bufferIn) + "\n---\n\n");
                     PeerMessage pm = new PeerMessage(bufferIn);
                     String type = pm.getType();
-                    System.out.println("Message reçu " + pm.getType());
+                    System.out.println("Message reçu " + pm.getType() + ", FROM: " + pm.getIdFrom()+", TO: "+pm.getIdTo() + ", Pno = " + pm.getNoPacket());
                     switch (type) {
                         case MessageType.HELO:
                             greetings(pm);
@@ -118,6 +121,7 @@ public class ServerPeerToPeer {
                         case MessageType.SFIL:
                         case MessageType.SMES:
                         case MessageType.UPDT:
+                        case MessageType.PGET:
                             redirectBuffer = bufferIn.clone();
                             redirect(pm);
                             break;
@@ -279,7 +283,7 @@ public class ServerPeerToPeer {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            } else if (pm.getType().equals(MessageType.INVI)) {
+            } else if (!pm.getType().equals(MessageType.INVI)) {
                 try {
                     PeerMessage nok = new PeerMessage(MessageType.DISC, pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), ("").getBytes());
                     //synchronized (out) {
