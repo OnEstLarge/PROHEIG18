@@ -243,6 +243,7 @@ public class ServerPeerToPeer {
             //System.out.println("greetings " + pm.getIdFrom() + " " + new String(b));
             peopleInServ.put(pm.getIdFrom(), clientToSever);
             clientIPPrivee.put(pm.getIdFrom(), new String(b));
+            System.out.println(peopleInServ);
         }
 
         void giveInfoToSender(PeerMessage pm) {
@@ -281,7 +282,7 @@ public class ServerPeerToPeer {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            } else if (pm.getType().equals(MessageType.INVI)) {
+            } else if (!pm.getType().equals(MessageType.INVI)) {
                 try {
                     PeerMessage nok = new PeerMessage(MessageType.DISC, pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), ("").getBytes());
                     //synchronized (out) {
@@ -303,6 +304,7 @@ public class ServerPeerToPeer {
                     clientIPPrivee.remove(pm.getIdFrom());
                 }
             }
+            System.out.println(peopleInServ);
             running = false;
             try {
                 out.close();
