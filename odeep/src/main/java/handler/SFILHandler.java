@@ -105,6 +105,11 @@ public class SFILHandler implements MessageHandler {
                 ex.printStackTrace();
             }
         }
-        Client.updateDownloadBar((double) n.numberPacketCurrent / n.numberPacketDownloaded);
+        try {
+            Client.updateDownloadBar((double) n.numberPacketCurrent / n.numberPacketDownloaded);
+        }
+        catch (NullPointerException e){
+            System.out.println("BAR ERREUR");
+        }
     }
 }

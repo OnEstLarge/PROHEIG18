@@ -664,6 +664,7 @@ public class Client extends Application {
             node.getMapMessage().get(message.getType()).handleMessage(node, connection, message); //gerer erreur possible
         } catch (NullPointerException e) {
             System.out.println("ERREUR");
+            System.out.println("type : " + message.getType() + "\ngroupe : " + message.getIdGroup() + "\nfrom : " + message.getIdFrom() + "\nto : " + message.getIdTo() + "\nNo : " + message.getNoPacket());
         }
     }
 
