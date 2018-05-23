@@ -395,7 +395,7 @@ public class Client extends Application {
             try {
 
                 int read;
-                byte[] buffer = new byte[4096];
+                byte[] buffer = new byte[PeerMessage.BLOCK_SIZE];
                 read = in.read(buffer);
                 PeerMessage pm = new PeerMessage(buffer);
                 System.out.println("Received response for username validation");
@@ -568,7 +568,7 @@ public class Client extends Application {
     private static class ReadFromServer implements Runnable {
         public void run() {
             //int read;
-            byte[] buffer = new byte[4096];
+            byte[] buffer = new byte[PeerMessage.BLOCK_SIZE];
 
             System.out.println("Start reading in main.Client.ReadFromServer");
             try {
@@ -580,7 +580,7 @@ public class Client extends Application {
                         }
 
                         PeerMessage pm = new PeerMessage(buffer);
-                        if (read != 4096)
+                        if (read != PeerMessage.BLOCK_SIZE)
                             System.out.println(read);
 
                         if (pm.getType().equals(MessageType.INFO)) {
@@ -634,7 +634,7 @@ public class Client extends Application {
     }
 
     private static String askForInfos(String username) {
-        PeerMessage askInfo = new PeerMessage(MessageType.INFO, "XXXXXX", myUsername, myUsername, "".getBytes());
+        PeerMessage askInfo = new PeerMessage(MessageType.INFO, "XXXXXX", myUsername, username, "".getBytes());
         try {
             synchronized (out) {
                 out.write(askInfo.getFormattedMessage());
