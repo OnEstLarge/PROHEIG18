@@ -5,7 +5,6 @@ import User.Person;
 import handler.*;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -15,17 +14,14 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.*;
-import java.lang.reflect.Member;
 import java.net.Inet4Address;
 import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 
-import javafx.stage.WindowEvent;
 import message.MessageType;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import peer.PeerConnection;
@@ -37,7 +33,7 @@ import util.InterfaceUtil;
 import util.JSONUtil;
 import views.AcceptInviteDialogController;
 import views.InviteDialogController;
-import views.PseudoDialogController;
+import views.UsernameDialogController;
 import views.RootLayoutController;
 import User.Group;
 
@@ -57,27 +53,7 @@ public class Client extends Application {
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("Odeep");
-        this.primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-
-            @Override
-            public void handle(WindowEvent event) {
-                Platform.runLater(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        System.exit(0);
-                    }
-                });
-            }
-        });
-       /* Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-
-                System.out.println("xxxxXXXxxxxx");
-                showAcceptInviteDialog("a");
-            }
-        });*/
+        this.primaryStage.setOnCloseRequest(event -> Platform.runLater(() -> System.exit(0)));
         initRootLayout();
     }
 
@@ -86,10 +62,10 @@ public class Client extends Application {
     }
 
     /**
-     * Vérifie dans le fichier '.userInfo' si l'utilisateur possède déjà un pseudo.
+     * Vérifie dans le fichier '.userInfo' si l'utilisateur possède déjà un nom d'utilisateur.
      *
-     * @return le pseudo de l'utilisateur.
-     * null, si l'utilisateur ne possède pas encorede pseudo.
+     * @return le nom de l'utilisateur.
+     * null, si l'utilisateur ne possède pas encore de nom.
      */
     private static String usernameExists() {
         String username = null;
@@ -156,9 +132,9 @@ public class Client extends Application {
      */
     public void initRootLayout() {
         if ((myUsername = usernameExists()) == null) {
-            boolean ok = showPseudoDialog();
+            boolean ok = showUsernameDialog();
             while (!ok) { // Demande un nom jusqu'à ce qu'il soit correct
-                ok = showPseudoDialog();
+                ok = showUsernameDialog();
             }
 
             // Ecrit le fichier .userInfo avec le bon nom d'utilisateur
@@ -237,11 +213,11 @@ public class Client extends Application {
      * Affiche la fenêtre demandant à l'utilisateur de choisir un nom d'utilisateur
      * @return true si jamais le nom est correct, false sinon
      */
-    public boolean showPseudoDialog() {
+    public boolean showUsernameDialog() {
         try {
             // Charge le fichier .fxml et crée la nouvelle scene pour la fenêtre d'invitation
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(Client.class.getResource("/views/PseudoDialog.fxml"));
+            loader.setLocation(Client.class.getResource("/views/UsernameDialog.fxml"));
             AnchorPane page = loader.load();
 
             // Crée la scène de dialogue
@@ -252,8 +228,8 @@ public class Client extends Application {
             Scene scene = new Scene(page);
             dialogStage.setScene(scene);
 
-            // Défini le controleur de la fenêtre pseudo
-            PseudoDialogController controller = loader.getController();
+            // Défini le controleur de la fenêtre username
+            UsernameDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage, image);
             controller.setMainApp(this);
 
@@ -311,8 +287,8 @@ public class Client extends Application {
         return primaryStage;
     }
 
-    public void setUserPseudo(String pseudo) {
-        myUsername = pseudo;
+    public void setUsername(String username) {
+        myUsername = username;
     }
 
     public List<Group> getGroups() {
@@ -336,45 +312,34 @@ public class Client extends Application {
     private static boolean groupsNotInialized = true;
 
     private static Node n;
-    private static boolean nodeIsRunning = true;
     private static String myUsername = null;
     private static String localIP;
 
     private static String response = null;
 
     private static List<Group> groups = new ArrayList();
-    public static Person myself;//set in getPseudo
-
-    private static int count = 0;
-    private static HashMap<Integer, Boolean> mutex = new HashMap();
-
+    public static Person myself;// Initialisé dans getUsername
 
     public static void main(String[] args) {
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                getLocalIP();
-                System.out.println("Connecting to server");
-                //initconnection connect to serv, get pseudo, connect with pseudo
-                initConnections(IP_SERVER, PORT_SERVER);
-                //for(Group g : groups)
-                // InterfaceUtil.printConfig(g.getID(), n.getKey(g.getID()));
-                //listening for incoming connections
-                System.out.println("Launching node listening");
-                n.acceptingConnections();
+        new Thread(() -> {
+            getLocalIP();
+            System.out.println("Connecting to server");
+            // initConnections établie la connexion avec le serveur, récupere le nom de l'utilisateur et se connecte avec
+            initConnections(IP_SERVER, PORT_SERVER);
 
+            // Se met à l'écoute de connexions
+            System.out.println("Launching node listening");
+            n.acceptingConnections();
 
-            }
         }).start();
 
         launch(args);
     }
 
 
-    private static void getPseudo() {
+    private static void waitForUsername() {
 
-        //Sinon, on peut le pseudo dans le fichier de config
         while (myUsername == null) {
             try {
                 Thread.sleep(100);
@@ -386,7 +351,7 @@ public class Client extends Application {
         myself.connect();
     }
 
-    //ask the server if the entered username is available
+    // Demande au serveur si le nom entré est libre
     public static boolean usernameValidation(String username) {
 
         isUsernameAvailaible = -1;
@@ -399,7 +364,7 @@ public class Client extends Application {
                 e.printStackTrace();
             }
         }
-        //une fois que la connection avec le serveur est établit, il faut demander si le pseudo entré est déjà utilisé
+        //une fois que la connection avec le serveur est établie, il faut demander si le pseudo entré est déjà utilisé
         //retourne true si le pseudo est libre, false si il est déjà utilisé
 
         PeerMessage availaibleUsername = new PeerMessage(MessageType.USRV, "XXXXXX", username, "XXXXXX", 0, "".getBytes());
@@ -460,7 +425,7 @@ public class Client extends Application {
     }
 
     private static void getLocalIP() {
-        //Get local IP used
+        // Récupération de l'adresse Ip locale utilisée
         localIP = null;
         try {
             Enumeration e = NetworkInterface.getNetworkInterfaces();
@@ -468,7 +433,7 @@ public class Client extends Application {
                 NetworkInterface n = (NetworkInterface) e.nextElement();
                 Enumeration ee = n.getInetAddresses();
                 while (ee.hasMoreElements()) {
-                    Inet4Address i = null;
+                    Inet4Address i;
                     try {
                         i = (Inet4Address) ee.nextElement();
                         if (!i.getHostAddress().endsWith(".1") && !i.getHostAddress().endsWith(".255")) {
@@ -489,7 +454,7 @@ public class Client extends Application {
         System.out.println("Created myInfos");
         n = new Node(myInfos);
         System.out.println("Created the node");
-        //Ajouter tous les handlers
+        // Ajouter tous les handlers
         n.addMessageHandler(MessageType.INVI, new INVIHandler());
         n.addMessageHandler(MessageType.DISC, new DISCHandler());
         n.addMessageHandler(MessageType.NFIL, new NFILHandler());
@@ -506,18 +471,17 @@ public class Client extends Application {
         System.out.println("Added the handlers");
     }
 
-    //initialise la connection avec le serveur et de lancer le server d'écoute du client
+    // Initialise la connection avec le serveur et lance le server d'écoute du client
     public static void initConnections(String ip, int port) {
         try {
-            //clientSocketToServerPublic = new PeerConnection(new Socket(ip,port));
             clientSocketToServerPublic = new Socket(ip, port);
             System.out.println("Connected to server");
             in = new BufferedInputStream(clientSocketToServerPublic.getInputStream());
             out = new BufferedOutputStream(clientSocketToServerPublic.getOutputStream());
             communicationReady = true;
-            //we have a pseudo after this
+            // Nous avons le pseudo après ça
             System.out.println("get pseudo");
-            getPseudo();
+            waitForUsername();
             System.out.println("we got the pseudo");
 
             //Greetings to server, receivinig response
@@ -538,21 +502,21 @@ public class Client extends Application {
         new Thread(new ReadFromServer()).start();
 
 
-        // Initialize the client node
+        // Initialise le noeud du client
         initNode();
 
-        // Restore existing groups
+        // Restore les groupes existants
         for (String groupID : scanGroups()) {
             downloadJSON(groupID);
 
-            // Read config file
+            // Lecture du fichier de configuration
             try {
                 RandomAccessFile configFile = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "/" + Constant.CONFIG_FILENAME, "r");
                 byte[] configFileByte = new byte[(int) configFile.length()];
                 configFile.readFully(configFileByte);
                 String configJson = new String(CipherUtil.AESDecrypt(configFileByte, n.getKey(groupID)));
 
-                groups.add((Group) JSONUtil.parseJson(configJson, Group.class));
+                groups.add(JSONUtil.parseJson(configJson, Group.class));
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -561,29 +525,30 @@ public class Client extends Application {
             }
         }
 
+        connectMyself(true);
+
+        groupsNotInialized = false;
+        Platform.runLater(() -> controller.updateGroupsAndFiles());
+    }
+
+    private static void connectMyself(boolean connectMyself) {
         for (Group group : groups) {
-            System.out.println("-----------------------------------------------------------------------------------------------------" + myself.isConnected());
             for (Person p : group.getMembers()) {
-                System.out.println(p.getID() + "   bnbnbnbnb   " + p.isConnected());
                 if (p.getID().equals(myUsername)) {
-                    p.connect();
+                    if(connectMyself){
+                        p.connect();
+                    } else {
+                        p.disconnect();
+                    }
                 }
-                System.out.println(p.getID() + "   bnbnbnbnb   " + p.isConnected());
             }
-            System.out.println("upddateeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
             JSONUtil.updateConfig(group);
             uploadJSON(Constant.ROOT_GROUPS_DIRECTORY + "/" + group.getID() + "/" + Constant.CONFIG_FILENAME, group.getID(), myUsername);
         }
-
-        groupsNotInialized = false;
-        //controller.updateGroupsAndFiles();
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                controller.updateGroupsAndFiles();
-            }
-        });
+        if(!connectMyself) {
+            PeerMessage bye = new PeerMessage(MessageType.BYE, "XXXXXX", myUsername, myUsername, "".getBytes());
+            sendPM(bye);
+        }
     }
 
     //Classe permettant de threader la lecture des packets server
@@ -1022,5 +987,4 @@ public class Client extends Application {
             }
         });
     }
-
 }

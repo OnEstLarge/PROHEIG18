@@ -5,10 +5,10 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="123.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="views.PseudoDialogController">
+<AnchorPane prefHeight="123.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="views.UsernameDialogController">
     <children>
-        <Label layoutX="74.0" layoutY="14.0" text="Veuillez rentrer votre pseudo" AnchorPane.leftAnchor="74.0" AnchorPane.topAnchor="14.0" />
-        <TextField fx:id="userPseudoField" layoutX="76.0" layoutY="37.0" AnchorPane.leftAnchor="76.0" AnchorPane.topAnchor="37.0" />
+        <Label layoutX="74.0" layoutY="14.0" text="Veuillez rentrer votre nom d'utilisateur" AnchorPane.leftAnchor="74.0" AnchorPane.topAnchor="14.0" />
+        <TextField fx:id="usernameField" layoutX="76.0" layoutY="37.0" AnchorPane.leftAnchor="76.0" AnchorPane.topAnchor="37.0" />
         <Button defaultButton="true" layoutX="125.0" layoutY="84.0" mnemonicParsing="false" onAction="#handleOk" prefHeight="25.0" prefWidth="52.0" text="OK" AnchorPane.leftAnchor="125.0" AnchorPane.topAnchor="84.0" />
     </children>
 </AnchorPane>
