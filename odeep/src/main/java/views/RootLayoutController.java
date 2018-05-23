@@ -156,7 +156,7 @@ public class RootLayoutController implements Initializable {
     }
 
     /**
-     * Remplis la Map en associant un groupe à une liste fichiers.
+     * Remplis la map en associant un groupe à une liste fichiers.
      */
     private void fillFileMap() {
         for (Group g : mainApp.getGroups()) {
@@ -186,8 +186,10 @@ public class RootLayoutController implements Initializable {
             TitledPane pane = new TitledPane();
             final ListView view = new ListView();
 
-            for(Person p : g.getMembers()){
-                view.getItems().add(p.getID());
+            for(Person p : g.getMembers()) {
+                if (p.isConnected()) {
+                    view.getItems().add(p.getID());
+                }
             }
 
             listView.add(view);
