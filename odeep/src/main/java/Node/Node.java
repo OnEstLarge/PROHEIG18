@@ -300,6 +300,7 @@ public class Node {
      *
      */
     private void cleanup(OutputStream out, InputStream in, Socket clientSocket, ServerSocket serverSocket) {
+        System.out.println("OMG JE SUIS EN MODE CLEANUP");
         try {
             if (out != null) {
                 out.close();
