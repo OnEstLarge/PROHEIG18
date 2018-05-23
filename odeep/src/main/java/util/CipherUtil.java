@@ -309,7 +309,7 @@ public class CipherUtil {
     public static byte[] eraseZero(byte[] input){
         int index = input.length-1;
         int numberOfZero = 0;
-        while(input[index--] == '\0') {
+        while(input[index--] == '\0' && index >= 0) {
             numberOfZero++;
         }
         return Arrays.copyOfRange(input, 0, input.length - numberOfZero);
