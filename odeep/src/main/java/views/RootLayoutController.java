@@ -6,9 +6,7 @@ import java.util.*;
 
 import User.Person;
 import User.Group;
-import javafx.event.EventHandler;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import main.Client;
 import javafx.fxml.FXML;
@@ -23,7 +21,7 @@ public class RootLayoutController implements Initializable {
     private static List<ListView> listView = new ArrayList();
     private String selectedGroup;
 
-    private HashMap<String, List<String>> mapFile = new HashMap<String, List<String>>();
+    private HashMap<String, List<String>> mapFile = new HashMap<>();
 
     @FXML
     private Accordion accordion;
@@ -128,7 +126,7 @@ public class RootLayoutController implements Initializable {
             pane.setText(groupName);
             pane.setContent(view);
             pane.setCollapsible(true);
-            mapFile.put(groupName, new ArrayList<String>());
+            mapFile.put(groupName, new ArrayList<>());
 
             // Affiche tous les fichier du groupe dans la partie centrale de l'interface quand le groupe est selectionné.
             pane.setOnMouseClicked(event -> {
@@ -160,7 +158,7 @@ public class RootLayoutController implements Initializable {
      */
     private void fillFileMap() {
         for (Group g : mainApp.getGroups()) {
-            List<String> files = new ArrayList<String>();
+            List<String> files = new ArrayList<>();
             for (Person p : g.getMembers()) {
                 if (p.isConnected()) {
                     for (String s : p.getFiles()) {
@@ -181,7 +179,7 @@ public class RootLayoutController implements Initializable {
         accordion.getPanes().clear();
         listView.clear();
 
-        // Update the list of files
+        // Met la liste des fichiers à jour
         fillFileMap();
 
         for (final Group g : mainApp.getGroups()) {
@@ -201,16 +199,13 @@ public class RootLayoutController implements Initializable {
             pane.setCollapsible(true);
 
             // Affiche tous les fichier du groupe dans la partie centrale de l'interface quand le groupe est selectionné.
-            pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
-                    selectedGroup = view.getId();
-                    middleList.getItems().clear();
-                    if (mapFile.containsKey(g.getID()) && mapFile.get(g.getID()) != null) {
-                        List<String> files = mapFile.get(g.getID());
-                        for (String s : files) {
-                            middleList.getItems().add(s);
-                        }
+            pane.setOnMouseClicked(event -> {
+                selectedGroup = view.getId();
+                middleList.getItems().clear();
+                if (mapFile.containsKey(g.getID()) && mapFile.get(g.getID()) != null) {
+                    List<String> files = mapFile.get(g.getID());
+                    for (String s : files) {
+                        middleList.getItems().add(s);
                     }
                 }
             });
