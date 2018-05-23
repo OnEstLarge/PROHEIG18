@@ -28,6 +28,7 @@ import peer.PeerConnection;
 import peer.PeerInformations;
 import peer.PeerMessage;
 import util.CipherUtil;
+import util.Constant;
 import util.InterfaceUtil;
 import util.JSONUtil;
 import views.AcceptInviteDialogController;
@@ -517,7 +518,7 @@ public class Client extends Application {
 
             // Lecture du fichier de configuration
             try {
-                RandomAccessFile configFile = new RandomAccessFile("./shared_files/" + groupID + "/config.json", "r");
+                RandomAccessFile configFile = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "/" + Constant.CONFIG_FILENAME, "r");
                 byte[] configFileByte = new byte[(int) configFile.length()];
                 configFile.readFully(configFileByte);
                 String configJson = new String(CipherUtil.AESDecrypt(configFileByte, n.getKey(groupID)));
@@ -549,7 +550,7 @@ public class Client extends Application {
                 }
             }
             JSONUtil.updateConfig(group);
-            uploadJSON("./shared_files/" + group.getID() + "/config.json", group.getID(), myUsername);
+            uploadJSON(Constant.ROOT_GROUPS_DIRECTORY + "/" + group.getID() + "/" + Constant.CONFIG_FILENAME, group.getID(), myUsername);
         }
         if(!connectMyself) {
             PeerMessage bye = new PeerMessage(MessageType.BYE, "XXXXXX", myUsername, myUsername, "".getBytes());
@@ -679,7 +680,7 @@ public class Client extends Application {
 
         try {
             System.out.println("UPLOADING will read file");
-            // Récupère et chiffre de fichier config.json
+            // Récupère et chiffre de fichier config
             RandomAccessFile configFile = new RandomAccessFile(filenameJSON, "r");
             byte[] configFileByte = new byte[(int) configFile.length()];
             configFile.readFully(configFileByte);
@@ -740,7 +741,7 @@ public class Client extends Application {
             waitingJsonFromServer = true;
             while(waitingJsonFromServer) {
                 System.out.println("I want to download");
-                // Averti le serveur que le client désire avoir le fichier 'config.json'
+                // Averti le serveur que le client désire avoir le fichier 'config'
                 synchronized (out) {
                     out.write(downloadMessage.getFormattedMessage());
                     out.flush();
@@ -782,7 +783,7 @@ public class Client extends Application {
         FileOutputStream fout = null;
         try {
             System.out.println("I download");
-            fout = new FileOutputStream(new File("./shared_files/" + pm.getIdGroup() + "/config.json"));
+            fout = new FileOutputStream(new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + pm.getIdGroup() + "/" + Constant.CONFIG_FILENAME));
             fout.write(buffer, 0, size);
             fout.flush();
 
@@ -800,7 +801,7 @@ public class Client extends Application {
     }
 
     private static String[] scanGroups() {
-        File directory = new File("./shared_files");
+        File directory = new File(Constant.ROOT_GROUPS_DIRECTORY);
         String[] groups = directory.list(new FilenameFilter() {
 
             @Override
@@ -845,7 +846,7 @@ public class Client extends Application {
             }
 
             // Crée le groupe localement
-            String dir = "./shared_files/" + groupID;
+            String dir = Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID;
             File file = new File(dir);
             if (!file.exists() || !file.isDirectory()) {
                 file.mkdirs();
@@ -870,7 +871,7 @@ public class Client extends Application {
         try {
             System.out.println("updateJsonAfterInvitation will read json received");
 
-            configFile = new RandomAccessFile("./shared_files/" + groupID + "/config.json", "r");
+            configFile = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "/" + Constant.CONFIG_FILENAME, "r");
             byte[] configFileByte = new byte[(int) configFile.length()];
             configFile.readFully(configFileByte);
 
@@ -899,7 +900,7 @@ public class Client extends Application {
         System.out.println("updateJsonAfterInvitation updated, uploading");
 
         //upload le nouveau json sur le serv
-        Client.uploadJSON("./shared_files/" + groupID + "/config.json", groupID, myUsername);
+        Client.uploadJSON(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "/" + Constant.CONFIG_FILENAME, groupID, myUsername);
 
         System.out.println("updateJsonAfterInvitation uploaded");
 
@@ -938,7 +939,7 @@ public class Client extends Application {
         if (index >= 0) {
             RandomAccessFile configFile = null;
             try {
-                configFile = new RandomAccessFile("./shared_files/" + groupID + "/config.json", "r");
+                configFile = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "/" + Constant.CONFIG_FILENAME, "r");
                 byte[] configFileByte = new byte[(int) configFile.length()];
                 configFile.readFully(configFileByte);
 

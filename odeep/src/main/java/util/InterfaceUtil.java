@@ -44,27 +44,27 @@ public class InterfaceUtil {
                 // Demande au serveur si le groupe existe déjà
                 if(Client.groupValidation(groupID)) {
                     // Crée le groupe localement
-                    String dir = "./shared_files/" + groupID;
+                    String dir = Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID;
                     File file = new File(dir);
                     if (!file.exists() || !file.isDirectory()) {
                         file.mkdirs();
                     }
-                    // Génération du fichier config.json
+                    // Génération du fichier config
                     group = new Group(groupID, new Person(idFrom));
                     String jsonConfig = JSONUtil.toJson(group);
 
-                    // Chiffrement du config.json
+                    // Chiffrement du config
                     node.setKey(CipherUtil.generateKey(), groupID);
-                    RandomAccessFile f = new RandomAccessFile("./shared_files/" + groupID + "/key", "r");
+                    RandomAccessFile f = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "/" + Constant.KEY_FILENAME, "r");
                     byte[] key = new byte[(int) f.length()];
                     f.readFully(key);
                     byte[] cipherConfig = CipherUtil.AESEncrypt(jsonConfig.getBytes(), key);
 
-                    // Ajoute le fichier 'config.json' chiffré localement dans le répertoire du groupe
+                    // Ajoute le fichier 'config' chiffré localement dans le répertoire du groupe
                     JSONUtil.updateConfig(group.getID(), cipherConfig);
 
-                    // Envoie le fichier 'config.json' chiffré au serveur
-                    Client.uploadJSON(dir + "/config.json", groupID, idFrom);
+                    // Envoie le fichier 'config' chiffré au serveur
+                    Client.uploadJSON(dir + "/" + Constant.CONFIG_FILENAME, groupID, idFrom);
 
                 }
             } catch (UnsupportedEncodingException e) {
@@ -101,8 +101,8 @@ public class InterfaceUtil {
                 // Ajoute le fichier à la liste des fichiers de l'utilisateur
                 group.addFile(file.getName(), userID);
 
-                // Affecte la modification au fichier config.json et le chiffre
-                RandomAccessFile f = new RandomAccessFile("./shared_files/" + group.getID() + "/key", "r");
+                // Affecte la modification au fichier config et le chiffre
+                RandomAccessFile f = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + group.getID() + "/" + Constant.KEY_FILENAME, "r");
                 byte[] key = new byte[(int) f.length()];
                 f.readFully(key);
                 byte[] cipherConfig = CipherUtil.AESEncrypt(JSONUtil.toJson(group).getBytes(), key);
@@ -110,7 +110,7 @@ public class InterfaceUtil {
                 JSONUtil.updateConfig(group.getID(), cipherConfig);
 
                 // Copie du fichier dans le répertoire 'shared_files/groupID'
-                File fileDest = new File("./shared_files/" + group.getID() + "/" + file.getName());
+                File fileDest = new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + group.getID() + "/" + file.getName());
 
                 System.out.println("\n\n\n-------COPY FILES--------------");
                 System.out.println("SRC PATH = " + file.toPath().toString());
@@ -118,8 +118,8 @@ public class InterfaceUtil {
 
                 Files.copy(file.toPath(), fileDest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-                // Envoi du fichier 'config.json' au serveur
-                Client.uploadJSON("./shared_files/" + group.getID() + "/config.json", group.getID(), userID);
+                // Envoi du fichier 'config' au serveur
+                Client.uploadJSON(Constant.ROOT_GROUPS_DIRECTORY + "/" + group.getID() + "/" + Constant.CONFIG_FILENAME, group.getID(), userID);
 
                 Client.refresh();
             }
@@ -174,8 +174,8 @@ public class InterfaceUtil {
                     }
                 }
 
-                // Affecte la modification au fichier config.json et le chiffre
-                RandomAccessFile f = new RandomAccessFile("./shared_files/" + group.getID() + "/key", "r");
+                // Affecte la modification au fichier config et le chiffre
+                RandomAccessFile f = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + group.getID() + "/" + Constant.KEY_FILENAME, "r");
                 byte[] key = new byte[(int) f.length()];
                 f.readFully(key);
                 byte[] cipherConfig = CipherUtil.AESEncrypt(JSONUtil.toJson(group).getBytes(), key);
@@ -186,7 +186,7 @@ public class InterfaceUtil {
 
                 InterfaceUtil.printConfig(group.getID(), key);
 
-                Client.uploadJSON("./shared_files/" + group.getID() + "/config.json", group.getID(), userID);
+                Client.uploadJSON(Constant.ROOT_GROUPS_DIRECTORY + "/" + group.getID() + "/" + Constant.CONFIG_FILENAME, group.getID(), userID);
 
                 //remove local file - additional feature not implemented
 
@@ -237,16 +237,16 @@ public class InterfaceUtil {
 
     //TODO: pour tests uniquement
     public static void printConfig(String groupID, byte[] key) {
-        // Récupère et chiffre de fichier config.json
+        // Récupère et chiffre de fichier config
         RandomAccessFile configFile = null;
         try {
-            configFile = new RandomAccessFile("./shared_files/"+groupID+"/config.json", "r");
+            configFile = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "\"/\" + Constant.CONFIG_FILENAME", "r");
             byte[] configFileByte = new byte[(int) configFile.length()];
             configFile.readFully(configFileByte);
 
             byte[] plainConfig = CipherUtil.AESDecrypt(configFileByte, key);
 
-            System.out.println("\n\n--------CONFIG.JSON--------------");
+            System.out.println("\n\n--------CONFIG--------------");
             System.out.println(new String(plainConfig) + "\n\n");
         } catch (FileNotFoundException e) {
             e.printStackTrace();

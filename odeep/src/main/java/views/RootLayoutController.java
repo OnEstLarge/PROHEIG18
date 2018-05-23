@@ -13,6 +13,7 @@ import main.Client;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import peer.PeerMessage;
+import util.Constant;
 import util.InterfaceUtil;
 
 public class RootLayoutController implements Initializable {
@@ -286,7 +287,7 @@ public class RootLayoutController implements Initializable {
         disableDownloadRemove();
         List<String> file =  middleList.getSelectionModel().getSelectedItems();
         String filename = file.get(0);
-        File fileToDownload = new File("./shared_files/" + selectedGroup + "/" + filename);
+        File fileToDownload = new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + selectedGroup + "/" + filename);
         if(fileToDownload.exists()){
             return;
         }
