@@ -33,7 +33,9 @@ public class PeerConnection {
         this.isLocal = isLocal;
 
         if(isLocal){
-            clientSocket = new Socket()
+            clientSocket = new Socket();
+            System.out.println("Adresse " + peer.getAddress());
+            System.out.println("Port " + peer.getPort());
             clientSocket.connect(new InetSocketAddress(peer.getAddress(), peer.getPort()), 1000);
         }
         else {
