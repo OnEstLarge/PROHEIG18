@@ -318,7 +318,7 @@ public class RootLayoutController implements Initializable {
      */
     public void updateDownloadBar(double value){
         downloadBar.setProgress(value);
-        downloadPercent.setText(String.valueOf(((value * 10000) %1) / 100.0) + "%");
+        downloadPercent.setText((((int)(value * 10000)) / 100.0) + "%");
     }
 
     /**
@@ -327,7 +327,7 @@ public class RootLayoutController implements Initializable {
      */
     public void updateUploadBar(double value){
         uploadBar.setProgress(value);
-        uploadPercent.setText(String.valueOf(((value * 10000) %1) / 100.0) + "%");
+        uploadPercent.setText((((int)(value * 10000)) / 100.0) + "%");
     }
 
     public void initialize(URL url, ResourceBundle rb) {}

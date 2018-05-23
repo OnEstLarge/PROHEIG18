@@ -32,6 +32,7 @@ public class DISCHandler implements MessageHandler{
         for(int i = 0; i < g.getMembers().size(); i++){
             if(g.getMembers().get(i).equals(m.getIdTo())){
                 g.getMembers().get(i).disconnect();
+                JSONUtil.updateConfig(g);
                 Client.uploadJSON(JSONUtil.toJson(g),m.getIdGroup(), m.getIdTo());
             }
         }
