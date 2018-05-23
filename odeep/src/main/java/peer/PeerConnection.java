@@ -65,6 +65,10 @@ public class PeerConnection {
         return isLocal;
     }
 
+    public PeerInformations getPeer() {
+        return peer;
+    }
+
     public void close() {
         try {
             is.close();

@@ -78,6 +78,11 @@ public class PGETHandler implements MessageHandler {
             n.createTempConnection(pi, response);
         }
         */
-        c.sendMessage(response);
+        if(c.isLocal()){
+            Node.createTempConnection(c.getPeer(), response);
+        }
+        else {
+            c.sendMessage(response);
+        }
     }
 }

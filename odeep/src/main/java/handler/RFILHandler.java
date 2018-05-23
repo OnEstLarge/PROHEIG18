@@ -29,7 +29,7 @@ import java.io.RandomAccessFile;
 /**
  * Classe permettant le traitement d'un message de type RFIL
  */
-public class RFILHandler implements MessageHandler{
+public class RFILHandler implements MessageHandler {
 
     @Override
     public void handleMessage(Node n, PeerConnection c, PeerMessage m) {
@@ -37,12 +37,11 @@ public class RFILHandler implements MessageHandler{
         byte[] key = null;
         try {
             f = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + m.getIdGroup() + "/" + Constant.KEY_FILENAME, "r");
-            key = new byte[(int)f.length()];
+            key = new byte[(int) f.length()];
             f.readFully(key);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         File fileAsked = null;
@@ -52,7 +51,7 @@ public class RFILHandler implements MessageHandler{
             e.printStackTrace();
         }
 
-        if(fileAsked.exists() && !fileAsked.isDirectory()) {
+        if (fileAsked.exists() && !fileAsked.isDirectory()) {
             n.filenameUploaded = fileAsked.getName();
             try {
                 n.sendFileToPeer(fileAsked, m.getIdGroup(), m.getIdFrom(), c);
@@ -61,8 +60,7 @@ public class RFILHandler implements MessageHandler{
             }
             n.filenameUploaded = null;
 
-        }
-        else{
+        } else {
             /*
             PeerInformations pi = null;
             for (PeerInformations p : n.getKnownPeers()) {
@@ -77,7 +75,12 @@ public class RFILHandler implements MessageHandler{
                 n.createTempConnection(pi,new PeerMessage(MessageType.NFIL, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getMessageContent()) );
             }
             */
-            c.sendMessage(new PeerMessage(MessageType.NFIL, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getMessageContent()));
+            PeerMessage response = new PeerMessage(MessageType.NFIL, m.getIdGroup(), m.getIdTo(), m.getIdFrom(), m.getMessageContent());
+            if (c.isLocal()) {
+                Node.createTempConnection(c.getPeer(), response);
+            } else {
+                c.sendMessage(response);
+            }
         }
     }
 }

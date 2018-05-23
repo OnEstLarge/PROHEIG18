@@ -167,9 +167,14 @@ public class Node {
         byte[] cipherFileInfo = CipherUtil.AESEncrypt(fileInfo.getBytes(), key);
 
         Client.clearUploadBar();
-
-        PeerMessage toSend = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherFileInfo);
-        pc.sendMessage(toSend);
+        if(pc.isLocal()){
+            System.out.println("LOCAL");
+            createTempConnection(pc.getPeer(),  new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherFileInfo));
+        }
+        else {
+            PeerMessage toSend = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherFileInfo);
+            pc.sendMessage(toSend);
+        }
 
         try {
             Thread.sleep(1000);
@@ -190,8 +195,12 @@ public class Node {
             PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
             System.out.println("sending : " + filename + " : " + 100.0 * i / (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE) + "%");
             Client.updateUploadBar(((double) i) / (fileSize / PeerMessage.MESSAGE_CONTENT_SIZE));
-            pc.sendMessage(p);
-
+            if(pc.isLocal()){
+                createTempConnection(pc.getPeer(), p);
+            }
+            else {
+                pc.sendMessage(p);
+            }
             //this.createTempConnection(pi, p);
             try {
                 Thread.sleep(5);
@@ -207,9 +216,19 @@ public class Node {
         raf.close();
         byte[] cipherMes = CipherUtil.AESEncrypt(lastMes, key);
         PeerMessage p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, index, cipherMes);
-        pc.sendMessage(p);
+        if(pc.isLocal()){
+            createTempConnection(pc.getPeer(), p);
+        }
+        else {
+            pc.sendMessage(p);
+        }
         p = new PeerMessage(MessageType.SFIL, groupID, this.getNodePeer().getID(), destination, 99999999, cipherMes);
-        pc.sendMessage(p);
+        if(pc.isLocal()){
+            createTempConnection(pc.getPeer(), p);
+        }
+        else {
+            pc.sendMessage(p);
+        }
         Client.updateUploadBar(1.0);
         //this.createTempConnection(pi, p);
         //}
@@ -277,7 +296,7 @@ public class Node {
         }
         if(isLocal){
             System.out.println("LOCAL");
-            pc.sendMessage(new PeerMessage(MessageType.RFIL, groupID, this.getNodePeer().getID(), peerHavingFile, CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));
+            createTempConnection(pc.getPeer(), new PeerMessage(MessageType.RFIL, groupID, this.getNodePeer().getID(), peerHavingFile, CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));
         }
         else {
             Client.sendPM(new PeerMessage(MessageType.RFIL, groupID, this.getNodePeer().getID(), peerHavingFile, CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));
@@ -298,7 +317,13 @@ public class Node {
         for (int i = 0; i < listPacket.size(); i++) {
             Boolean b = listPacket.get(i);
             if (!b) {
-                pc.sendMessage(new PeerMessage(MessageType.PGET, pm.getIdGroup(), pm.getIdTo(), pm.getIdFrom(), i, new byte[]{}));
+                PeerMessage response = new PeerMessage(MessageType.PGET, pm.getIdGroup(), pm.getIdTo(), pm.getIdFrom(), i, new byte[]{});
+                if(pc.isLocal()){
+                    Node.createTempConnection(pc.getPeer(), response);
+                }
+                else {
+                    pc.sendMessage(response);
+                }
                 //Client.sendPM(new PeerMessage(MessageType.PGET, pm.getIdGroup(), pm.getIdTo(), pm.getIdFrom(), i, new byte[]{}));
             }
         }
@@ -310,9 +335,6 @@ public class Node {
             }
             checkPacket(pm, pc);
         } else {
-            if(pc.isLocal()){
-                pc.close();
-            }
             Client.updateDownloadBar(1.0);
             InterfaceUtil.addFile(new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + pm.getIdGroup() + "/" + filenameDownloaded), Client.getUsername(), Client.getGroupById(pm.getIdGroup()));
             System.out.println("STOP");
