@@ -17,7 +17,7 @@ public class InviteDialogController {
     private ComboBox<String> comboBox;
 
     @FXML
-    private TextField newUserPseudoField;
+    private TextField newUsernameField;
 
     @FXML
     private void initialize() {}
@@ -79,7 +79,7 @@ public class InviteDialogController {
     private void handleOk() {
         if (isInputValid()) {
 
-            Client.inviteNewMember(newUserPseudoField.getText(), comboBox.getValue());
+            Client.inviteNewMember(newUsernameField.getText(), comboBox.getValue());
 
             Client.getController().enableButtons();
             okClicked = true;
@@ -94,7 +94,7 @@ public class InviteDialogController {
      * @return True si jamais les champs sont corrects, false sinon.
      */
     private boolean isInputValid() {
-        if (!PeerMessage.isValidIdFormat(newUserPseudoField.getText(), PeerMessage.ID_MIN_LENGTH, PeerMessage.ID_MAX_LENGTH)) {
+        if (!PeerMessage.isValidIdFormat(newUsernameField.getText(), PeerMessage.ID_MIN_LENGTH, PeerMessage.ID_MAX_LENGTH)) {
             String errorMessage = "Nom d'utilisateur invalide. Il doit contenir entre " + PeerMessage.ID_MIN_LENGTH + " et " + PeerMessage.ID_MAX_LENGTH + " caractères.\n";
 
             Alert alert = new Alert(Alert.AlertType.ERROR);

@@ -131,16 +131,13 @@ public class RootLayoutController implements Initializable {
             mapFile.put(groupName, new ArrayList<String>());
 
             // Affiche tous les fichier du groupe dans la partie centrale de l'interface quand le groupe est selectionné.
-            pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
-                    selectedGroup = view.getId();
-                    middleList.getItems().clear();
-                    if (mapFile.containsKey(groupName) && mapFile.get(groupName) != null) {
-                        List<String> files = mapFile.get(groupName);
-                        for (String s : files) {
-                            middleList.getItems().add(s);
-                        }
+            pane.setOnMouseClicked(event -> {
+                selectedGroup = view.getId();
+                middleList.getItems().clear();
+                if (mapFile.containsKey(groupName) && mapFile.get(groupName) != null) {
+                    List<String> files = mapFile.get(groupName);
+                    for (String s : files) {
+                        middleList.getItems().add(s);
                     }
                 }
             });

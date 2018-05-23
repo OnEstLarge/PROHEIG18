@@ -495,7 +495,7 @@ public class Client extends Application {
             waitForUsername();
             System.out.println("we got the pseudo");
 
-            //Greetings to server, receivinig response
+            // Salutation au serveur, reception de la réponse
             System.out.println("aaaa" + localIP);
             PeerMessage greetings = new PeerMessage(MessageType.HELO, "XXXXXX", myUsername, "XXXXXX", 0, localIP.getBytes());
             synchronized (out) {
@@ -562,7 +562,7 @@ public class Client extends Application {
         }
     }
 
-    //Classe permettant de threader la lecture des packets server
+    // Classe permettant de threader la lecture des packets server
     private static class ReadFromServer implements Runnable {
         public void run() {
             //int read;
@@ -576,13 +576,10 @@ public class Client extends Application {
                         while(read != PeerMessage.BLOCK_SIZE) {
                             read += in.read(buffer, read, buffer.length - read);
                         }
-                        //}
-                        //while ((read = in.read(buffer, 0, 4096)) != -1) {
 
                         PeerMessage pm = new PeerMessage(buffer);
                         if (read != 4096)
                             System.out.println(read);
-                        //System.out.println("type message received = " + pm.getType());
 
                         if (pm.getType().equals(MessageType.INFO)) {
                             System.out.println("Received info, writing in response static");
@@ -597,14 +594,8 @@ public class Client extends Application {
                             waitingJsonFromServer = false;
                             System.out.println("i'm out");
                         } else {
-                            //System.out.println("Client redirect message " + pm.getType());
                             final PeerMessage redirectPM = new PeerMessage(pm);
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    redirectToHandler(redirectPM, n, new PeerConnection(clientSocketToServerPublic));
-                                }
-                            }).start();
+                            new Thread(() -> redirectToHandler(redirectPM, n, new PeerConnection(clientSocketToServerPublic))).start();
                         }
                         try {
                             Thread.sleep(10);
@@ -612,9 +603,7 @@ public class Client extends Application {
                             System.out.println(e.getMessage());
                             //e.printStackTrace();
                         }
-                        //}
                     }
-                    //System.out.println("End of reading in main.Client.ReadFromServer");
 
                 }
             }catch (IOException e) {
@@ -633,16 +622,16 @@ public class Client extends Application {
     }
 
     private static void redirectToHandler(PeerMessage message, Node node, PeerConnection connection) {
-        //handle message
+        // handle message
         try {
-            node.getMapMessage().get(message.getType()).handleMessage(node, connection, message); //gerer erreur possible
+            node.getMapMessage().get(message.getType()).handleMessage(node, connection, message); // Gerer erreur possible
         } catch (NullPointerException e) {
             System.out.println("ERREUR");
             System.out.println("type : " + message.getType() + "\ngroupe : " + message.getIdGroup() + "\nfrom : " + message.getIdFrom() + "\nto : " + message.getIdTo() + "\nNo : " + message.getNoPacket());
         }
     }
 
-    private static String askForInfos(String pseudo) {
+    private static String askForInfos(String username) {
         PeerMessage askInfo = new PeerMessage(MessageType.INFO, "XXXXXX", myUsername, myUsername, "".getBytes());
         try {
             synchronized (out) {
@@ -679,9 +668,7 @@ public class Client extends Application {
 
 
     public static void uploadJSON(String filenameJSON, String groupID, String idFrom) {
-        //TODO tester validité des paramètres
-
-        PeerMessage uploadMessage = null;
+        PeerMessage uploadMessage;
 
         try {
             System.out.println("UPLOADING will read file");
@@ -726,12 +713,9 @@ public class Client extends Application {
                             out.write(pm.getFormattedMessage());
                             out.flush();
                         }
-                        //Thread.sleep(100);
                     } catch (IOException e) {
                         System.out.println(e.getMessage());
-                    } /*catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }*/
+                    }
                 }
 
             }
@@ -772,32 +756,27 @@ public class Client extends Application {
             updateGroupsWithJson(groupID);
         }
 
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                controller.updateGroupsAndFiles();
-            }
-        });
+        Platform.runLater(() -> controller.updateGroupsAndFiles());
     }
 
     private static void saveReceivedJson(PeerMessage pm) {
         byte[] buffer = pm.getMessageContent();
         int size = pm.getMessageContent().length;
         System.out.println(size);
-        FileOutputStream fout = null;
+        FileOutputStream fOut = null;
         try {
             System.out.println("I download");
-            fout = new FileOutputStream(new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + pm.getIdGroup() + "/" + Constant.CONFIG_FILENAME));
-            fout.write(buffer, 0, size);
-            fout.flush();
+
+            fOut = new FileOutputStream(new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + pm.getIdGroup() + "/" + Constant.CONFIG_FILENAME));
+            fOut.write(buffer, 0, size);
+            fOut.flush();
 
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (fout != null) {
+            if (fOut != null) {
                 try {
-                    fout.close();
+                    fOut.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -807,13 +786,7 @@ public class Client extends Application {
 
     private static String[] scanGroups() {
         File directory = new File(Constant.ROOT_GROUPS_DIRECTORY);
-        String[] groups = directory.list(new FilenameFilter() {
-
-            @Override
-            public boolean accept(File file, String name) {
-                return new File(file, name).isDirectory();
-            }
-        });
+        String[] groups = directory.list((file, name) -> new File(file, name).isDirectory());
 
         for (String group : groups) {
             System.out.println(group);
@@ -863,16 +836,14 @@ public class Client extends Application {
     }
 
     public static void updateJsonAfterInvitation(String groupID) {
-
-
         System.out.println("updateJsonAfterInvitation in");
 
-        //download json du groupe
+        //Téléchargement json du groupe
         downloadJSON(groupID);
-        //ajoute le group dans sa liste groups
+        // Ajoute le group dans sa liste groupe
         System.out.println("updateJsonAfterInvitation downloaded");
 
-        RandomAccessFile configFile = null;
+        RandomAccessFile configFile;
         try {
             System.out.println("updateJsonAfterInvitation will read json received");
 
@@ -899,22 +870,20 @@ public class Client extends Application {
 
         System.out.println("updateJsonAfterInvitation update config");
 
-        //update le json en s'ajoutant dans le groupe
+        // Update le json en s'ajoutant dans le groupe
         JSONUtil.updateConfig(Client.getGroupById(groupID));
 
         System.out.println("updateJsonAfterInvitation updated, uploading");
 
-        //upload le nouveau json sur le serv
+
+        // Upload le nouveau json sur le serveur
         Client.uploadJSON(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "/" + Constant.CONFIG_FILENAME, groupID, myUsername);
 
         System.out.println("updateJsonAfterInvitation uploaded");
 
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                controller.enableButtons();
-                controller.updateGroupsAndFiles();
-            }
+        Platform.runLater(() -> {
+            controller.enableButtons();
+            controller.updateGroupsAndFiles();
         });
     }
 
@@ -931,18 +900,13 @@ public class Client extends Application {
     }
 
     public static void refresh() {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                controller.updateGroupsAndFiles();
-            }
-        });
+        Platform.runLater(() -> controller.updateGroupsAndFiles());
     }
 
     private static void updateGroupsWithJson(String groupID) {
         int index = groups.indexOf(getGroupById(groupID));
         if (index >= 0) {
-            RandomAccessFile configFile = null;
+            RandomAccessFile configFile;
             try {
                 configFile = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + groupID + "/" + Constant.CONFIG_FILENAME, "r");
                 byte[] configFileByte = new byte[(int) configFile.length()];
@@ -969,13 +933,10 @@ public class Client extends Application {
 
     public static void updateDownloadBar(double value) {
         final double v = value;
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                controller.updateDownloadBar(v);
-                if(Math.abs(v - 1.0) < 0.001) {
-                    controller.enableDownLoad();
-                }
+        Platform.runLater(() -> {
+            controller.updateDownloadBar(v);
+            if(Math.abs(v - 1.0) < 0.001) {
+                controller.enableDownLoad();
             }
         });
 
@@ -983,20 +944,10 @@ public class Client extends Application {
 
     public static void updateUploadBar(double value) {
         final double v = value;
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                controller.updateUploadBar(v);
-            }
-        });
+        Platform.runLater(() -> controller.updateUploadBar(v));
     }
 
     public static void clearUploadBar() {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                controller.clearUploadBar();
-            }
-        });
+        Platform.runLater(() -> controller.clearUploadBar());
     }
 }

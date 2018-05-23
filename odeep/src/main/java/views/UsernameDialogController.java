@@ -80,9 +80,9 @@ public class UsernameDialogController {
      */
     private boolean isInputValid(){
         String errorMessage = "";
-        String pseudo = usernameField.getText();
+        String username = usernameField.getText();
 
-        if(!PeerMessage.isValidIdFormat(pseudo, PeerMessage.ID_MIN_LENGTH, PeerMessage.ID_MAX_LENGTH) || !Client.usernameValidation(pseudo)){
+        if(!PeerMessage.isValidIdFormat(username, PeerMessage.ID_MIN_LENGTH, PeerMessage.ID_MAX_LENGTH) || !Client.usernameValidation(username)){
             errorMessage += "Nom d'utilisateur invalide. Il doit contenir entre " + PeerMessage.ID_MIN_LENGTH + " et " + PeerMessage.ID_MAX_LENGTH + " caractères.\n";
         }
 
