@@ -303,7 +303,9 @@ public class Client extends Application {
 
 
 
-    private static final String IP_SERVER = "206.189.49.105";//"192.168.0.213";//"206.189.49.105";
+
+    private static final String IP_SERVER = "206.189.49.105";
+
     private static final int PORT_SERVER = 8080;
     private static final int LOCAL_PORT = 4444;
 
