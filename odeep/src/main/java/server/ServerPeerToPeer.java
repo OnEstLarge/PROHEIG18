@@ -65,6 +65,7 @@ public class ServerPeerToPeer {
         Socket clientToSever;
         BufferedInputStream in = null;
         BufferedOutputStream out = null;
+        boolean running = true;
         byte[] bufferIn = new byte[PeerMessage.BLOCK_SIZE];
         byte[] bufferOut = new byte[PeerMessage.BLOCK_SIZE];
 
@@ -81,25 +82,25 @@ public class ServerPeerToPeer {
 
         @Override
         public void run() {
-
+            PeerMessage pm = null;
             try {
 
-                while (true) {
+                while (running) {
                     int read = 0;
                     while (read != PeerMessage.BLOCK_SIZE) {
                         int lu;
                         lu = in.read(bufferIn, 0, bufferIn.length);
                         read += lu;
                     }
-                    read = 0;
-                    PeerMessage pm = new PeerMessage(bufferIn);
+
+                    pm = new PeerMessage(bufferIn);
                     String type = pm.getType();
                     System.out.println("Message reçu " + pm.getType());
                     switch (type) {
                         case MessageType.HELO:
                             greetings(pm);
                             break;
-                        case MessageType.BYE:
+                        case MessageType.EXIT:
                             bye(pm);
                             break;
                         case MessageType.USRV:
@@ -209,11 +210,13 @@ public class ServerPeerToPeer {
                         Thread.sleep(10);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
+
                     }
                 }
             } catch (IOException e) {
                 //System.out.println(e.getMessage());
                 e.printStackTrace();
+                bye(pm);
             }
         }
 
@@ -293,12 +296,14 @@ public class ServerPeerToPeer {
         }
 
         void bye(PeerMessage pm) {
+            System.out.println("bye");
             if (peopleInServ.containsKey(pm.getIdFrom())) {
                 peopleInServ.remove(pm.getIdFrom());
                 if (clientIPPrivee.containsKey(pm.getIdFrom())) {
                     clientIPPrivee.remove(pm.getIdFrom());
                 }
             }
+            running = false;
             try {
                 out.close();
                 in.close();
