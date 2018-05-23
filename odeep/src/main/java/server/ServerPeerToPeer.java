@@ -15,6 +15,7 @@ public class ServerPeerToPeer {
 
     private DatabaseUtil databaseUtil;
     private static Object o = new Object();
+    private static String ROOT_GROUPS_DIRECTORY = "groupsConfigs";
     private HashMap<String, String> clientIPPrivee = new HashMap<String, String>();
     private HashMap<String, Socket> peopleInServ = new HashMap<String, Socket>();
 
@@ -116,6 +117,7 @@ public class ServerPeerToPeer {
                         case MessageType.SFIL:
                         case MessageType.SMES:
                         case MessageType.UPDT:
+                        case MessageType.PGET:
                             redirectBuffer = bufferIn.clone();
                             redirect(pm);
                             break;
@@ -145,7 +147,7 @@ public class ServerPeerToPeer {
                             //On récupère la taille du JSON a download
                             //String s = CipherUtil.erasePadding(new String(pm.getMessageContent()), PeerMessage.PADDING_START);
                             byte[] input = CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START);
-                            FileOutputStream fout = new FileOutputStream(new File("./groupsConfigs/" + pm.getIdGroup()));
+                            FileOutputStream fout = new FileOutputStream(new File("./" + ROOT_GROUPS_DIRECTORY + "/" + pm.getIdGroup()));
                             //int size = Integer.parseInt(s);
                             int size = input.length;
                             //System.out.println("Size =" + size);
@@ -162,7 +164,7 @@ public class ServerPeerToPeer {
 
                         case MessageType.DOWN:
                             System.out.println("DOWN");
-                            RandomAccessFile json = new RandomAccessFile("./groupsConfigs/" + pm.getIdGroup(), "r");
+                            RandomAccessFile json = new RandomAccessFile("./" + ROOT_GROUPS_DIRECTORY + "/" + pm.getIdGroup(), "r");
                             int sizeJSON = (int)json.length();
                             byte[] bufferJson = new byte[(int) json.length()];
                             json.readFully(bufferJson);
