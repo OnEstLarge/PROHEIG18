@@ -55,7 +55,11 @@ public class Client extends Application {
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("Odeep");
-        this.primaryStage.setOnCloseRequest(event -> Platform.runLater(() -> exit(0)));
+        this.primaryStage.setOnCloseRequest(event -> Platform.runLater(() ->
+        {
+            connectMyself(false);
+            exit(0);
+        }));
         initRootLayout();
     }
 
@@ -299,7 +303,7 @@ public class Client extends Application {
 
 
 
-    private static final String IP_SERVER = "192.168.0.46";//"206.189.49.105";
+    private static final String IP_SERVER = "192.168.0.213";//"206.189.49.105";
     private static final int PORT_SERVER = 8080;
     private static final int LOCAL_PORT = 4444;
 
@@ -553,7 +557,7 @@ public class Client extends Application {
             uploadJSON(Constant.ROOT_GROUPS_DIRECTORY + "/" + group.getID() + "/" + Constant.CONFIG_FILENAME, group.getID(), myUsername);
         }
         if(!connectMyself) {
-            PeerMessage bye = new PeerMessage(MessageType.BYE, "XXXXXX", myUsername, myUsername, "".getBytes());
+            PeerMessage bye = new PeerMessage(MessageType.EXIT, "XXXXXX", myUsername, myUsername, "".getBytes());
             sendPM(bye);
         }
     }
