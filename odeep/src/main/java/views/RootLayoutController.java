@@ -288,7 +288,7 @@ public class RootLayoutController implements Initializable {
         if (fileToDownload.exists()) {
             return;
         } else {
-            disableDownloadRemove();
+            //disableDownloadRemove();
             mainApp.requestFile(filename, selectedGroup);
             clearDownloadBar();
         }

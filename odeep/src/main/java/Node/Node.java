@@ -277,8 +277,8 @@ public class Node {
 
     public void checkPacket(PeerMessage pm){
         Boolean allPacketOk = true;
-        for(int i = 0; i < listPacket.size(); i++){
-            Boolean b = listPacket.get(i);
+        for(int i = 0; i < listPacket.get(pm.getIdFrom()).size(); i++){
+            boolean b = listPacket.get(pm.getIdFrom()).get(i);
             if(!b){
                 Client.sendPM(new PeerMessage(MessageType.PGET, pm.getIdGroup(), pm.getIdTo(), pm.getIdFrom(), i, new byte[]{}));
             }
@@ -293,7 +293,7 @@ public class Node {
         }
         else{
             Client.updateDownloadBar(1.0);
-            InterfaceUtil.addFile(new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + pm.getIdGroup() + "/" + filenameDownloaded), Client.getUsername(), Client.getGroupById(pm.getIdGroup()));
+            InterfaceUtil.addFile(new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + pm.getIdGroup() + "/" + filenameDownloaded.get(pm.getIdFrom())), Client.getUsername(), Client.getGroupById(pm.getIdGroup()));
             System.out.println("STOP");
         }
     }
@@ -398,13 +398,18 @@ public class Node {
     //permet de conserver temporairement la pair de clé RSA utilisé lors d'un protocole Diffie Hellman
     private RSAInfo tempRsaInfo = null;
 
-    public static String filenameUploaded = null;
-    public static int filesizeUploaded = 0;
+    public static HashMap<String,String> filenameUploaded = new HashMap<>();
 
+    public static HashMap<String,String> filenameDownloaded = new HashMap<>();
+    public static HashMap<String,Integer> filesizeDownloaded = new HashMap<>();
+    public static HashMap<String,Integer> numberPacketDownloaded = new HashMap<>();
+    public static HashMap<String,Integer> numberPacketCurrent = new HashMap<>();
+    public static HashMap<String,List<Boolean>> listPacket = new HashMap<>();
+    /*
     public static String filenameDownloaded = null;
     public static int filesizeDownloaded = 0;
     public static int numberPacketDownloaded = 0;
     public static int numberPacketCurrent = 0;
     public List<Boolean> listPacket = new ArrayList<>();
-
+*/
 }

@@ -69,22 +69,23 @@ public class SFILHandler implements MessageHandler {
         //cas du premier paquet : le paquet contient uniquement le nom et la taille du fichier
         if (m.getNoPacket() == 0) {
             String[] fileInfo = new String(rcv).split(":");
-            n.filesizeDownloaded = Integer.parseInt(fileInfo[1]);
-            n.filenameDownloaded = fileInfo[0];
-            n.numberPacketDownloaded = n.filesizeDownloaded / PeerMessage.MESSAGE_CONTENT_SIZE + 2;
-            n.numberPacketCurrent = 0;
-            n.listPacket.clear();
-            for(int i = 0; i < n.numberPacketDownloaded; i++){
-                n.listPacket.add(false);
+            n.filesizeDownloaded.put(m.getIdFrom(), Integer.parseInt(fileInfo[1]));
+            n.filenameDownloaded.put(m.getIdFrom(), fileInfo[0]);
+            int size = n.filesizeDownloaded.get(m.getIdFrom()) / PeerMessage.MESSAGE_CONTENT_SIZE + 2;
+            n.numberPacketDownloaded.put(m.getIdFrom(), size);
+            n.numberPacketCurrent.put(m.getIdFrom(), 0);
+            n.listPacket.put(m.getIdFrom(), new ArrayList<>());
+            for(int i = 0; i < n.numberPacketDownloaded.get(m.getIdFrom()); i++){
+                n.listPacket.get(m.getIdFrom()).add(false);
             }
             System.out.println("Receiving " + fileInfo[0]);
             try {
-                RandomAccessFile emptyFile = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + m.getIdGroup() + "/" + n.filenameDownloaded, "rw");
+                RandomAccessFile emptyFile = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + m.getIdGroup() + "/" + n.filenameDownloaded.get(m.getIdFrom()), "rw");
 
-                emptyFile.setLength(n.filesizeDownloaded);
+                emptyFile.setLength(n.filesizeDownloaded.get(m.getIdFrom()));
                 emptyFile.close();
-                n.listPacket.set(0,true);
-                n.numberPacketCurrent++;
+                n.listPacket.get(m.getIdFrom()).set(0,true);
+                n.numberPacketCurrent.put(m.getIdFrom(), n.numberPacketCurrent.get(m.getIdFrom()) + 1);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -97,18 +98,18 @@ public class SFILHandler implements MessageHandler {
         //on stocke les autres paquets dans le fichier de sortie
         else {
             try {
-                RandomAccessFile raf = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + m.getIdGroup() + "/" + n.filenameDownloaded, "rw");
+                RandomAccessFile raf = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + m.getIdGroup() + "/" + n.filenameDownloaded.get(m.getIdFrom()), "rw");
                 raf.seek(PeerMessage.MESSAGE_CONTENT_SIZE * (m.getNoPacket() - 1));
                 raf.write(rcv);
                 raf.close();
-                n.listPacket.set(m.getNoPacket(), true);
-                n.numberPacketCurrent++;
+                n.listPacket.get(m.getIdFrom()).set(m.getNoPacket(), true);
+                n.numberPacketCurrent.put(m.getIdFrom(), n.numberPacketCurrent.get(m.getIdFrom()) + 1);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
         try {
-            Client.updateDownloadBar((double) n.numberPacketCurrent / n.numberPacketDownloaded);
+            Client.updateDownloadBar((double) n.numberPacketCurrent.get(m.getIdFrom()) / n.numberPacketDownloaded.get(m.getIdFrom()));
         }
         catch (NullPointerException e){
             System.out.println("BAR ERREUR");

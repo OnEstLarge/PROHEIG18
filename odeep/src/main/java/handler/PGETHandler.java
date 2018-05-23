@@ -51,7 +51,7 @@ public class PGETHandler implements MessageHandler {
 
         RandomAccessFile raf = null;
         try {
-            raf = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + m.getIdGroup() + "/" + n.filenameUploaded, "rw");
+            raf = new RandomAccessFile(Constant.ROOT_GROUPS_DIRECTORY + "/" + m.getIdGroup() + "/" + n.filenameUploaded.get(m.getIdFrom()), "rw");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

@@ -53,13 +53,16 @@ public class RFILHandler implements MessageHandler{
         }
 
         if(fileAsked.exists() && !fileAsked.isDirectory()) {
-            n.filenameUploaded = fileAsked.getName();
-            try {
-                n.sendFileToPeer(fileAsked, m.getIdGroup(), m.getIdFrom());
-            } catch (IOException e) {
-                e.printStackTrace();
+            //on ne peut telecharger qu'un seul fichier chez un noeud particulier
+            if(n.filenameUploaded.get(m.getIdFrom()) == null) {
+                n.filenameUploaded.put(m.getIdFrom(), fileAsked.getName());
+                try {
+                    n.sendFileToPeer(fileAsked, m.getIdGroup(), m.getIdFrom());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                n.filenameUploaded.put(m.getIdFrom(), null);
             }
-            n.filenameUploaded = null;
 
         }
         else{
