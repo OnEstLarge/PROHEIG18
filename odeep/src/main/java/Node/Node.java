@@ -222,7 +222,7 @@ public class Node {
      * @param groupID  nom du groupe
      * @return liste de peerInformation
      */
-    public String getFileLocation(String filename, String groupID) {
+    public String getFileLocation(String filename, String groupID, String currentID) {
         RandomAccessFile f = null;
         byte[] payload = null;
         byte[] plainPayload = null;
@@ -240,9 +240,11 @@ public class Node {
         }
         Group g = JSONUtil.parseJson(new String(plainPayload), Group.class);
         for (Person p : g.getMembers()) {
-            for (String file : p.getFiles()) {
-                if (file.equals(filename)) {
-                    return p.getID();
+            if(!p.getID().equals(currentID)) {
+                for (String file : p.getFiles()) {
+                    if (file.equals(filename)) {
+                        return p.getID();
+                    }
                 }
             }
         }
@@ -262,7 +264,7 @@ public class Node {
             throw new NullPointerException();
         }
         byte[] buffer = filename.getBytes();
-        String peerHavingFile = getFileLocation(filename, groupID);
+        String peerHavingFile = getFileLocation(filename, groupID, this.getNodePeer().getID());
         boolean isLocal = false;
         PeerInformations pi = new PeerInformations(peerHavingFile, Client.askForInfos(peerHavingFile), 4444);
         PeerConnection pc = null;
@@ -274,6 +276,7 @@ public class Node {
             e.printStackTrace();
         }
         if(isLocal){
+            System.out.println("LOCAL");
             pc.sendMessage(new PeerMessage(MessageType.RFIL, groupID, this.getNodePeer().getID(), peerHavingFile, CipherUtil.AESEncrypt(buffer, this.getKey(groupID))));
         }
         else {
