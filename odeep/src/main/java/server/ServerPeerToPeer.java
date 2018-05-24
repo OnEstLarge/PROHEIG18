@@ -100,18 +100,10 @@ public class ServerPeerToPeer {
                 while (running) {
                     int read = 0;
                     while (read != PeerMessage.BLOCK_SIZE) {
-                        //int lu;
                         read += in.read(bufferIn, read, bufferIn.length - read);
-                        //read += lu;
                     }
-
-                    //in.read(bufferIn,0, bufferIn.length);
-
-                    //System.out.println("\n---\n---BufferIN = ");
-                    //System.out.println(new String(bufferIn) + "\n---\n\n");
                     pm = new PeerMessage(bufferIn);
                     String type = pm.getType();
-                    System.out.println("Message reçu " + pm.getType() + ", FROM: " + pm.getIdFrom() + ", TO: " + pm.getIdTo() + ", Pno = " + pm.getNoPacket());
 
                     switch (type) {
                         case MessageType.HELO:
@@ -142,7 +134,6 @@ public class ServerPeerToPeer {
 
                         // Création d'un nouveau groupe
                         case MessageType.NEWG:
-                            System.out.println("Creation Group, FROM: " + pm.getIdFrom());
                             int ajout = DatabaseUtil.addGroupIfNotExists(pm.getIdGroup());
 
 
@@ -160,8 +151,6 @@ public class ServerPeerToPeer {
                         // Stocker le fichier config reçu sur le serveur
                         case MessageType.UPLO:
 
-                            System.out.println("Upload, FROM: " + pm.getIdFrom() + ", " + "TO: " + pm.getIdTo());
-
                             //On récupère la taille du JSON a download
 
                             byte[] input = CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START);
@@ -178,8 +167,6 @@ public class ServerPeerToPeer {
                         // Envoie le fichier config à la personne voulue
                         case MessageType.DOWN:
 
-                            System.out.println("DOWN");
-
                             RandomAccessFile json = new RandomAccessFile("./groupsConfigs/" + pm.getIdGroup(), "r");
 
                             byte[] bufferJson = new byte[(int) json.length()];
@@ -187,8 +174,6 @@ public class ServerPeerToPeer {
 
 
                             PeerMessage jsonPm = new PeerMessage(pm.getType(), pm.getIdGroup(), pm.getIdFrom(), pm.getIdTo(), bufferJson);
-
-                            System.out.println(new String(jsonPm.getMessageContent()) + "  " + jsonPm.getMessageContent().length);
 
                             out.write(jsonPm.getFormattedMessage());
                             out.flush();
@@ -239,8 +224,6 @@ public class ServerPeerToPeer {
          */
         private void greetings(PeerMessage pm) {
             byte[] b = CipherUtil.erasePadding(pm.getMessageContent(), PeerMessage.PADDING_START);
-
-            System.out.println("Greetings, " + pm.getIdFrom());
 
             peopleInServ.put(pm.getIdFrom(), clientToSever);
             clientIPPrivee.put(pm.getIdFrom(), new String(b));

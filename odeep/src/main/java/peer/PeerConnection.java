@@ -35,7 +35,7 @@ public class PeerConnection {
         try {
             os = new BufferedOutputStream(clientSocket.getOutputStream());
             is = new BufferedInputStream(clientSocket.getInputStream());
-        }catch(IOException e) { System.out.println("problem peerconnection");}
+        }catch(IOException e) { System.err.println("problem peerconnection");}
     }
 
     public PeerConnection(PeerInformations peer) throws IOException{

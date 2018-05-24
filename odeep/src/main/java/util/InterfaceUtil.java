@@ -84,7 +84,6 @@ public class InterfaceUtil {
     public static void addFile(File file, String userID, Group group) {
 
         try {
-            System.out.println("file.getName() = " + file.getName());
             // Vérifie que le nom de fichier est disponible (au sein du groupe)
             if (checkFilename(file.getName(), group)) {
 
@@ -166,7 +165,6 @@ public class InterfaceUtil {
                 Client.uploadJSON(Constant.ROOT_GROUPS_DIRECTORY + "/" + group.getID() + "/" + Constant.CONFIG_FILENAME, group.getID(), userID);
 
                 //remove local file - additional feature not implemented
-                System.out.println(Constant.ROOT_GROUPS_DIRECTORY + "/" + group.getID() + "/" + Constant.CONFIG_FILENAME + "/" + filename);
                 File file = new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + group.getID() + "/" + filename);
                 file.delete();
 
