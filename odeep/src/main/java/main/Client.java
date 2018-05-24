@@ -878,7 +878,7 @@ public class Client extends Application {
         Platform.runLater(() -> {
             controller.updateDownloadBar(v);
             if(Math.abs(v - 1.0) < 0.001) {
-                controller.enableDownLoad();
+                controller.enableInviteRemove();
             }
         });
 

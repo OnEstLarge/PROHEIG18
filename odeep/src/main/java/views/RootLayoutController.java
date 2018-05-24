@@ -97,16 +97,16 @@ public class RootLayoutController implements Initializable {
     /**
      * Désactive les boutons download et remove
      */
-    public void disableDownloadRemove() {
-        downloadButton.setDisable(true);
+    public void disableInviteRemove() {
         removeButton.setDisable(true);
+        inviteButton.setDisable(true);
     }
 
     /**
      * Réactive les boutons download et remove
      */
-    public void enableDownLoad() {
-        downloadButton.setDisable(false);
+    public void enableInviteRemove() {
+        inviteButton.setDisable(false);
         removeButton.setDisable(false);
     }
 
@@ -307,7 +307,7 @@ public class RootLayoutController implements Initializable {
         if (fileToDownload.exists()) {
             return;
         } else {
-            //disableDownloadRemove();
+            disableInviteRemove();
             mainApp.requestFile(filename, selectedGroup);
             clearDownloadBar();
         }
