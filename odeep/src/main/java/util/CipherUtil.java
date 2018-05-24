@@ -2,8 +2,9 @@ package util;
 /*
  -----------------------------------------------------------------------------------
  Odeep
- Fichier     : util.CipherUtil.java
- Auteur(s)   : Kopp Olivier
+ Fichier     : handler.DHR1Handler.java
+ Auteur(s)   : Burgbacher Lionel, Jee Mathieu, Kopp Olivier, Piller Florent,
+               Silvestri Romain, Schürch Loïc
  Date        : 05.04.2018
  Compilateur : jdk 1.8.0_144
  -----------------------------------------------------------------------------------
@@ -29,6 +30,9 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 
 
+/**
+ * Classe utilitaire pour le chiffrement des données
+ */
 public class CipherUtil {
 
     static {

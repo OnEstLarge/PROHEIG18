@@ -1,5 +1,15 @@
 package views;
 
+/*
+ -----------------------------------------------------------------------------------
+ Odeep
+ Fichier     : handler.DHR1Handler.java
+ Auteur(s)   : Burgbacher Lionel, Jee Mathieu, Kopp Olivier, Piller Florent,
+               Silvestri Romain, Schürch Loïc
+ Compilateur : jdk 1.8.0_144
+ -----------------------------------------------------------------------------------
+*/
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
@@ -10,6 +20,9 @@ import peer.PeerMessage;
 
 import java.io.File;
 
+/**
+ * Pop up de pseudo
+ */
 public class UsernameDialogController {
 
     private Stage dialogStage;

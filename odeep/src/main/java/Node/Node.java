@@ -2,8 +2,9 @@ package Node;
 /*
  -----------------------------------------------------------------------------------
  Odeep
- Fichier     : Node.Node.java
- Auteur(s)   : Burgbacher Lionel, Jee Mathieu, Schürch Loïc
+ Fichier     : handler.DHR1Handler.java
+ Auteur(s)   : Burgbacher Lionel, Jee Mathieu, Kopp Olivier, Piller Florent,
+               Silvestri Romain, Schürch Loïc
  Date        : 15.03.2018
  Compilateur : jdk 1.8.0_144
  -----------------------------------------------------------------------------------
@@ -32,7 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Noeud P2P.
+ * Classe qui représente un noeud P2P
  */
 public class Node {
 

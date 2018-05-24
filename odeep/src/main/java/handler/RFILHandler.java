@@ -3,8 +3,9 @@ package handler;
 /*
  -----------------------------------------------------------------------------------
  Odeep
- Fichier     : handler.RFILHandler.java
- Auteur(s)   : Kopp Olivier
+ Fichier     : handler.DHR1Handler.java
+ Auteur(s)   : Burgbacher Lionel, Jee Mathieu, Kopp Olivier, Piller Florent,
+               Silvestri Romain, Schürch Loïc
  Date        : 10.05.2018
  Compilateur : jdk 1.8.0_144
  -----------------------------------------------------------------------------------

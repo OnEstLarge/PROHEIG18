@@ -2,8 +2,9 @@ package User;
 /*
  -----------------------------------------------------------------------------------
  Odeep
- Fichier     : User.Person.java
- Auteur(s)   : Kopp Olivier
+ Fichier     : handler.DHR1Handler.java
+ Auteur(s)   : Burgbacher Lionel, Jee Mathieu, Kopp Olivier, Piller Florent,
+               Silvestri Romain, Schürch Loïc
  Date        : 20.04.2018
  Compilateur : jdk 1.8.0_144
  -----------------------------------------------------------------------------------
@@ -13,6 +14,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Classe qui permet la gestion d'une personne dans un groupe F2F
+ */
 public class Person implements Serializable{
     private String ID = "";
     private List<String> files = new ArrayList<String>();

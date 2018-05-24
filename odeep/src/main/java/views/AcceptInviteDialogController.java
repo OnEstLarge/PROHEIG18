@@ -1,5 +1,15 @@
 package views;
 
+/*
+ -----------------------------------------------------------------------------------
+ Odeep
+ Fichier     : handler.DHR1Handler.java
+ Auteur(s)   : Burgbacher Lionel, Jee Mathieu, Kopp Olivier, Piller Florent,
+               Silvestri Romain, Schürch Loïc
+ Compilateur : jdk 1.8.0_144
+ -----------------------------------------------------------------------------------
+*/
+
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -7,6 +17,9 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import main.Client;
 
+/**
+ * Pop up d'acceptation d'invitation
+ */
 public class AcceptInviteDialogController {
 
     private Stage dialogStage;

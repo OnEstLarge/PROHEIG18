@@ -1,5 +1,15 @@
 package views;
 
+/*
+ -----------------------------------------------------------------------------------
+ Odeep
+ Fichier     : handler.DHR1Handler.java
+ Auteur(s)   : Burgbacher Lionel, Jee Mathieu, Kopp Olivier, Piller Florent,
+               Silvestri Romain, Schürch Loïc
+ Compilateur : jdk 1.8.0_144
+ -----------------------------------------------------------------------------------
+*/
+
 import java.io.File;
 import java.net.URL;
 import java.util.*;
@@ -15,6 +25,9 @@ import peer.PeerMessage;
 import util.Constant;
 import util.InterfaceUtil;
 
+/**
+ * Classe principale de l'interface utilisateur
+ */
 public class RootLayoutController implements Initializable {
 
     private Client mainApp;

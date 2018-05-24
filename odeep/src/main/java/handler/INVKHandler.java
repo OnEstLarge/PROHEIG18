@@ -3,9 +3,10 @@ package handler;
 /*
  -----------------------------------------------------------------------------------
  Odeep
- Fichier     : handler.INVKHandler.java
- Auteur(s)   :
- Date        :
+ Fichier     : handler.DHR1Handler.java
+ Auteur(s)   : Burgbacher Lionel, Jee Mathieu, Kopp Olivier, Piller Florent,
+               Silvestri Romain, Schürch Loïc
+ Date        : 27.04.2018
  Compilateur : jdk 1.8.0_144
  -----------------------------------------------------------------------------------
 */

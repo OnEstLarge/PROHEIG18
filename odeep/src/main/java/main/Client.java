@@ -1,5 +1,16 @@
 package main;
 
+/*
+ -----------------------------------------------------------------------------------
+ Odeep
+ Fichier     : handler.DHR1Handler.java
+ Auteur(s)   : Burgbacher Lionel, Jee Mathieu, Kopp Olivier, Piller Florent,
+               Silvestri Romain, Schürch Loïc
+ Date        : 05.03.2018
+ Compilateur : jdk 1.8.0_144
+ -----------------------------------------------------------------------------------
+*/
+
 import Node.Node;
 import User.Person;
 import handler.*;
@@ -39,13 +50,25 @@ import User.Group;
 
 import static java.lang.System.exit;
 
-
+/**
+ * Classe principale de l'application contenant la méthode main
+ */
 public class Client extends Application {
 
-    private static Stage primaryStage;
-    private BorderPane rootLayout;
-    private static RootLayoutController controller;
-    private Image image = new Image(getClass().getResourceAsStream("logo.png"));
+    public static void main(String[] args) {
+        new Thread(() -> {
+            getLocalIP();
+            initConnections(IP_SERVER, PORT_SERVER);
+
+            try {
+                n.acceptingConnections();
+            } catch (NullPointerException e) {
+                //Le server n'est pas actif
+                exit(0);
+            }
+        }).start();
+        launch(args);
+    }
 
     /**
      * Lance l'affichage de la fenêtre initiale et défini le nom de la fenêtre.
@@ -68,83 +91,19 @@ public class Client extends Application {
     }
 
     /**
-     * Vérifie dans le fichier '.userInfo' si l'utilisateur possède déjà un nom d'utilisateur.
-     *
-     * @return le nom de l'utilisateur.
-     * null, si l'utilisateur ne possède pas encore de nom.
-     */
-    private static String usernameExists() {
-        String username = null;
-        final String userFilename = ".userInfo";
-        File userFile = new File("./" + userFilename);
-
-        if (userFile.exists() && !userFile.isDirectory()) {
-            username = readFromFile(userFile);
-            username = username.replaceAll("[^A-Za-z0-9]", ""); //remove all non aplhanumeric character
-        }
-
-        return username;
-    }
-
-    private static String readFromFile(File file) {
-        StringBuilder stringBuilder = new StringBuilder();
-        FileInputStream fileInputStream = null;
-        BufferedReader bufferedReader = null;
-        try {
-            fileInputStream = new FileInputStream(file);
-            bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
-            String line;
-
-            while ((line = bufferedReader.readLine()) != null) {
-                stringBuilder.append(line).append("\n");
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                bufferedReader.close();
-                fileInputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return stringBuilder.toString();
-    }
-
-    private static void writeToFile(File file, String data) {
-        PrintWriter writer = null;
-        try {
-
-            writer = new PrintWriter(file, "UTF-8");
-            writer.print(data);
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } finally {
-            writer.close();
-        }
-    }
-
-    /**
      * Initialise puis affiche la fenêtre initiale.
      * Si jamais le fichier .userInfo n'est pas trouvé, affiche la fenêtre demandant un nom d'utilisateur puis
      * crée le fichier .userInfo avec le nom reçu.
      */
     public void initRootLayout() {
-        if ((myUsername = usernameExists()) == null) {
+        if ((myUsername = InterfaceUtil.usernameExists()) == null) {
             boolean ok = showUsernameDialog();
             while (!ok) { // Demande un nom jusqu'à ce qu'il soit correct
                 ok = showUsernameDialog();
             }
 
             // Ecrit le fichier .userInfo avec le bon nom d'utilisateur
-            writeToFile(new File("./.userInfo"), myUsername);
+            InterfaceUtil.writeToFile(new File("./.userInfo"), myUsername);
         }
         try {
             // Charge l'interface initiale depuis un fichier .fxml
@@ -301,54 +260,9 @@ public class Client extends Application {
         return groups;
     }
 
-
-
-
-    private static final String IP_SERVER = "206.189.49.105";
-
-    private static final int PORT_SERVER = 8080;
-    private static final int LOCAL_PORT = 4444;
-
-    private static Socket clientSocketToServerPublic;
-    private static BufferedInputStream in;
-    private static BufferedOutputStream out;
-    private static boolean communicationReady = false;
-    private static int isUsernameAvailaible = -1;
-    private static boolean waitingForGroupValidation = false;
-    private static boolean validationGroup = false;
-    private static boolean waitingJsonFromServer = false;
-    private static boolean groupsNotInialized = true;
-
-    private static Node n;
-    private static String myUsername = null;
-    private static String localIP;
-
-    private static String response = null;
-
-    private static List<Group> groups = new ArrayList();
-    public static Person myself;// Initialisé dans getUsername
-
-    public static void main(String[] args) {
-
-        new Thread(() -> {
-            getLocalIP();
-            // initConnections établie la connexion avec le serveur, récupere le nom de l'utilisateur et se connecte avec
-            initConnections(IP_SERVER, PORT_SERVER);
-
-            // Se met à l'écoute de connexions
-            try {
-                n.acceptingConnections();
-            } catch (NullPointerException e) {
-                //Le server n'est pas actif
-                exit(0);
-            }
-
-        }).start();
-
-        launch(args);
-    }
-
-
+    /**
+     * Attend que l'utilisateur entre un pseudo lors de sa première utilisation
+     */
     private static void waitForUsername() {
 
         while (myUsername == null) {
@@ -368,7 +282,6 @@ public class Client extends Application {
      * @return true si le nom est disponible, false sinon
      */
     public static boolean usernameValidation(String username) {
-
         isUsernameAvailaible = -1;
 
         while (!communicationReady) {
@@ -408,10 +321,14 @@ public class Client extends Application {
                 ex.printStackTrace();
             }
         }
-
         return isUsernameAvailaible == 1;
     }
 
+    /**
+     * Attend la validation de la base de données sur la validité d'un nom de groupe
+     * @param groupID Le nom de groupe à valider
+     * @return true si le nom est valide, false sinon
+     */
     public static boolean groupValidation(String groupID) {
         PeerMessage availaibleGroupID = new PeerMessage(MessageType.NEWG, groupID, myUsername, "XXXXXX", 0, "".getBytes());
 
@@ -433,6 +350,9 @@ public class Client extends Application {
         return validationGroup;
     }
 
+    /**
+     * Retourne notre IP locale
+     */
     private static void getLocalIP() {
         // Récupération de l'adresse Ip locale utilisée
         localIP = null;
@@ -477,8 +397,6 @@ public class Client extends Application {
 
     }
 
-    // Initialise la connection avec le serveur et lance le server d'écoute du client
-
     /**
      * initialisation de la connection avec le serveur et mise à l'écoute du client
      * @param ip ip du serveur
@@ -500,7 +418,6 @@ public class Client extends Application {
                 out.flush();
             }
 
-
         } catch (IOException e) {
             System.err.println("Could not connect to the server");
             return;
@@ -508,11 +425,10 @@ public class Client extends Application {
 
         new Thread(new ReadFromServer()).start();
 
-
         // Initialise le noeud du client
         initNode();
 
-        // Restore les groupes existants
+        // Restaure les groupes existants
         for (String groupID : scanGroups()) {
             downloadJSON(groupID);
 
@@ -522,9 +438,7 @@ public class Client extends Application {
                 byte[] configFileByte = new byte[(int) configFile.length()];
                 configFile.readFully(configFileByte);
                 String configJson = new String(CipherUtil.AESDecrypt(configFileByte, n.getKey(groupID)));
-
                 groups.add(JSONUtil.parseJson(configJson, Group.class));
-
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (InvalidCipherTextException e) {
@@ -538,6 +452,10 @@ public class Client extends Application {
         Platform.runLater(() -> controller.updateGroupsAndFiles());
     }
 
+    /**
+     * Met notre status de connexion à connecté ou déconnecté
+     * @param connectMyself met notre status à connecté si true, déconnecté sinon
+     */
     public static void connectMyself(boolean connectMyself) {
         for (Group group : groups) {
             for (Person p : group.getMembers()) {
@@ -582,7 +500,7 @@ public class Client extends Application {
                             validationGroup = resp.equals("true") ? true : false;
                             waitingForGroupValidation = false;
                         } else if (pm.getType().equals(MessageType.DOWN)) {
-                            saveReceivedJson(pm);
+                            JSONUtil.saveReceivedJson(pm);
                             waitingJsonFromServer = false;
                         } else {
                             final PeerMessage redirectPM = new PeerMessage(pm);
@@ -619,7 +537,6 @@ public class Client extends Application {
      * @param connection connection depuis laquelle le message a été recu
      */
     private static void redirectToHandler(PeerMessage message, Node node, PeerConnection connection) {
-        // handle message
         try {
             node.getMapMessage().get(message.getType()).handleMessage(node, connection, message); // Gerer erreur possible
         } catch (NullPointerException e) {
@@ -784,28 +701,6 @@ public class Client extends Application {
         Platform.runLater(() -> controller.updateGroupsAndFiles());
     }
 
-    private static void saveReceivedJson(PeerMessage pm) {
-        byte[] buffer = pm.getMessageContent();
-        int size = pm.getMessageContent().length;
-        FileOutputStream fOut = null;
-        try {
-            fOut = new FileOutputStream(new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + pm.getIdGroup() + "/" + Constant.CONFIG_FILENAME));
-            fOut.write(buffer, 0, size);
-            fOut.flush();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (fOut != null) {
-                try {
-                    fOut.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
     /**
      * fonction permettant de connaitre tous les groupes de l'utilisateur
      * @return la list des groupes de l'utilisateur
@@ -928,6 +823,9 @@ public class Client extends Application {
         }
     }
 
+    /**
+     * Rafraichie la vue graphique
+     */
     public static void refresh() {
         Platform.runLater(() -> controller.updateGroupsAndFiles());
     }
@@ -1001,4 +899,34 @@ public class Client extends Application {
     public static void clearUploadBar() {
         Platform.runLater(() -> controller.clearUploadBar());
     }
+
+    //Constantes de connexion
+    private static final String IP_SERVER = "206.189.49.105";
+    private static final int PORT_SERVER = 8080;
+    private static final int LOCAL_PORT = 4444;
+
+    //variables d'un client F2F
+    private static Socket clientSocketToServerPublic;
+    private static BufferedInputStream in;
+    private static BufferedOutputStream out;
+    private static Node n;
+    private static String myUsername = null;
+    private static String localIP;
+    private static List<Group> groups = new ArrayList();
+    public static Person myself;
+
+    //variables pour l'interface graphique
+    private static Stage primaryStage;
+    private BorderPane rootLayout;
+    private static RootLayoutController controller;
+    private Image image = new Image(getClass().getResourceAsStream("logo.png"));
+
+    //nécéssaire à la communication entre les threads
+    private static String response = null;
+    private static boolean communicationReady = false;
+    private static int isUsernameAvailaible = -1;
+    private static boolean waitingForGroupValidation = false;
+    private static boolean validationGroup = false;
+    private static boolean waitingJsonFromServer = false;
+    private static boolean groupsNotInialized = true;
 }

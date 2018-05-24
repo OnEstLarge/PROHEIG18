@@ -3,8 +3,9 @@ package util;
 /*
  -----------------------------------------------------------------------------------
  Odeep
- Fichier     : util.JSONUtil.java
- Auteur(s)   : Kopp Olivier, Jee Mathieu
+ Fichier     : handler.DHR1Handler.java
+ Auteur(s)   : Burgbacher Lionel, Jee Mathieu, Kopp Olivier, Piller Florent,
+               Silvestri Romain, Schürch Loïc
  Date        : 20.04.2018
  Compilateur : jdk 1.8.0_144
  -----------------------------------------------------------------------------------
@@ -12,6 +13,7 @@ package util;
 
 import User.Group;
 import com.google.gson.*;
+import peer.PeerMessage;
 
 import java.io.*;
 import java.lang.reflect.ParameterizedType;
@@ -82,6 +84,32 @@ public class JSONUtil {
             if(fout != null) {
                 try {
                     fout.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * Sauve localement un fichier de configuration chiffré reçu encapsulé dans un PeerMessage
+     * @param pm Le PeerMessage qui encapsule le fichier de configuration chiffré
+     */
+    public static void saveReceivedJson(PeerMessage pm) {
+        byte[] buffer = pm.getMessageContent();
+        int size = pm.getMessageContent().length;
+        FileOutputStream fOut = null;
+        try {
+            fOut = new FileOutputStream(new File(Constant.ROOT_GROUPS_DIRECTORY + "/" + pm.getIdGroup() + "/" + Constant.CONFIG_FILENAME));
+            fOut.write(buffer, 0, size);
+            fOut.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fOut != null) {
+                try {
+                    fOut.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

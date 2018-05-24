@@ -1,4 +1,16 @@
 package message;
+
+/*
+ -----------------------------------------------------------------------------------
+ Odeep
+ Fichier     : handler.DHR1Handler.java
+ Auteur(s)   : Burgbacher Lionel, Jee Mathieu, Kopp Olivier, Piller Florent,
+               Silvestri Romain, Schürch Loïc
+ Date        : 15.03.2018
+ Compilateur : jdk 1.8.0_144
+ -----------------------------------------------------------------------------------
+*/
+
 import peer.*;
 import Node.*;/*
  -----------------------------------------------------------------------------------
@@ -11,7 +23,7 @@ import Node.*;/*
 */
 
 /**
- * Interface utilisée par tous les handlers de PeerMessage
+ * Interface qui définit le comportement des handlers de PeerMessage
  */
 public interface MessageHandler {
 

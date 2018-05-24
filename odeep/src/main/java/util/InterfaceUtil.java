@@ -3,8 +3,9 @@ package util;
 /*
  -----------------------------------------------------------------------------------
  Odeep
- Fichier     : util.InterfaceUtil.java
- Auteur(s)   : Jee Mathieu
+ Fichier     : handler.DHR1Handler.java
+ Auteur(s)   : Burgbacher Lionel, Jee Mathieu, Kopp Olivier, Piller Florent,
+               Silvestri Romain, Schürch Loïc
  Date        : 20.04.2018
  Compilateur : jdk 1.8.0_144
  -----------------------------------------------------------------------------------
@@ -177,4 +178,79 @@ public class InterfaceUtil {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Vérifie dans le fichier '.userInfo' si l'utilisateur possède déjà un nom d'utilisateur.
+     *
+     * @return le nom de l'utilisateur.
+     * null, si l'utilisateur ne possède pas encore de nom.
+     */
+    public static String usernameExists() {
+        String username = null;
+        final String userFilename = ".userInfo";
+        File userFile = new File("./" + userFilename);
+
+        if (userFile.exists() && !userFile.isDirectory()) {
+            username = readFromFile(userFile);
+            username = username.replaceAll("[^A-Za-z0-9]", ""); //remove all non aplhanumeric character
+        }
+
+        return username;
+    }
+
+    /**
+     * Lis intégralement un fichier et retourne son contenu sous forme de chaine de caractères
+     * @param file Le fichier à lire
+     * @return Les donneés lues sous forme de chaine de caractères
+     */
+    private static String readFromFile(File file) {
+        StringBuilder stringBuilder = new StringBuilder();
+        FileInputStream fileInputStream = null;
+        BufferedReader bufferedReader = null;
+        try {
+            fileInputStream = new FileInputStream(file);
+            bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
+            String line;
+
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuilder.append(line).append("\n");
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                bufferedReader.close();
+                fileInputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return stringBuilder.toString();
+    }
+
+    /**
+     * Ecrit des données dans un fichier
+     * @param file Le fichier dans lequel écrire les données
+     * @param data Les donneés à écrire
+     */
+    public static void writeToFile(File file, String data) {
+        PrintWriter writer = null;
+        try {
+
+            writer = new PrintWriter(file, "UTF-8");
+            writer.print(data);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } finally {
+            writer.close();
+        }
+    }
+
 }

@@ -1,7 +1,21 @@
 package util;
 
+/*
+ -----------------------------------------------------------------------------------
+ Odeep
+ Fichier     : handler.DHR1Handler.java
+ Auteur(s)   : Burgbacher Lionel, Jee Mathieu, Kopp Olivier, Piller Florent,
+               Silvestri Romain, Schürch Loïc
+ Date        : 20.04.2018
+ Compilateur : jdk 1.8.0_144
+ -----------------------------------------------------------------------------------
+*/
+
 import java.sql.*;
 
+/**
+ * Classe utilitaire pour les accès à la base de données
+ */
 public class DatabaseUtil {
 
     private static Connection connection;

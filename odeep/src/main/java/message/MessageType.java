@@ -1,5 +1,19 @@
 package message;
 
+/*
+ -----------------------------------------------------------------------------------
+ Odeep
+ Fichier     : handler.DHR1Handler.java
+ Auteur(s)   : Burgbacher Lionel, Jee Mathieu, Kopp Olivier, Piller Florent,
+               Silvestri Romain, Schürch Loïc
+ Date        : 17.03.2018
+ Compilateur : jdk 1.8.0_144
+ -----------------------------------------------------------------------------------
+*/
+
+/**
+ * Contient tous les types de messages utilisés par l'application
+ */
 public class MessageType {
     public final static String PGET = "PGET"; // demande d'envoie d'un paquet a un noeud
     public final static String RFIL = "RFIL"; // demande a un noeud si celui ci possède un fichier

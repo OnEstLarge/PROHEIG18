@@ -2,8 +2,9 @@ package User;
 /*
  -----------------------------------------------------------------------------------
  Odeep
- Fichier     : User.Group.java
- Auteur(s)   : Kopp Olivier, Jee Mathieu
+ Fichier     : handler.DHR1Handler.java
+ Auteur(s)   : Burgbacher Lionel, Jee Mathieu, Kopp Olivier, Piller Florent,
+               Silvestri Romain, Schürch Loïc
  Date        : 20.04.2018
  Compilateur : jdk 1.8.0_144
  -----------------------------------------------------------------------------------
@@ -12,6 +13,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Classe qui permet la gestion d'un groupe F2F
+ */
 public class Group implements Serializable {
 
     private String ID;
