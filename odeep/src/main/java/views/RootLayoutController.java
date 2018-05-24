@@ -274,6 +274,9 @@ public class RootLayoutController implements Initializable {
             return;
         }
         if (mapFile.containsKey(selectedGroup)) {
+            if(file.get(0) == null){
+                return;
+            }
             InterfaceUtil.removeFile(file.get(0), Client.getUsername(), Client.getGroupById(selectedGroup));
             mapFile.get(selectedGroup).remove(file.get(0));
             middleList.getItems().remove(file.get(0));
