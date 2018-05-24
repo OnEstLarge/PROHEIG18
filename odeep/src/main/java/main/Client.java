@@ -11,8 +11,8 @@ package main;
  -----------------------------------------------------------------------------------
 */
 
-import node.Node;
-import user.Person;
+import Node.Node;
+import User.Person;
 import handler.*;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -46,7 +46,7 @@ import views.AcceptInviteDialogController;
 import views.InviteDialogController;
 import views.UsernameDialogController;
 import views.RootLayoutController;
-import user.Group;
+import User.Group;
 
 import static java.lang.System.exit;
 
