@@ -11,8 +11,8 @@ package main;
  -----------------------------------------------------------------------------------
 */
 
-import Node.Node;
-import User.Person;
+import node.Node;
+import user.Person;
 import handler.*;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -46,7 +46,7 @@ import views.AcceptInviteDialogController;
 import views.InviteDialogController;
 import views.UsernameDialogController;
 import views.RootLayoutController;
-import User.Group;
+import user.Group;
 
 import static java.lang.System.exit;
 
@@ -545,7 +545,7 @@ public class Client extends Application {
     }
 
     /**
-     * fonction utilisé pour les connexions directs via un TCP pushing ou en local
+     * fonction utilisé pour les connexions directs via un TCP punching ou en local
      * @param username id de la personne dont on souhaite connaitre les informations
      * @return ip de l'utilisateur passé en paramétre
      */
