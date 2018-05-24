@@ -53,7 +53,7 @@ public class PeerHandler implements Runnable {
         node.getMapMessage().get(message.getType()).handleMessage(node,connection, message); //gerer erreur possible
 
 
-        //close connection
+        //close connexion
         connection.close();
     }
 

@@ -78,7 +78,7 @@ public class PeerConnection {
     }
 
     /**
-     * Permet de fermer la connection
+     * Permet de fermer la connexion
      */
     public void close() {
         try {

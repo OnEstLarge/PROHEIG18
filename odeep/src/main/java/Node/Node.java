@@ -65,7 +65,7 @@ public class Node {
     }
 
     /**
-     * permet d'accepter des connections entrantes sur le noeud
+     * permet d'accepter des connexions entrantes sur le noeud
      */
     public void acceptingConnections() {
         ServerSocket serverSocket = null;
@@ -74,7 +74,7 @@ public class Node {
         try {
             serverSocket = new ServerSocket(myInfos.getPort());
             while (nodeIsRunning) {
-                //attente de connection
+                //attente de connexion
                 try {
                     clientSocket = serverSocket.accept();
 

@@ -291,7 +291,7 @@ public class Client extends Application {
                 e.printStackTrace();
             }
         }
-        //une fois que la connection avec le serveur est établie, il faut demander si le pseudo entré est déjà utilisé
+        //une fois que la connexion avec le serveur est établie, il faut demander si le pseudo entré est déjà utilisé
         PeerMessage availaibleUsername = new PeerMessage(MessageType.USRV, "XXXXXX", username, "XXXXXX", 0, "".getBytes());
 
         try {
@@ -398,7 +398,7 @@ public class Client extends Application {
     }
 
     /**
-     * initialisation de la connection avec le serveur et mise à l'écoute du client
+     * initialisation de la connexion avec le serveur et mise à l'écoute du client
      * @param ip ip du serveur
      * @param port port du serveur
      */
@@ -534,7 +534,7 @@ public class Client extends Application {
      * fonction permettant de transmettre les messages aux bons handlers
      * @param message message recu
      * @param node noeud ayant recu le message
-     * @param connection connection depuis laquelle le message a été recu
+     * @param connection connexion depuis laquelle le message a été recu
      */
     private static void redirectToHandler(PeerMessage message, Node node, PeerConnection connection) {
         try {
@@ -545,7 +545,7 @@ public class Client extends Application {
     }
 
     /**
-     * fonction utilisé pour les connections directs via un TCP pushing ou en local
+     * fonction utilisé pour les connexions directs via un TCP pushing ou en local
      * @param username id de la personne dont on souhaite connaitre les informations
      * @return ip de l'utilisateur passé en paramétre
      */
